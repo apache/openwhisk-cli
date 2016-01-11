@@ -15,5 +15,7 @@ type SdkRequest struct {
 
 // Install artifact {component = docker || swift}
 func (s *SdkService) Install(component string) {
+	req, err := s.client.NewRequest()
 
+	res, err := s.client.Do(req)
 }
