@@ -4,15 +4,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RootCmd = &cobra.Command{
-	Use:   "wsk",
-	Short: "Whisk cloud computing command line interface.",
-	Long: `This is a longer description
+// RootCmd defines the entry point for the cli.  All other commands are registered on this.
+var (
+	RootCmd = &cobra.Command{
+		Use:   "wsk",
+		Short: "Whisk cloud computing command line interface.",
+		Long: `This is a longer description
 						of Whisk!`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
-	},
-}
+		Run: func(cmd *cobra.Command, args []string) {
+			// Do Stuff Here
+		},
+	}
+)
 
 func init() {
 	// TODO :: configure cobra

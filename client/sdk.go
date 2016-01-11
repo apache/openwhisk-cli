@@ -1,5 +1,7 @@
 package client
 
+import "fmt"
+
 type SdkService struct {
 	client *Client
 }
@@ -15,7 +17,9 @@ type SdkRequest struct {
 
 // Install artifact {component = docker || swift}
 func (s *SdkService) Install(component string) {
-	req, err := s.client.NewRequest()
+	url := fmt.Printf("/sdk/install") //build url with args.
+	req, err := s.client.NewRequest("POST", url)
 
 	res, err := s.client.Do(req)
+	// etc...
 }

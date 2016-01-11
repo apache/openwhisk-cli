@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// packageCmd represents the package command
 var packageCmd = &cobra.Command{
 	Use:   "package",
 	Short: "A brief description of your command",
@@ -17,13 +16,105 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
+		fmt.Println("package called")
+	},
+}
+
+var packageBindCmd = &cobra.Command{
+	Use:   "bind",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("package bind called")
+	},
+}
+
+var packageCreateCmd = &cobra.Command{
+	Use:   "create",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("package create called")
+	},
+}
+
+var packageUpdateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("update called")
+	},
+}
+
+var packageGetCmd = &cobra.Command{
+	Use:   "get",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("package get called")
+	},
+}
+
+var packageDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("package delete called")
+	},
+}
+
+var packageListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package called")
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(packageCmd)
+
+	packageCmd.AddCommand(
+		packageBindCmd,
+		packageCreateCmd,
+		packageUpdateCmd,
+		packageGetCmd,
+		packageDeleteCmd,
+		packageListCmd,
+	)
 
 	// Here you will define your flags and configuration settings.
 
