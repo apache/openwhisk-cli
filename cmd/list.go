@@ -23,7 +23,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	RootCmd.AddCommand(listCmd)
+	WhiskCmd.AddCommand(listCmd)
 
 	// Here you will define your flags and configuration settings.
 

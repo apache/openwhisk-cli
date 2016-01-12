@@ -98,7 +98,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	RootCmd.AddCommand(activationCmd)
+	WhiskCmd.AddCommand(activationCmd)
 
 	activationCmd.AddCommand(
 		activationListCmd,

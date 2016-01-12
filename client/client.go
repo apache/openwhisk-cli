@@ -83,6 +83,31 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	return req, nil
 }
 
+// NewUploadRequest creates an upload request. A relative URL can be provided in
+// urlStr, in which case it is resolved relative to the UploadURL of the Client.
+// Relative URLs should always be specified without a preceding slash.
+func (c *Client) NewUploadRequest(urlStr string, reader io.Reader, size int64, mediaType string) (*http.Request, error) {
+	rel, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+	req, err := http.NewRequest("POST", u.String(), reader)
+	if err != nil {
+		return nil, err
+	}
+	req.ContentLength = size
+
+	if len(mediaType) == 0 {
+		mediaType = defaultMediaType
+	}
+	req.Header.Add("Content-Type", mediaType)
+	req.Header.Add("Accept", mediaTypeV3)
+	req.Header.Add("User-Agent", c.UserAgent)
+	return req, nil
+}
+
 // Do sends an API request and returns the API response.  The API response is
 // JSON decoded and stored in the value pointed to by v, or returned as an
 // error if an API error has occurred.  If v implements the io.Writer
@@ -166,7 +191,7 @@ func (c *Client) Auth(authKey string) error {
 	return nil
 }
 
-// Clean resets object state (cache + auth)
+// Clean resets client state (cache + auth)
 func (c *Client) Clean() {
 
 }

@@ -108,7 +108,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	RootCmd.AddCommand(triggerCmd)
+	WhiskCmd.AddCommand(triggerCmd)
 
 	triggerCmd.AddCommand(
 		triggerFireCmd,
