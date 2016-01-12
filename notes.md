@@ -1,13 +1,13 @@
 ## Thoughts
 
-What else now ???
---> 
-
 
 ## Notes
 
 Thinking about how to persist data in between wsk calls.  The way that the python version does it is to write to a file on disk.  What other ways are there to do this?
-- Can keep it all in memory, in the client.  Can have a single point of entry `wsk` and then have an interactive environment based on that...  Actually I think the `.wskprops` approach is standard... git writes to a config file in a similar way... look at the github cli (or hugo / something written with cobra ) for inspiration.
+- How does github cli do this ?
+
+
+
 
 ## To do's
 
@@ -147,3 +147,97 @@ def request(method, urlString, body = "", headers = {}, auth = None, verbose = F
 ```
 
 - Shows auth scheme --> just base64 encode and use basic authorization for requests
+
+
+## Code samples from hugo
+
+---
+
+from `commands/hugo.go`
+
+```go
+
+// Execute adds all child commands to the root command HugoCmd and sets flags appropriately.
+func Execute() {
+	HugoCmd.SetGlobalNormalizationFunc(helpers.NormalizeHugoFlags)
+
+	HugoCmd.SilenceUsage = true
+
+	AddCommands()
+
+	if c, err := HugoCmd.ExecuteC(); err != nil {
+		if isUserError(err) {
+			c.Println("")
+			c.Println(c.UsageString())
+		}
+
+		os.Exit(-1)
+	}
+}
+
+// AddCommands adds child commands to the root command HugoCmd.
+func AddCommands() {
+	HugoCmd.AddCommand(serverCmd)
+	HugoCmd.AddCommand(versionCmd)
+	HugoCmd.AddCommand(configCmd)
+	HugoCmd.AddCommand(checkCmd)
+	HugoCmd.AddCommand(benchmarkCmd)
+	HugoCmd.AddCommand(convertCmd)
+	HugoCmd.AddCommand(newCmd)
+	HugoCmd.AddCommand(listCmd)
+	HugoCmd.AddCommand(undraftCmd)
+	HugoCmd.AddCommand(importCmd)
+
+	HugoCmd.AddCommand(genCmd)
+	genCmd.AddCommand(genautocompleteCmd)
+	genCmd.AddCommand(gendocCmd)
+	genCmd.AddCommand(genmanCmd)
+}
+
+```
+
+- use a top-level execute function like this to wrap Cmd.Execute().
+- Add all the commands in one place in the main function --> makes it much easier to see what's going on vs. in lots of different init files --> also easier to update / edit etc.
+
+```go
+
+
+
+
+// Flags that are to be added to commands.
+var BuildWatch, IgnoreCache, Draft, Future, UglyURLs, CanonifyURLs, Verbose, Logging, VerboseLog, DisableRSS, DisableSitemap, DisableRobotsTXT, PluralizeListTitles, PreserveTaxonomyNames, NoTimes, ForceSync bool
+var Source, CacheDir, Destination, Theme, BaseURL, CfgFile, LogFile, Editor string
+
+func initCoreCommonFlags(cmd *cobra.Command) {
+	cmd.Flags().BoolVarP(&Draft, "buildDrafts", "D", false, "include content marked as draft")
+	cmd.Flags().BoolVarP(&Future, "buildFuture", "F", false, "include content with publishdate in the future")
+	cmd.Flags().BoolVar(&DisableRSS, "disableRSS", false, "Do not build RSS files")
+	cmd.Flags().BoolVar(&DisableSitemap, "disableSitemap", false, "Do not build Sitemap file")
+	cmd.Flags().BoolVar(&DisableRobotsTXT, "disableRobotsTXT", false, "Do not build Robots TXT file")
+	cmd.Flags().StringVarP(&Source, "source", "s", "", "filesystem path to read files relative from")
+	cmd.Flags().StringVarP(&CacheDir, "cacheDir", "", "", "filesystem path to cache directory. Defaults: $TMPDIR/hugo_cache/")
+	cmd.Flags().BoolVarP(&IgnoreCache, "ignoreCache", "", false, "Ignores the cache directory for reading but still writes to it")
+	cmd.Flags().StringVarP(&Destination, "destination", "d", "", "filesystem path to write files to")
+	cmd.Flags().StringVarP(&Theme, "theme", "t", "", "theme to use (located in /themes/THEMENAME/)")
+	cmd.Flags().BoolVar(&UglyURLs, "uglyURLs", false, "if true, use /filename.html instead of /filename/")
+	cmd.Flags().BoolVar(&CanonifyURLs, "canonifyURLs", false, "if true, all relative URLs will be canonicalized using baseURL")
+	cmd.Flags().StringVarP(&BaseURL, "baseURL", "b", "", "hostname (and path) to the root, e.g. http://spf13.com/")
+	cmd.Flags().StringVar(&CfgFile, "config", "", "config file (default is path/config.yaml|json|toml)")
+	cmd.Flags().StringVar(&Editor, "editor", "", "edit new content with this editor, if provided")
+	cmd.Flags().BoolVar(&nitro.AnalysisOn, "stepAnalysis", false, "display memory and timing of different steps of the program")
+	cmd.Flags().BoolVar(&PluralizeListTitles, "pluralizeListTitles", true, "Pluralize titles in lists using inflect")
+	cmd.Flags().BoolVar(&PreserveTaxonomyNames, "preserveTaxonomyNames", false, `Preserve taxonomy names as written ("Gérard Depardieu" vs "gerard-depardieu")`)
+	cmd.Flags().BoolVarP(&ForceSync, "forceSyncStatic", "", false, "Copy all files when static is changed.")
+	// For bash-completion
+	validConfigFilenames := []string{"json", "js", "yaml", "yml", "toml", "tml"}
+	cmd.Flags().SetAnnotation("config", cobra.BashCompFilenameExt, validConfigFilenames)
+	cmd.Flags().SetAnnotation("source", cobra.BashCompSubdirsInDir, []string{})
+	cmd.Flags().SetAnnotation("cacheDir", cobra.BashCompSubdirsInDir, []string{})
+	cmd.Flags().SetAnnotation("destination", cobra.BashCompSubdirsInDir, []string{})
+	cmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
+}
+```
+
+- Parse variables like this.
+
+---

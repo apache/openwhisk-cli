@@ -38,7 +38,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	WhiskCmd.AddCommand(sdkCmd)
 
 	sdkCmd.AddCommand(sdkInstallCmd)
 

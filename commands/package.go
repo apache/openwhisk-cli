@@ -105,7 +105,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	WhiskCmd.AddCommand(packageCmd)
 
 	packageCmd.AddCommand(
 		packageBindCmd,

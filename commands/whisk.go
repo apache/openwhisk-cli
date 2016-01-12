@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -15,10 +17,41 @@ var (
 			// Do Stuff Here
 		},
 	}
+
+	// Top-level flags
+	Verbose bool
+	// Config string
 )
+
+// Execute runs main whisk command.
+func Execute() {
+
+	WhiskCmd.AddCommand(
+		actionCmd,
+		activationCmd,
+		authCmd,
+		cleanCmd,
+		listCmd,
+		packageCmd,
+		ruleCmd,
+		sdkCmd,
+		triggerCmd,
+		versionCmd,
+	)
+
+	if err := WhiskCmd.Execute(); err != nil {
+		os.Exit(-1)
+	}
+}
 
 func init() {
 	// TODO :: configure cobra
+
+	// add commands
+
+	// add common flags
+
+	WhiskCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 
 	// cobra.OnInitialize(initConfig)
 	// WhiskCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
