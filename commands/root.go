@@ -32,9 +32,3 @@ func init() {
 	// viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
 	// viper.SetDefault("license", "apache")
 }
-
-func Execute() {
-	if c, err := WhiskCmd.ExecuteC(); err != nil {
-		if
-	}
-}
