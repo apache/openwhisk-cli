@@ -1,5 +1,13 @@
 ## Thoughts
 
+How to set namespace properly... ?
+
+--> Namespace Service.
+
+
+
+---
+
 Review other python cli commands that are not listed in swagger doc (e.g. namespaces, sdk )
 
 ---

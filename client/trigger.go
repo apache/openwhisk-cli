@@ -49,8 +49,8 @@ func (s *TriggerService) List(options *TriggerListOptions) ([]Trigger, *http.Res
 
 }
 
-func (s *TriggerService) Create(trigger *Trigger, blocking bool) (*Trigger, *http.Response, error) {
-	route := fmt.Sprintf("triggers?blocking=%s", blocking)
+func (s *TriggerService) Insert(trigger *Trigger, overwrite bool) (*Trigger, *http.Response, error) {
+	route := fmt.Sprintf("triggers/%s?overwrite=%s", trigger.Name, overwrite)
 
 	req, err := s.client.NewRequest("POST", route, trigger)
 	if err != nil {
@@ -85,23 +85,6 @@ func (s *TriggerService) Fetch(triggerName string) (*Trigger, *http.Response, er
 
 }
 
-func (s *TriggerService) Update(trigger *Trigger, overwrite bool) (*Trigger, *http.Response, error) {
-	route := fmt.Sprintf("triggers/%s?overwrite=", trigger.Name, overwrite)
-
-	req, err := s.client.NewRequest("POST", route, trigger)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	t := new(Trigger)
-	resp, err := s.client.Do(req, &t)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return t, resp, nil
-}
-
 func (s *TriggerService) Delete(triggerName string) (*http.Response, error) {
 	route := fmt.Sprintf("triggers/%s", triggerName)
 
@@ -118,7 +101,7 @@ func (s *TriggerService) Delete(triggerName string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (s *TriggerService) Trigger(triggerName string, payload KeyValue) (*Trigger, *http.Response, error) {
+func (s *TriggerService) Fire(triggerName string, payload KeyValue) (*Trigger, *http.Response, error) {
 	route := fmt.Sprintf("triggers/", triggerName)
 
 	req, err := s.client.NewRequest("POST", route, payload)

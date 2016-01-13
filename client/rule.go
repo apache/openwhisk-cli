@@ -49,10 +49,10 @@ func (s *RuleService) List(options *RuleListOptions) ([]Rule, *http.Response, er
 
 }
 
-func (s *RuleService) Create(rule *Rule, blocking bool) (*Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules?blocking=%t", blocking)
+func (s *RuleService) Insert(rule *Rule, blocking bool) (*Rule, *http.Response, error) {
+	route := fmt.Sprintf("rules/%s?blocking=%t", rule.Name, blocking)
 
-	req, err := s.client.NewRequest("POST", route, rule)
+	req, err := s.client.NewRequest("PUT", route, rule)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -83,23 +83,6 @@ func (s *RuleService) Fetch(ruleName string) (*Rule, *http.Response, error) {
 
 	return r, resp, nil
 
-}
-
-func (s *RuleService) Update(rule *Rule, overwrite bool) (*Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules/%s?overwrite=%t", rule.Name, overwrite)
-
-	req, err := s.client.NewRequest("POST", route, rule)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	r := new(Rule)
-	resp, err := s.client.Do(req, &r)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return r, resp, nil
 }
 
 func (s *RuleService) Delete(ruleName string) (*http.Response, error) {

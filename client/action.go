@@ -63,10 +63,10 @@ func (s *ActionService) List(options *ActionListOptions) ([]Action, *http.Respon
 
 }
 
-func (s *ActionService) Create(action *Action, blocking bool) (*Action, *http.Response, error) {
-	route := fmt.Sprintf("actions?blocking=%s", blocking)
+func (s *ActionService) Insert(action *Action, overwrite bool) (*Action, *http.Response, error) {
+	route := fmt.Sprintf("actions/%s?overwrite=%t", action.Name, overwrite)
 
-	req, err := s.client.NewRequest("POST", route, action)
+	req, err := s.client.NewRequest("PUT", route, action)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -99,23 +99,6 @@ func (s *ActionService) Fetch(actionName string) (*Action, *http.Response, error
 
 }
 
-func (s *ActionService) Update(action *Action, overwrite bool) (*Action, *http.Response, error) {
-	route := fmt.Sprintf("actions/%s?overwrite=", action.Name, overwrite)
-
-	req, err := s.client.NewRequest("POST", route, action)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	a := new(Action)
-	resp, err := s.client.Do(req, &a)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return a, resp, nil
-}
-
 func (s *ActionService) Delete(actionName string) (*http.Response, error) {
 	route := fmt.Sprintf("actions/%s", actionName)
 
@@ -133,7 +116,7 @@ func (s *ActionService) Delete(actionName string) (*http.Response, error) {
 }
 
 func (s *ActionService) Invoke(actionName string, blocking bool) (*Action, *http.Response, error) {
-	route := fmt.Sprintf("actions/%s?blocking=", actionName, blocking)
+	route := fmt.Sprintf("actions/%s?blocking=%t", actionName, blocking)
 
 	req, err := s.client.NewRequest("POST", route, nil)
 	if err != nil {
