@@ -1,5 +1,13 @@
 ## Thoughts
 
+Review other python cli commands that are not listed in swagger doc (e.g. namespaces, sdk )
+
+---
+What does "clean" do ??
+
+
+
+---
 
 **Where does "namespace" come from??**
 - Look at where the client gets it from.  may have to be config'd
@@ -38,10 +46,12 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
   + add messages
   + add functions (link up with stubbed out client)
 - Client
-  + stub out methods for all services (with arguments)
-  + complete request method for Client ... include route specific stuff
-  + add auth to Client
-  + add verbose to Client
+  + [X] stub out methods for all services (with arguments)
+  + [X] complete services
+  + [X] complete request method for Client ()
+  + [ ] figure out what namespaces is about
+  + [ ] add auth to Client
+  + [ ] add verbose to Client
 
 
 

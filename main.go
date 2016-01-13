@@ -4,15 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.ibm.com/theodore-wilson/whisk-cli/cmd"
+	"github.com/spf13/hugo/commands"
 )
 
 func main() {
-
-	// client := client.NewClient(*http.Client)
-	// cmd := cmd.NewCli(client)
-	// err := cmd.Run(); ==> cmd.WhiskCmd.Execute()
-	if err := cmd.WhiskCmd.Execute(); err != nil {
+	if err := commands.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}

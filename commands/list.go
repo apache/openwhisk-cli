@@ -1,10 +1,6 @@
 package commands
 
-import (
-	"fmt"
-
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -17,8 +13,30 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("list called")
+		//List returns lists of all actions, triggers, rules, and activations.
+
+		actions, _, err := wsk.Actions.List(nil)
+		if err != nil {
+			return
+		}
+
+		triggers, _, err := wsk.Triggers.List(nil)
+		if err != nil {
+			return
+		}
+
+		rules, _, err := wsk.Rules.List(nil)
+		if err != nil {
+			return
+		}
+
+		activations, _, err := wsk.Activations.List(nil)
+		if err != nil {
+			return
+		}
+
+		return
+
 	},
 }
 

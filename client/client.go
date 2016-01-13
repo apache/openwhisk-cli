@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,6 +38,7 @@ type Config struct {
 	Namespace string
 	AuthToken string
 	BaseURL   *url.URL
+	Version   string
 }
 
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
@@ -93,6 +95,10 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
+
+	// base64 encode the auth token
+	encodedAuthToken := base64.StdEncoding.EncodeToString([]byte(c.Config.AuthToken))
+	req.Header.Add("Authorization", "Basic "+encodedAuthToken)
 
 	return req, nil
 }
@@ -198,44 +204,3 @@ func CheckResponse(r *http.Response) error {
 ////////////////////////////
 // Basic Client Functions //
 ////////////////////////////
-
-// Auth performs authorization operation --> stores token in client
-func (c *Client) Auth(authKey string) error {
-	// Does auth, stores token in client
-	return nil
-}
-
-// Clean resets client state (cache + auth)
-func (c *Client) Clean() {
-
-}
-
-// Version returns the version of the API
-func (c *Client) Version() string {
-	return ""
-}
-
-//List returns lists of all actions, triggers, rules, and activations.
-func (c *Client) List() (actions []Action, triggers []Trigger, rules []Rule, activations []Activation, err error) {
-	actions, _, err = c.Actions.List(nil)
-	if err != nil {
-		return
-	}
-
-	triggers, _, err = c.Triggers.List(nil)
-	if err != nil {
-		return
-	}
-
-	rules, _, err = c.Rules.List(nil)
-	if err != nil {
-		return
-	}
-
-	activations, _, err = c.Activations.List(nil)
-	if err != nil {
-		return
-	}
-
-	return
-}
