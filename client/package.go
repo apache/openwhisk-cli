@@ -1,5 +1,10 @@
 package client
 
+import (
+	"fmt"
+	"net/http"
+)
+
 type PackageService struct {
 	client *Client
 }
@@ -26,4 +31,95 @@ type PackageListOptions struct {
 	Skip   int    `url:"skip,omitempty"`
 	Since  int    `url:"since,omitempty"`
 	Docs   bool   `url:"docs,omitempty"`
+}
+
+func (s *PackageService) List(options *PackageListOptions) ([]Package, *http.Response, error) {
+	route := fmt.Sprintf("packages")
+	route, err := addRouteOptions(route, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var packages []Package
+	resp, err := s.client.Do(req, &packages)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return packages, resp, err
+
+}
+
+func (s *PackageService) Create(x_package *Package, blocking bool) (*Package, *http.Response, error) {
+	route := fmt.Sprintf("packages")
+
+	req, err := s.client.NewRequest("POST", route, x_package)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	p := new(Package)
+	resp, err := s.client.Do(req, &p)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return p, resp, nil
+
+}
+
+func (s *PackageService) Fetch(packageName string) (*Package, *http.Response, error) {
+	route := fmt.Sprintf("packages/%s", packageName)
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	x_package := new(Package)
+	resp, err := s.client.Do(req, &x_package)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return x_package, resp, nil
+
+}
+
+func (s *PackageService) Delete(packageName string) (*http.Response, error) {
+	route := fmt.Sprintf("packages/%s", packageName)
+
+	req, err := s.client.NewRequest("DELETE", route, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (s *PackageService) Update(x_package *Package, overwrite bool) (*Package, *http.Response, error) {
+	route := fmt.Sprintf("packages/%s?overwrite=", x_package.Name, overwrite)
+
+	req, err := s.client.NewRequest("POST", route, x_package)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	x_package := new(Package)
+	resp, err := s.client.Do(req, &x_package)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return x_package, resp, nil
 }
