@@ -24,12 +24,12 @@ type Client struct {
 	// version string
 	// verbose bool
 
-	Sdk        *SdkService
-	Trigger    *TriggerService
-	Action     *ActionService
-	Rule       *RuleService
-	Activation *ActivationService
-	Package    *PackageService
+	Sdks        *SdkService
+	Triggers    *TriggerService
+	Actions     *ActionService
+	Rules       *RuleService
+	Activations *ActivationService
+	Packages    *PackageService
 }
 
 func NewClient(httpClient *http.Client) (c *Client, err error) {
@@ -44,12 +44,12 @@ func NewClient(httpClient *http.Client) (c *Client, err error) {
 		BaseURL: baseURL,
 	}
 
-	c.Sdk = &SdkService{client: c}
-	c.Trigger = &TriggerService{client: c}
-	c.Action = &ActionService{client: c}
-	c.Rule = &RuleService{client: c}
-	c.Activation = &ActivationService{client: c}
-	c.Package = &PackageService{client: c}
+	c.Sdks = &SdkService{client: c}
+	c.Triggers = &TriggerService{client: c}
+	c.Actions = &ActionService{client: c}
+	c.Rules = &RuleService{client: c}
+	c.Activations = &ActivationService{client: c}
+	c.Packages = &PackageService{client: c}
 
 	return
 }
@@ -86,27 +86,27 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 // NewUploadRequest creates an upload request. A relative URL can be provided in
 // urlStr, in which case it is resolved relative to the UploadURL of the Client.
 // Relative URLs should always be specified without a preceding slash.
-func (c *Client) NewUploadRequest(urlStr string, reader io.Reader, size int64, mediaType string) (*http.Request, error) {
-	rel, err := url.Parse(urlStr)
-	if err != nil {
-		return nil, err
-	}
-
-	u := c.BaseURL.ResolveReference(rel)
-	req, err := http.NewRequest("POST", u.String(), reader)
-	if err != nil {
-		return nil, err
-	}
-	req.ContentLength = size
-
-	if len(mediaType) == 0 {
-		mediaType = defaultMediaType
-	}
-	req.Header.Add("Content-Type", mediaType)
-	req.Header.Add("Accept", mediaTypeV3)
-	req.Header.Add("User-Agent", c.UserAgent)
-	return req, nil
-}
+// func (c *Client) NewUploadRequest(urlStr string, reader io.Reader, size int64, mediaType string) (*http.Request, error) {
+// 	rel, err := url.Parse(urlStr)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	u := c.BaseURL.ResolveReference(rel)
+// 	req, err := http.NewRequest("POST", u.String(), reader)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	req.ContentLength = size
+//
+// 	if len(mediaType) == 0 {
+// 		mediaType = defaultMediaType
+// 	}
+// 	req.Header.Add("Content-Type", mediaType)
+// 	req.Header.Add("Accept", mediaTypeV3)
+// 	req.Header.Add("User-Agent", c.UserAgent)
+// 	return req, nil
+// }
 
 // Do sends an API request and returns the API response.  The API response is
 // JSON decoded and stored in the value pointed to by v, or returned as an

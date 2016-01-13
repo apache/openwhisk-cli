@@ -6,7 +6,7 @@
 Thinking about how to persist data in between wsk calls.  The way that the python version does it is to write to a file on disk.  What other ways are there to do this?
 - How does github cli do this ?
 
-
+-
 
 
 ## To do's
@@ -15,7 +15,9 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
   + hugo
   + github
 
-
+- review whisk server
+  + find out what resource structure is.
+  + [whisk swagger docs] (https://whisk.sl.cloud9.ibm.com/docs/index.html)
 
 - Cmd
   + implement loadConfig + updateConfig
