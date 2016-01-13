@@ -38,7 +38,7 @@ type Result struct {
 }
 
 func (s *ActivationService) List(options *ActivationListOptions) ([]Activations, *http.Response, error) {
-	route := fmt.Sprintf("activations")
+	route := "activations"
 	route, err := addRouteOptions(route, options)
 	if err != nil {
 		return nil, nil, err

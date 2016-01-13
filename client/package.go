@@ -56,7 +56,7 @@ func (s *PackageService) List(options *PackageListOptions) ([]Package, *http.Res
 }
 
 func (s *PackageService) Create(x_package *Package, blocking bool) (*Package, *http.Response, error) {
-	route := fmt.Sprintf("packages")
+	route := "packages"
 
 	req, err := s.client.NewRequest("POST", route, x_package)
 	if err != nil {
@@ -91,22 +91,6 @@ func (s *PackageService) Fetch(packageName string) (*Package, *http.Response, er
 
 }
 
-func (s *PackageService) Delete(packageName string) (*http.Response, error) {
-	route := fmt.Sprintf("packages/%s", packageName)
-
-	req, err := s.client.NewRequest("DELETE", route, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, nil)
-	if err != nil {
-		return resp, err
-	}
-
-	return resp, nil
-}
-
 func (s *PackageService) Update(x_package *Package, overwrite bool) (*Package, *http.Response, error) {
 	route := fmt.Sprintf("packages/%s?overwrite=", x_package.Name, overwrite)
 
@@ -122,4 +106,20 @@ func (s *PackageService) Update(x_package *Package, overwrite bool) (*Package, *
 	}
 
 	return x_package, resp, nil
+}
+
+func (s *PackageService) Delete(packageName string) (*http.Response, error) {
+	route := fmt.Sprintf("packages/%s", packageName)
+
+	req, err := s.client.NewRequest("DELETE", route, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }

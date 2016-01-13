@@ -1,5 +1,10 @@
 package client
 
+import (
+	"fmt"
+	"net/http"
+)
+
 type TriggerService struct {
 	client *Client
 }
@@ -20,4 +25,113 @@ type TriggerListOptions struct {
 	Limit string `url:"limit,omitempty"`
 	Skip  int    `url:"skip,omitempty"`
 	Docs  bool   `url:"docs,omitempty"`
+}
+
+func (s *TriggerService) List(options *TriggerListOptions) ([]Trigger, *http.Response, error) {
+	route := "triggers"
+	route, err := addRouteOptions(route, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var triggers []Trigger
+	resp, err := s.client.Do(req, &triggers)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return triggers, resp, err
+
+}
+
+func (s *TriggerService) Create(trigger *Trigger, blocking bool) (*Trigger, *http.Response, error) {
+	route := fmt.Sprintf("triggers?blocking=%s", blocking)
+
+	req, err := s.client.NewRequest("POST", route, trigger)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	t := new(Trigger)
+	resp, err := s.client.Do(req, &t)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return t, resp, nil
+
+}
+
+func (s *TriggerService) Fetch(triggerName string) (*Trigger, *http.Response, error) {
+	route := fmt.Sprintf("triggers/%s", triggerName)
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	t := new(Trigger)
+	resp, err := s.client.Do(req, &t)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return t, resp, nil
+
+}
+
+func (s *TriggerService) Update(trigger *Trigger, overwrite bool) (*Trigger, *http.Response, error) {
+	route := fmt.Sprintf("triggers/%s?overwrite=", trigger.Name, overwrite)
+
+	req, err := s.client.NewRequest("POST", route, trigger)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	t := new(Trigger)
+	resp, err := s.client.Do(req, &t)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return t, resp, nil
+}
+
+func (s *TriggerService) Delete(triggerName string) (*http.Response, error) {
+	route := fmt.Sprintf("triggers/%s", triggerName)
+
+	req, err := s.client.NewRequest("DELETE", route, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (s *TriggerService) Trigger(triggerName string, payload KeyValue) (*Trigger, *http.Response, error) {
+	route := fmt.Sprintf("triggers/", triggerName)
+
+	req, err := s.client.NewRequest("POST", route, payload)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	t := new(Trigger)
+	resp, err := s.client.Do(req, &t)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return t, resp, nil
+
 }

@@ -29,7 +29,7 @@ type RuleListOptions struct {
 }
 
 func (s *RuleService) List(options *RuleListOptions) ([]Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules")
+	route := "rules"
 	route, err := addRouteOptions(route, options)
 	if err != nil {
 		return nil, nil, err
@@ -86,22 +86,6 @@ func (s *RuleService) Fetch(ruleName string) (*Rule, *http.Response, error) {
 
 }
 
-func (s *RuleService) Delete(ruleName string) (*http.Response, error) {
-	route := fmt.Sprintf("rules/%s", ruleName)
-
-	req, err := s.client.NewRequest("DELETE", route, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, nil)
-	if err != nil {
-		return resp, err
-	}
-
-	return resp, nil
-}
-
 func (s *RuleService) Update(rule *Rule, overwrite bool) (*Rule, *http.Response, error) {
 	route := fmt.Sprintf("rules/%s?overwrite=", rule.Name, overwrite)
 
@@ -117,6 +101,22 @@ func (s *RuleService) Update(rule *Rule, overwrite bool) (*Rule, *http.Response,
 	}
 
 	return r, resp, nil
+}
+
+func (s *RuleService) Delete(ruleName string) (*http.Response, error) {
+	route := fmt.Sprintf("rules/%s", ruleName)
+
+	req, err := s.client.NewRequest("DELETE", route, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }
 
 func (s *RuleService) SetState(ruleName string, state string) (*Rule, *http.Response, error) {
@@ -139,5 +139,4 @@ func (s *RuleService) SetState(ruleName string, state string) (*Rule, *http.Resp
 	}
 
 	return r, resp, nil
-
 }

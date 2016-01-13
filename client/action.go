@@ -42,7 +42,7 @@ type ActionListOptions struct {
 ////////////////////
 
 func (s *ActionService) List(options *ActionListOptions) ([]Action, *http.Response, error) {
-	route := fmt.Sprintf("actions")
+	route := "actions"
 	route, err := addRouteOptions(route, options)
 	if err != nil {
 		return nil, nil, err
@@ -99,6 +99,23 @@ func (s *ActionService) Fetch(actionName string) (*Action, *http.Response, error
 
 }
 
+func (s *ActionService) Update(action *Action, overwrite bool) (*Action, *http.Response, error) {
+	route := fmt.Sprintf("actions/%s?overwrite=", action.Name, overwrite)
+
+	req, err := s.client.NewRequest("POST", route, action)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	a := new(Action)
+	resp, err := s.client.Do(req, &a)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return a, resp, nil
+}
+
 func (s *ActionService) Delete(actionName string) (*http.Response, error) {
 	route := fmt.Sprintf("actions/%s", actionName)
 
@@ -131,21 +148,4 @@ func (s *ActionService) Invoke(actionName string, blocking bool) (*Action, *http
 
 	return a, resp, nil
 
-}
-
-func (s *ActionService) Update(action *Action, overwrite bool) (*Action, *http.Response, error) {
-	route := fmt.Sprintf("actions/%s?overwrite=", action.Name, overwrite)
-
-	req, err := s.client.NewRequest("POST", route, action)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	a := new(Action)
-	resp, err := s.client.Do(req, &a)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return a, resp, nil
 }
