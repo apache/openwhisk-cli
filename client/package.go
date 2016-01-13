@@ -81,13 +81,13 @@ func (s *PackageService) Fetch(packageName string) (*Package, *http.Response, er
 		return nil, nil, err
 	}
 
-	x_package := new(Package)
-	resp, err := s.client.Do(req, &x_package)
+	p := new(Package)
+	resp, err := s.client.Do(req, &p)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return x_package, resp, nil
+	return p, resp, nil
 
 }
 
@@ -99,13 +99,13 @@ func (s *PackageService) Update(x_package *Package, overwrite bool) (*Package, *
 		return nil, nil, err
 	}
 
-	x_package := new(Package)
-	resp, err := s.client.Do(req, &x_package)
+	p := new(Package)
+	resp, err := s.client.Do(req, &p)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return x_package, resp, nil
+	return p, resp, nil
 }
 
 func (s *PackageService) Delete(packageName string) (*http.Response, error) {

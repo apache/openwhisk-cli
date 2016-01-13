@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -51,7 +50,7 @@ func (s *RuleService) List(options *RuleListOptions) ([]Rule, *http.Response, er
 }
 
 func (s *RuleService) Create(rule *Rule, blocking bool) (*Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules?blocking=%s", blocking)
+	route := fmt.Sprintf("rules?blocking=%t", blocking)
 
 	req, err := s.client.NewRequest("POST", route, rule)
 	if err != nil {
@@ -87,7 +86,7 @@ func (s *RuleService) Fetch(ruleName string) (*Rule, *http.Response, error) {
 }
 
 func (s *RuleService) Update(rule *Rule, overwrite bool) (*Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules/%s?overwrite=", rule.Name, overwrite)
+	route := fmt.Sprintf("rules/%s?overwrite=%t", rule.Name, overwrite)
 
 	req, err := s.client.NewRequest("POST", route, rule)
 	if err != nil {
@@ -122,10 +121,11 @@ func (s *RuleService) Delete(ruleName string) (*http.Response, error) {
 func (s *RuleService) SetState(ruleName string, state string) (*Rule, *http.Response, error) {
 	state = strings.ToLower(state)
 	if state != "enable" && state != "disable" {
-		return nil, nil, errors.New(fmt.Sprintf("Invalid state option %s.  Valid options are \"disabled\" and \"enabled\"."), state)
+		err := fmt.Errorf("Invalid state option %s.  Valid options are \"disabled\" and \"enabled\".", state)
+		return nil, nil, err
 	}
 
-	route := fmt.Sprintf("rules/%s?state=", ruleName, state)
+	route := fmt.Sprintf("rules/%s?state=%s", ruleName, state)
 
 	req, err := s.client.NewRequest("POST", route, nil)
 	if err != nil {

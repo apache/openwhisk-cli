@@ -17,8 +17,8 @@ const (
 )
 
 type Client struct {
-	client  *http.Client
-	BaseURL *url.URL
+	client *http.Client
+	*Config
 
 	// TODO :: put state in here
 	// authToken string // etc.
@@ -33,16 +33,29 @@ type Client struct {
 	Packages    *PackageService
 }
 
-func NewClient(httpClient *http.Client) (c *Client, err error) {
+type Config struct {
+	Namespace string
+	AuthToken string
+	BaseURL   *url.URL
+}
+
+func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-	baseURL, err := url.Parse(defaultBaseURL)
 
-	c = &Client{
-		client:  httpClient,
-		BaseURL: baseURL,
+	var err error
+	if config.BaseURL == nil {
+		config.BaseURL, err = url.Parse(defaultBaseURL)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	c := &Client{
+		client: httpClient,
+		Config: config,
 	}
 
 	c.Sdks = &SdkService{client: c}
@@ -52,7 +65,7 @@ func NewClient(httpClient *http.Client) (c *Client, err error) {
 	c.Activations = &ActivationService{client: c}
 	c.Packages = &PackageService{client: c}
 
-	return
+	return c, nil
 }
 
 ///////////////////////////////
@@ -204,22 +217,22 @@ func (c *Client) Version() string {
 
 //List returns lists of all actions, triggers, rules, and activations.
 func (c *Client) List() (actions []Action, triggers []Trigger, rules []Rule, activations []Activation, err error) {
-	actions, resp, err := c.Actions.List(nil)
+	actions, _, err = c.Actions.List(nil)
 	if err != nil {
 		return
 	}
 
-	triggers, err = c.Triggers.List()
+	triggers, _, err = c.Triggers.List(nil)
 	if err != nil {
 		return
 	}
 
-	rules, err = c.Rules.List()
+	rules, _, err = c.Rules.List(nil)
 	if err != nil {
 		return
 	}
 
-	activations, err = c.Activations.List()
+	activations, _, err = c.Activations.List(nil)
 	if err != nil {
 		return
 	}

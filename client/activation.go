@@ -37,7 +37,7 @@ type Result struct {
 	Value  map[string]interface{} `json:"value,omitempty"`
 }
 
-func (s *ActivationService) List(options *ActivationListOptions) ([]Activations, *http.Response, error) {
+func (s *ActivationService) List(options *ActivationListOptions) ([]Activation, *http.Response, error) {
 	route := "activations"
 	route, err := addRouteOptions(route, options)
 	if err != nil {
