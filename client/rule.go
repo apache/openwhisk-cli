@@ -49,8 +49,8 @@ func (s *RuleService) List(options *RuleListOptions) ([]Rule, *http.Response, er
 
 }
 
-func (s *RuleService) Insert(rule *Rule, blocking bool) (*Rule, *http.Response, error) {
-	route := fmt.Sprintf("rules/%s?blocking=%t", rule.Name, blocking)
+func (s *RuleService) Insert(rule *Rule, overwrite bool) (*Rule, *http.Response, error) {
+	route := fmt.Sprintf("rules/%s?overwrite=%t", rule.Name, overwrite)
 
 	req, err := s.client.NewRequest("PUT", route, rule)
 	if err != nil {
