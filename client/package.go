@@ -5,10 +5,11 @@ type PackageService struct {
 }
 
 type Package struct {
-	Namespace   string `json:"namespace,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Version     string `json:"version,omitempty"`
-	Publish     bool   `json:"publish,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Version   string `json:"version,omitempty"`
+	Publish   bool   `json:"publish,omitempty"`
+
 	Annotations `json:"annotations"`
 	Parameters  `json:"parameters"`
 	Binding     `json:"binding"`
@@ -19,5 +20,10 @@ type Binding struct {
 	Name      string `json:"name"`
 }
 
-type PackageRequest struct {
+type PackageListOptions struct {
+	Public bool   `url:"public,omitempty"`
+	Limit  string `url:"limit,omitempty"`
+	Skip   int    `url:"skip,omitempty"`
+	Since  int    `url:"since,omitempty"`
+	Docs   bool   `url:"docs,omitempty"`
 }

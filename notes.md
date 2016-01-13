@@ -1,12 +1,17 @@
 ## Thoughts
 
 
+**Where does "namespace" come from??**
+- Look at where the client gets it from.  may have to be config'd
+
 ## Notes
 
 Thinking about how to persist data in between wsk calls.  The way that the python version does it is to write to a file on disk.  What other ways are there to do this?
 - How does github cli do this ?
 
 -
+
+
 
 
 ## To do's

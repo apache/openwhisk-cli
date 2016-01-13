@@ -13,6 +13,7 @@ import (
 const (
 	libraryVersion = "0.1"
 	defaultBaseURL = "https://whisk.com" // TODO :: insert real url
+	// namespace = "??" // TODO
 )
 
 type Client struct {
@@ -203,22 +204,22 @@ func (c *Client) Version() string {
 
 //List returns lists of all actions, triggers, rules, and activations.
 func (c *Client) List() (actions []Action, triggers []Trigger, rules []Rule, activations []Activation, err error) {
-	actions, err = c.Action.List()
+	actions, resp, err := c.Actions.List(nil)
 	if err != nil {
 		return
 	}
 
-	triggers, err = c.Trigger.List()
+	triggers, err = c.Triggers.List()
 	if err != nil {
 		return
 	}
 
-	rules, err = c.Rule.List()
+	rules, err = c.Rules.List()
 	if err != nil {
 		return
 	}
 
-	activations, err = c.Activation.List()
+	activations, err = c.Activations.List()
 	if err != nil {
 		return
 	}
