@@ -1,5 +1,10 @@
 package client
 
+import (
+	"fmt"
+	"net/http"
+)
+
 type ActivationService struct {
 	client *Client
 }
@@ -30,4 +35,79 @@ type ActivationListOptions struct {
 type Result struct {
 	Status string                 `json:"status,omitempty"`
 	Value  map[string]interface{} `json:"value,omitempty"`
+}
+
+func (s *ActivationService) List(options *ActivationListOptions) ([]Activations, *http.Response, error) {
+	route := fmt.Sprintf("activations")
+	route, err := addRouteOptions(route, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var activations []Activation
+	resp, err := s.client.Do(req, &activations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return activations, resp, err
+
+}
+
+func (s *ActivationService) Fetch(activationID string) (*Activation, *http.Response, error) {
+	route := fmt.Sprintf("activations/%s", activationID)
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	a := new(Activation)
+	resp, err := s.client.Do(req, &a)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return a, resp, nil
+
+}
+
+func (s *ActivationService) Logs(activationID string) (*Activation, *http.Response, error) {
+	route := fmt.Sprintf("activations/%s/logs", activationID)
+
+	req, err := s.client.NewRequest("GET", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	activation := new(Activation)
+	resp, err := s.client.Do(req, &activation)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return activation, resp, nil
+}
+
+func (s *ActivationService) Result(activationID string) (*Result, *http.Response, error) {
+	route := fmt.Sprintf("activations/%s", activationID)
+
+	req, err := s.client.NewRequest("get", route, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(Result)
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
+
 }
