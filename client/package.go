@@ -55,24 +55,6 @@ func (s *PackageService) List(options *PackageListOptions) ([]Package, *http.Res
 
 }
 
-func (s *PackageService) Create(x_package *Package, blocking bool) (*Package, *http.Response, error) {
-	route := "packages"
-
-	req, err := s.client.NewRequest("POST", route, x_package)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	p := new(Package)
-	resp, err := s.client.Do(req, &p)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return p, resp, nil
-
-}
-
 func (s *PackageService) Fetch(packageName string) (*Package, *http.Response, error) {
 	route := fmt.Sprintf("packages/%s", packageName)
 
@@ -91,10 +73,10 @@ func (s *PackageService) Fetch(packageName string) (*Package, *http.Response, er
 
 }
 
-func (s *PackageService) Update(x_package *Package, overwrite bool) (*Package, *http.Response, error) {
-	route := fmt.Sprintf("packages/%s?overwrite=", x_package.Name, overwrite)
+func (s *PackageService) Insert(x_package *Package, overwrite bool) (*Package, *http.Response, error) {
+	route := fmt.Sprintf("packages/%s?overwrite=%t", x_package.Name, overwrite)
 
-	req, err := s.client.NewRequest("POST", route, x_package)
+	req, err := s.client.NewRequest("PUT", route, x_package)
 	if err != nil {
 		return nil, nil, err
 	}
