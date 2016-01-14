@@ -9,13 +9,8 @@ import (
 // sdkCmd represents the sdk command
 var sdkCmd = &cobra.Command{
 	Use:   "sdk",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "work with the sdk",
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("sdk called")
@@ -25,12 +20,7 @@ to quickly create a Cobra application.`,
 var sdkInstallCmd = &cobra.Command{
 	Use:   "install",
 	Short: "Install artifacts",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("sdk install called")

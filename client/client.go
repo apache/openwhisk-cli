@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	DEFAULT_BASE_URL = "https://whisk.stage1.ng.bluemix.net"
+	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net"
 )
 
 type Client struct {
@@ -35,7 +35,7 @@ type Client struct {
 type Config struct {
 	Namespace string // NOTE :: Default is "_"
 	AuthToken string
-	BaseURL   *url.URL // NOTE :: Default is
+	BaseURL   *url.URL // NOTE :: Default is "whisk.stage1.ng.bluemix.net"
 	Version   string
 }
 
@@ -47,7 +47,7 @@ func New(httpClient *http.Client, config *Config) (*Client, error) {
 
 	var err error
 	if config.BaseURL == nil {
-		config.BaseURL, err = url.Parse(DEFAULT_BASE_URL)
+		config.BaseURL, err = url.Parse(defaultBaseURL)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +80,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 
 	// TODO :: Need to add namespace to request.
 
-	urlStr = fmt.Printf("%s/%s", c.Config.Namespace, urlStr)
+	urlStr = fmt.Sprintf("%s/%s", c.Config.Namespace, urlStr)
 
 	rel, err := url.Parse(urlStr)
 	if err != nil {

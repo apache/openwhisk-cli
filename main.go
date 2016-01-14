@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/hugo/commands"
+	"github.ibm.com/Bluemix/whisk-cli/commands"
 )
 
 func main() {

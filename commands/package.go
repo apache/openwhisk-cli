@@ -8,13 +8,8 @@ import (
 
 var packageCmd = &cobra.Command{
 	Use:   "package",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "work with packages",
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package called")
 	},
@@ -23,12 +18,7 @@ to quickly create a Cobra application.`,
 var packageBindCmd = &cobra.Command{
 	Use:   "bind",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package bind called")
 	},
@@ -37,12 +27,7 @@ to quickly create a Cobra application.`,
 var packageCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package create called")
 	},
@@ -51,12 +36,7 @@ to quickly create a Cobra application.`,
 var packageUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("update called")
 	},
@@ -65,12 +45,7 @@ to quickly create a Cobra application.`,
 var packageGetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package get called")
 	},
@@ -79,12 +54,7 @@ to quickly create a Cobra application.`,
 var packageDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package delete called")
 	},
@@ -93,12 +63,7 @@ to quickly create a Cobra application.`,
 var packageListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("package called")
 	},

@@ -9,13 +9,8 @@ import (
 // triggerCmd represents the trigger command
 var triggerCmd = &cobra.Command{
 	Use:   "trigger",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "work with triggers",
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("trigger called")
@@ -25,12 +20,7 @@ to quickly create a Cobra application.`,
 var triggerFireCmd = &cobra.Command{
 	Use:   "fire",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("trigger fire called")
@@ -40,12 +30,7 @@ to quickly create a Cobra application.`,
 var triggerCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("trigger create called")
 	},
@@ -54,12 +39,7 @@ to quickly create a Cobra application.`,
 var triggerUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("update called")
 	},
@@ -68,12 +48,7 @@ to quickly create a Cobra application.`,
 var triggerGetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("trigger get called")
 	},
@@ -82,12 +57,7 @@ to quickly create a Cobra application.`,
 var triggerDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("trigger delete called")
 	},
@@ -96,12 +66,7 @@ to quickly create a Cobra application.`,
 var triggerListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("trigger list called")
 	},

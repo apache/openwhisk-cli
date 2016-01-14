@@ -1,5 +1,29 @@
 ## Thoughts
 
+
+---
+
+Now... -> fill out command functions.
+
+Perhaps start with a different function... with fewer flags ??
+
+
+Need to figure out how flags will be done...
+
+Can put in cmd.init() functions ??  yeah ...
+
+would be really nice if i could test this ...
+
+
+
+---
+
+Issue: not running..  pain in the ass.
+
+Not sure why ...  looks right according to docs...
+
+
+
 ---
 
 How to set namespace properly... ?

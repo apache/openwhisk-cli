@@ -9,13 +9,8 @@ import (
 // actionCmd represents the action command
 var actionCmd = &cobra.Command{
 	Use:   "action",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "work with actions",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("action called")
@@ -32,8 +27,22 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("action called")
+
+		// var (
+		// 	name        string
+		// 	annotations client.Annotations
+		// 	parameters  client.Parameters
+		// 	limits      client.Limits
+		// )
+
+		// get these values from cmd. flags
+		// what is args for ?
+
+		// action := &client.Action{
+		//
+		// }
+		//
+		// _, whisk.Actions.Insert(action)
 	},
 }
 
@@ -49,12 +58,13 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("action called")
+
 	},
 }
 
 var actionInvokeCmd = &cobra.Command{
 	Use:   "invoke []",
-	Short: "A brief description of your command",
+	Short: "invoke action",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -69,7 +79,7 @@ to quickly create a Cobra application.`,
 
 var actionGetCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
+	Short: "get action",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -93,7 +103,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		fmt.Println("action called")
+		// client.Actions.Delete(name)
 	},
 }
 
