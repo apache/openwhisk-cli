@@ -15,27 +15,27 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//List returns lists of all actions, triggers, rules, and activations.
 
-		actions, _, err := wsk.Actions.List(nil)
-		if err != nil {
-			return
-		}
-
-		triggers, _, err := wsk.Triggers.List(nil)
-		if err != nil {
-			return
-		}
-
-		rules, _, err := wsk.Rules.List(nil)
-		if err != nil {
-			return
-		}
-
-		activations, _, err := wsk.Activations.List(nil)
-		if err != nil {
-			return
-		}
-
-		return
+		// actions, _, err := wsk.Actions.List(nil)
+		// if err != nil {
+		// 	return
+		// }
+		//
+		// triggers, _, err := wsk.Triggers.List(nil)
+		// if err != nil {
+		// 	return
+		// }
+		//
+		// rules, _, err := wsk.Rules.List(nil)
+		// if err != nil {
+		// 	return
+		// }
+		//
+		// activations, _, err := wsk.Activations.List(nil)
+		// if err != nil {
+		// 	return
+		// }
+		//
+		// return
 
 	},
 }

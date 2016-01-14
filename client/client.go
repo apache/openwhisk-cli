@@ -12,9 +12,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.1"
-	defaultBaseURL = "https://whisk.com" // TODO :: insert real url
-	// namespace = "??" // TODO
+	DEFAULT_BASE_URL = "https://whisk.stage1.ng.bluemix.net"
 )
 
 type Client struct {
@@ -35,9 +33,9 @@ type Client struct {
 }
 
 type Config struct {
-	Namespace string
+	Namespace string // NOTE :: Default is "_"
 	AuthToken string
-	BaseURL   *url.URL
+	BaseURL   *url.URL // NOTE :: Default is
 	Version   string
 }
 
@@ -49,10 +47,14 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 	var err error
 	if config.BaseURL == nil {
-		config.BaseURL, err = url.Parse(defaultBaseURL)
+		config.BaseURL, err = url.Parse(DEFAULT_BASE_URL)
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if config.Namespace == "" {
+		config.Namespace = "_"
 	}
 
 	c := &Client{
@@ -75,6 +77,9 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 ///////////////////////////////
 
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+
+	// TODO :: Need to add namespace to request.
+
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -96,9 +101,11 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		return nil, err
 	}
 
-	// base64 encode the auth token
-	encodedAuthToken := base64.StdEncoding.EncodeToString([]byte(c.Config.AuthToken))
-	req.Header.Add("Authorization", "Basic "+encodedAuthToken)
+	// base64 encode the auth token, if present
+	if c.Config.AuthToken != "" {
+		encodedAuthToken := base64.StdEncoding.EncodeToString([]byte(c.Config.AuthToken))
+		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", encodedAuthToken))
+	}
 
 	return req, nil
 }
