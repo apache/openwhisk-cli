@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.ibm.com/Bluemix/whisk-cli/client"
 )
 
 // WskCmd defines the entry point for the cli.  All other commands are registered on this.
@@ -21,10 +23,23 @@ var (
 	// Top-level flags
 	Verbose bool
 	// Config string
+
+	whisk *client.Client
+)
+
+const (
+	// TODO :: configure this properly
+	PROPS_PATH = "~/.wskprops"
+
+	TEST_AUTH_TOKEN = "6c31860c-67ec-4adf-84f5-e421a9d3050e:CShXVzgb0KmlLJ2Iej02p60SBsnZJXA7FCQThVDXLEw2z5faOZBnc9efgp8BuQ9U"
+	TEST_NAMESPACE  = "wilsonth@us.ibm.com_dev"
+	TEST_BASE_URL   = "whisk.stage1.ng.bluemix.net" // TODO :: relplace with local address
 )
 
 // Execute runs main whisk command.
 func Execute() {
+
+	// Where to parse flags ??
 
 	WskCmd.AddCommand(
 		actionCmd,
@@ -45,9 +60,22 @@ func Execute() {
 }
 
 func init() {
-	// TODO :: configure cobra
 
-	// add commands
+	// read props
+	// props, _ := readProps(PROPS_PATH)
+	// if err != nil {
+	// 	fmt.Errorf()
+	// 	// What now?
+	// }
+
+	clientConfig := &client.Config{
+		AuthToken: TEST_AUTH_TOKEN,
+		Namespace: TEST_NAMESPACE,
+		BaseURL:   TEST_BASE_URL,
+	}
+	whisk = client.New(http.DefaultClient, clientConfig)
+
+	// TODO :: configure cobra
 
 	// add common flags
 

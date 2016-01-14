@@ -39,7 +39,7 @@ type Config struct {
 	Version   string
 }
 
-func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
+func New(httpClient *http.Client, config *Config) (*Client, error) {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -79,6 +79,8 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 
 	// TODO :: Need to add namespace to request.
+
+	urlStr = fmt.Printf("%s/%s", c.Config.Namespace, urlStr)
 
 	rel, err := url.Parse(urlStr)
 	if err != nil {

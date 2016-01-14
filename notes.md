@@ -1,10 +1,11 @@
 ## Thoughts
 
+---
+
 How to set namespace properly... ?
 
---> Namespace Service.
-
-
+stored in .wskprops, initialized in client.
+client offers namespaceService.List() only.
 
 ---
 
@@ -13,6 +14,13 @@ Review other python cli commands that are not listed in swagger doc (e.g. namesp
 ---
 What does "clean" do ??
 
+---
+
+What am I doing with Config / props ??
+
+What is the requirement?
+> read .wsk config into map[string]string
+> write map[string]string to file (configurable)
 
 
 ---
@@ -25,19 +33,25 @@ What does "clean" do ??
 Thinking about how to persist data in between wsk calls.  The way that the python version does it is to write to a file on disk.  What other ways are there to do this?
 - How does github cli do this ?
 
--
-
+- Start working on command ...
+  + fill out methods.
+    + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
 
 
 
 ## To do's
+
+- Local install
+  - vagrant.
+  - test everything locally, include how in docs.
+  - Debug locally.
 
 - review how other cli packages store props (to disk)
   + hugo
   + github
 
 - review whisk server
-  + find out what resource structure is.
+  + [X] find out what resource structure is.
   + [whisk swagger docs] (https://whisk.sl.cloud9.ibm.com/docs/index.html)
 
 - Cmd
@@ -46,20 +60,20 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
     + auth
     + clean
     + version
+  + add verbose
   + add arguments
   + add flags
     + top-level
     + sub-cmd-level
 
   + add messages
-  + add functions (link up with stubbed out client)
+  + add functions (link up with stubbed out client + props)
 - Client
   + [X] stub out methods for all services (with arguments)
   + [X] complete services
   + [X] complete request method for Client ()
-  + [ ] figure out what namespaces is about
-  + [ ] add auth to Client
-  + [ ] add verbose to Client
+  + [X] figure out what namespaces is about
+  + [X] add auth to Client
 
 
 
