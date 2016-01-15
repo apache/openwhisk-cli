@@ -22,7 +22,7 @@ type Trigger struct {
 }
 
 type TriggerListOptions struct {
-	Limit string `url:"limit,omitempty"`
+	Limit int `url:"limit,omitempty"`
 	Skip  int    `url:"skip,omitempty"`
 	Docs  bool   `url:"docs,omitempty"`
 }

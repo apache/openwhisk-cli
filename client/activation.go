@@ -25,7 +25,7 @@ type Activation struct {
 
 type ActivationListOptions struct {
 	Name  string `url:"name,omitempty"`
-	Limit string `url:"limit,omitempty"`
+	Limit int    `url:"limit,omitempty"`
 	Skip  int    `url:"skip,omitempty"`
 	Since int    `url:"since,omitempty"`
 	Upto  int    `url:"upto,omitempty"`

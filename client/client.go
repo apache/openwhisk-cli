@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net"
+	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net:443/api/v1/"
 )
 
 type Client struct {
@@ -147,7 +147,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 
 	err = CheckResponse(resp)
@@ -156,6 +155,8 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 		// in case the caller wants to inspect it further
 		return resp, err
 	}
+
+	// spew.Dump(ioutil.ReadAll(resp.Body))
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {

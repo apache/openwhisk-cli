@@ -32,9 +32,9 @@ type Exec struct {
 }
 
 type ActionListOptions struct {
-	Limit string `url:"limit,omitempty"`
-	Skip  int    `url:"skip,omitempty"`
-	Docs  bool   `url:"docs,omitempty"`
+	Limit int  `url:"limit,omitempty"`
+	Skip  int  `url:"skip,omitempty"`
+	Docs  bool `url:"docs,omitempty"`
 }
 
 ////////////////////
@@ -115,7 +115,7 @@ func (s *ActionService) Delete(actionName string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (s *ActionService) Invoke(actionName string, blocking bool) (*Action, *http.Response, error) {
+func (s *ActionService) Invoke(actionName string, blocking bool) (*Activation, *http.Response, error) {
 	route := fmt.Sprintf("actions/%s?blocking=%t", actionName, blocking)
 
 	req, err := s.client.NewRequest("POST", route, nil)
@@ -123,7 +123,7 @@ func (s *ActionService) Invoke(actionName string, blocking bool) (*Action, *http
 		return nil, nil, err
 	}
 
-	a := new(Action)
+	a := new(Activation)
 	resp, err := s.client.Do(req, &a)
 	if err != nil {
 		return nil, resp, err

@@ -1,56 +1,4 @@
-## Thoughts
 
-
----
-
-Now... -> fill out command functions.
-
-Perhaps start with a different function... with fewer flags ??
-
-
-Need to figure out how flags will be done...
-
-Can put in cmd.init() functions ??  yeah ...
-
-would be really nice if i could test this ...
-
-
-
----
-
-Issue: not running..  pain in the ass.
-
-Not sure why ...  looks right according to docs...
-
-
-
----
-
-How to set namespace properly... ?
-
-stored in .wskprops, initialized in client.
-client offers namespaceService.List() only.
-
----
-
-Review other python cli commands that are not listed in swagger doc (e.g. namespaces, sdk )
-
----
-What does "clean" do ??
-
----
-
-What am I doing with Config / props ??
-
-What is the requirement?
-> read .wsk config into map[string]string
-> write map[string]string to file (configurable)
-
-
----
-
-**Where does "namespace" come from??**
-- Look at where the client gets it from.  may have to be config'd
 
 ## Notes
 
@@ -61,9 +9,21 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
   + fill out methods.
     + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
 
+## Inconsistencies
 
+- activation name vs activation id
+  + python client uses name to look up, swagger says id.
 
 ## To do's
+
+- [ ] Figure out how to properly define positional arguments with cobra / pflags.
+
+- [ ] Implement verbose mode to help with debugging.
+
+- [ ] Add flags as common variables. --> perhaps have a flag file ??
+
+- [ ] Action.Create with exec and all flags
+- [ ] Action.Invoke with params
 
 - Local install
   - vagrant.
@@ -304,3 +264,85 @@ func initCoreCommonFlags(cmd *cobra.Command) {
 - Parse variables like this.
 
 ---
+
+
+## Thoughts
+
+---
+
+Now... -> fill out command functions.
+
+Perhaps start with a different function... with fewer flags ??
+
+
+Need to figure out how flags will be done...
+
+Can put in cmd.init() functions ??  yeah ...
+
+would be really nice if i could test this ...
+
+
+---
+
+How to set namespace properly... ?
+
+stored in .wskprops, initialized in client.
+client offers namespaceService.List() only.
+
+---
+
+Review other python cli commands that are not listed in swagger doc (e.g. namespaces, sdk )
+
+---
+What does "clean" do ??
+
+---
+
+What am I doing with Config / props ??
+
+What is the requirement?
+> read .wsk config into map[string]string
+> write map[string]string to file (configurable)
+
+
+---
+
+
+current issue:
+Optional parameters... should not be listed in url params.  If not there, then don't print.
+e.g. How to deal with activationsListOptions .since and .upto
+
+possible solution: use pointers.  if pointer is nil, then ignore.
+
+
+```go
+func addRouteOptions(route string, options interface{}) (string, error) {
+	v := reflect.ValueOf(options)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return route, nil
+	}
+
+	u, err := url.Parse(route)
+	if err != nil {
+		return route, err
+	}
+
+	qs, err := query.Values(options)
+	if err != nil {
+		return route, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u.String(), nil
+}
+```
+- How does go-querystring/query.Values() work ?? has options ??
+  + want to take all non-nil values from options and write key=value in url.  Should ignore nil values (like for pointers and empty structs.)
+
+
+Already does this!  using the tags... --> omit empty.  Anything to worry about then ... ?
+
+
+- consider using pointers to structs.
+-
+- for now, just flag and skip anything difficult.
