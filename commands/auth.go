@@ -8,12 +8,12 @@ import (
 
 // authCmd represents the auth command
 var authCmd = &cobra.Command{
-	Use:   "auth",
+	Use:   "auth <key string>",
 	Short: "add an authentication key to .wskprops",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("auth called")
+
+		fmt.Println("TODO :: implement auth command")
 	},
 }
 

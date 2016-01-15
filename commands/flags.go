@@ -19,6 +19,9 @@ var flags struct {
 	limit int  // return max N records
 	full  bool // return full records (docs=true for client request)
 
+	// auth
+	x_type string
+
 	// action
 	docker     bool
 	copy       bool

@@ -1,6 +1,11 @@
 package commands
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/spf13/cobra"
+)
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -8,43 +13,54 @@ var listCmd = &cobra.Command{
 	Short: "list triggers, actions, and rules in the registry",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//List returns lists of all actions, triggers, rules, and activations.
+		listAll := flags.x_type == ""
 
-		// actions, _, err := wsk.Actions.List(nil)
-		// if err != nil {
-		// 	return
-		// }
-		//
-		// triggers, _, err := wsk.Triggers.List(nil)
-		// if err != nil {
-		// 	return
-		// }
-		//
-		// rules, _, err := wsk.Rules.List(nil)
-		// if err != nil {
-		// 	return
-		// }
-		//
-		// activations, _, err := wsk.Activations.List(nil)
-		// if err != nil {
-		// 	return
-		// }
-		//
-		// return
+		if (listAll) || (flags.x_type == "actions") {
+			actions, _, err := whisk.Actions.List(nil)
+			if err != nil {
+				return
+			}
+			fmt.Println("actions")
+			spew.Dump(actions)
+		}
+
+		if (listAll) || (flags.x_type == "triggers") {
+
+			triggers, _, err := whisk.Triggers.List(nil)
+			if err != nil {
+				return
+			}
+			fmt.Println("triggers")
+			spew.Dump(triggers)
+		}
+
+		if (listAll) || (flags.x_type == "rules") {
+
+			rules, _, err := whisk.Rules.List(nil)
+			if err != nil {
+				return
+			}
+			fmt.Println("rules")
+			spew.Dump(rules)
+		}
+
+		if (listAll) || (flags.x_type == "activations") {
+
+			activations, _, err := whisk.Activations.List(nil)
+			if err != nil {
+				return
+			}
+			fmt.Println("activations")
+			spew.Dump(activations)
+		}
 
 	},
 }
 
 func init() {
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	listCmd.Flags().StringVarP(&flags.x_type, "type", "t", "", "only list given type")
+	listCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
+	listCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")
 
 }
