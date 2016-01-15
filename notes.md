@@ -2,6 +2,25 @@
 
 ## Notes
 
+Order of variables: flags -> env -> .wsk
+
+1. load flags, env, and .wsk (props)
+2. for each value, check and assign in order
+3. initialize client + other variables that depend on valuesz
+
+config:
+- `auth`
+- `namespace`
+- `edge`
+
+- [X] load props and env. variables in main init.  Write a top-level persistent pre-run function to read the command line variables.
+- [ ] add setter functions
+  + [ ] `auth`
+  + [ ] `namespace`
+
+
+---
+
 Thinking about how to persist data in between wsk calls.  The way that the python version does it is to write to a file on disk.  What other ways are there to do this?
 - How does github cli do this ?
 

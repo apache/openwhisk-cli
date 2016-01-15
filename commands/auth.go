@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -12,8 +13,26 @@ var authCmd = &cobra.Command{
 	Short: "add an authentication key to .wskprops",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			err := errors.New("Invalid auth argument")
+			fmt.Println(err)
+			return
+		}
 
-		fmt.Println("TODO :: implement auth command")
+		authToken := args[0]
+
+		props, err := readProps(propsFile)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		props["AUTH"] = authToken
+
+		err = writeProps(propsFile, props)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 

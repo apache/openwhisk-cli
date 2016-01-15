@@ -19,11 +19,6 @@ type Client struct {
 	client *http.Client
 	*Config
 
-	// TODO :: put state in here
-	// authToken string // etc.
-	// version string
-	// verbose bool
-
 	Sdks        *SdkService
 	Triggers    *TriggerService
 	Actions     *ActionService
