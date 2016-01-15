@@ -13,7 +13,7 @@ var healthCmd = &cobra.Command{
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		fmt.Println("version called")
+		fmt.Println("not yet implemented")
 	},
 }
 

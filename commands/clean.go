@@ -13,7 +13,7 @@ var cleanCmd = &cobra.Command{
 	Long:  `Cleans items in the registry`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		fmt.Println("clean called")
+		fmt.Println("not yet implemented")
 	},
 }
 
