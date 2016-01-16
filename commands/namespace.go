@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -41,10 +42,26 @@ var namespaceSetCmd = &cobra.Command{
 	Short: "sets the namespace to the desired option",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("namespace set called")
+		if len(args) != 1 {
+			err := errors.New("Invalid namespace argument")
+			fmt.Println(err)
+			return
+		}
 
-		// TODO :: update namespace in props.
+		namespace := args[0]
 
+		props, err := readProps(PropsFile)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		props["NAMESPACE"] = namespace
+
+		err = writeProps(PropsFile, props)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 
