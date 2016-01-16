@@ -25,6 +25,7 @@ type Client struct {
 	Rules       *RuleService
 	Activations *ActivationService
 	Packages    *PackageService
+	Namespaces  *NamespaceService
 }
 
 type Config struct {
@@ -63,6 +64,7 @@ func New(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Rules = &RuleService{client: c}
 	c.Activations = &ActivationService{client: c}
 	c.Packages = &PackageService{client: c}
+	c.Namespaces = &NamespaceService{client: c}
 
 	return c, nil
 }

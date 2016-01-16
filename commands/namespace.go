@@ -19,17 +19,26 @@ var namespaceCmd = &cobra.Command{
 
 var namespaceListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "lists all available namespaces",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("namespace list called")
+		namespaces, _, err := whisk.Namespaces.List()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("namespaces")
+		for _, namespace := range namespaces {
+			fmt.Println(namespace)
+		}
+
 	},
 }
 
 var namespaceSetCmd = &cobra.Command{
-	Use:   "set",
-	Short: "A brief description of your command",
+	Use:   "set <namespace string>",
+	Short: "sets the namespace to the desired option",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("namespace set called")
