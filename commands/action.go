@@ -81,7 +81,50 @@ var actionUpdateCmd = &cobra.Command{
 	Short: "update an existing action",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Complete
+		var err error
+		if len(args) != 2 {
+			err = errors.New("Invalid argument list")
+			fmt.Println(err)
+			return
+		}
+
+		actionName := args[0]
+		// artifactName := args[1]
+
+		// flags.docker
+		// flags.copy
+		// flags.pipe
+		// flags.lib
+		// flags.package
+		// flags.param
+		// flags.annotation
+
+		exec := client.Exec{}
+		annotations := client.Annotations{}
+		parameters := client.Parameters{}
+		limits := client.Limits{
+			Timeout: flags.timeout,
+			Memory:  flags.memory,
+		}
+
+		action := &client.Action{
+			Name:        actionName,
+			Publish:     flags.shared,
+			Exec:        exec,
+			Annotations: annotations,
+			Parameters:  parameters,
+			Limits:      limits,
+		}
+
+		action, _, err = whisk.Actions.Insert(action, true)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("ok: created action")
+		spew.Dump(action)
+
 	},
 }
 
