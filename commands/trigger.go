@@ -1,8 +1,12 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
+	"github.ibm.com/Bluemix/whisk-cli/client"
+
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -18,61 +22,169 @@ var triggerCmd = &cobra.Command{
 }
 
 var triggerFireCmd = &cobra.Command{
-	Use:   "fire",
-	Short: "A brief description of your command",
+	Use:   "fire <name string> <payload ?>",
+	Short: "fire trigger event",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("trigger fire called")
+		// TODO :: parse payload from args... how ?
+		// whisk.Triggers.Fire(triggerName, payload)
 	},
 }
 
 var triggerCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
+	Short: "create new trigger",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("trigger create called")
+
+		// TODO :: parse annotation
+		// TODO :: parse param
+
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
+
+		triggerName := args[0]
+
+		trigger := &client.Trigger{
+			Name: triggerName,
+			// Param
+			// Annotation
+		}
+
+		trigger, _, err = whisk.Triggers.Insert(trigger, false)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("ok: created trigger")
+
+		spew.Dump(trigger)
 	},
 }
 
 var triggerUpdateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "A brief description of your command",
+	Short: "update existing trigger",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+
+		// TODO :: parse annotation
+		// TODO :: parse param
+
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
+
+		triggerName := args[0]
+
+		trigger := &client.Trigger{
+			Name: triggerName,
+			// Param
+			// Annotation
+		}
+
+		trigger, _, err = whisk.Triggers.Insert(trigger, true)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("ok: updated trigger")
+
+		spew.Dump(trigger)
 	},
 }
 
 var triggerGetCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
+	Short: "get trigger",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("trigger get called")
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
+
+		triggerName := args[0]
+
+		trigger, _, err := whisk.Triggers.Fetch(triggerName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println("ok: got trigger ", triggerName)
+		spew.Dump(trigger)
 	},
 }
 
 var triggerDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "A brief description of your command",
+	Use:   "delete <name string>",
+	Short: "delete trigger",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("trigger delete called")
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
+
+		ruleName := args[0]
+
+		_, err = whisk.Triggers.Delete(ruleName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println("ok: deleted rule ", ruleName)
 	},
 }
 
 var triggerListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "list all triggers",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("trigger list called")
+		options := &client.TriggerListOptions{
+			Skip:  flags.skip,
+			Limit: flags.limit,
+		}
+		triggers, _, err := whisk.Triggers.List(options)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(triggers)
+		spew.Dump(triggers)
 	},
 }
 
 func init() {
+
+	triggerCreateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
+	triggerCreateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	triggerCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
+
+	triggerUpdateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
+	triggerUpdateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	triggerUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
+
+	triggerFireCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+
+	triggerListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
+	triggerListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")
 
 	triggerCmd.AddCommand(
 		triggerFireCmd,
