@@ -15,10 +15,9 @@ config:
 
 - [X] load props and env. variables in main init.  Write a top-level persistent pre-run function to read the command line variables.
 
-**check these... was working**
-- [ ] add setter functions
-  + [ ] `auth`
-  + [ ] `namespace`
+- [X] add setter functions
+  + [X] `auth`
+  + [X] `namespace`
 
 
 
@@ -39,10 +38,16 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 ## To do's
 
-- [ ] finish all simple methods
+- [ ] create action
+  - how to pass in file ?
+- [ ] verbose
+- [ ] params / annotations
+
+
+- [X] finish all simple methods
   + [x] package
-  + [ ] rule
-  + [ ] trigger
+  + [X] rule
+  + [X] trigger
 
 - [ ] How to properly parse k|v flags like annotation and parameter ??
 

@@ -170,12 +170,12 @@ func init() {
 
 	packageCreateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
 	packageCreateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
-	packageCreateCmd.Flags().StringVarP(&flags.serviceGuid, "service_guid", "s", "", "a unique identifier of the service")
+	packageCreateCmd.Flags().StringVarP(&flags.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
 	packageUpdateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
 	packageUpdateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
-	packageUpdateCmd.Flags().StringVarP(&flags.serviceGuid, "service_guid", "s", "", "a unique identifier of the service")
+	packageUpdateCmd.Flags().StringVarP(&flags.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
 	packageBindCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")

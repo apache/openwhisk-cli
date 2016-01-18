@@ -29,17 +29,49 @@ var actionCreateCmd = &cobra.Command{
 	Short: "create a new action",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
+		var err error
+		if len(args) != 2 {
+			err = errors.New("Invalid argument list")
+			fmt.Println(err)
+			return
+		}
 
-		// var (
-		// 	name        string
-		// 	annotations client.Annotations
-		// 	parameters  client.Parameters
-		// 	limits      client.Limits
-		// )
-		//
-		// action := &client.Action{}
+		actionName := args[0]
+		// artifactName := args[1]
 
-		// _, whisk.Actions.Insert(action)
+		// flags.docker
+		// flags.copy
+		// flags.pipe
+		// flags.lib
+		// flags.package
+		// flags.param
+		// flags.annotation
+
+		exec := client.Exec{}
+		annotations := client.Annotations{}
+		parameters := client.Parameters{}
+		limits := client.Limits{
+			Timeout: flags.timeout,
+			Memory:  flags.memory,
+		}
+
+		action := &client.Action{
+			Name:        actionName,
+			Publish:     flags.shared,
+			Exec:        exec,
+			Annotations: annotations,
+			Parameters:  parameters,
+			Limits:      limits,
+		}
+
+		action, _, err = whisk.Actions.Insert(action, false)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("ok: created action")
+		spew.Dump(action)
 
 	},
 }
@@ -165,6 +197,7 @@ func init() {
 	actionCreateCmd.Flags().BoolVar(&flags.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
 	actionCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
 	actionCreateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
+	actionCreateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
 
 	// actionUpdateCmd
 

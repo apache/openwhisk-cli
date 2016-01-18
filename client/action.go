@@ -21,9 +21,9 @@ type Action struct {
 	Limits      `json:"limits,omitempty"`
 }
 
-type ActionRequest struct {
-	// Use this if POST /actions requires different parameters than above.
-}
+// type ActionRequest struct {
+// 	// Use this if POST /actions requires different parameters than above.
+// }
 
 type Exec struct {
 	Code  string `json:"code,omitempty"`

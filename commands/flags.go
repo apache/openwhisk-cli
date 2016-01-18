@@ -25,13 +25,14 @@ var flags struct {
 	xType string
 
 	// action
-	docker  bool
-	copy    bool
-	pipe    bool
-	shared  bool
-	lib     string
-	timeout int
-	memory  int
+	docker   bool
+	copy     bool
+	pipe     bool
+	shared   bool
+	lib      string
+	timeout  int
+	memory   int
+	xPackage string
 
 	// activation
 	upto    int // retrieve results up to certain time
@@ -41,7 +42,7 @@ var flags struct {
 	// namespace
 
 	// package
-	serviceGuid string
+	serviceGUID string
 
 	// rule
 	auto bool
