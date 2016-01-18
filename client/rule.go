@@ -18,13 +18,13 @@ type Rule struct {
 
 	Status  string `json:"status"`
 	Trigger string `json:"trigger"`
-	Rule    string `json:"rule"`
+	Action  string `json:"rule"`
 }
 
 type RuleListOptions struct {
-	Limit int `url:"limit,omitempty"`
-	Skip  int    `url:"skip,omitempty"`
-	Docs  bool   `url:"docs,omitempty"`
+	Limit int  `url:"limit,omitempty"`
+	Skip  int  `url:"skip,omitempty"`
+	Docs  bool `url:"docs,omitempty"`
 }
 
 func (s *RuleService) List(options *RuleListOptions) ([]Rule, *http.Response, error) {

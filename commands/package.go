@@ -20,8 +20,8 @@ var packageCmd = &cobra.Command{
 }
 
 var packageBindCmd = &cobra.Command{
-	Use:   "bind",
-	Short: "A brief description of your command",
+	Use:   "bind <name string>",
+	Short: "bind parameters to the package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO :: find out what this does and implement it.
@@ -29,8 +29,8 @@ var packageBindCmd = &cobra.Command{
 }
 
 var packageCreateCmd = &cobra.Command{
-	Use:   "create",
-	Short: "A brief description of your command",
+	Use:   "create <name string>",
+	Short: "create a new package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO :: parse annotations
@@ -42,10 +42,10 @@ var packageCreateCmd = &cobra.Command{
 			return
 		}
 
-		name := args[0]
+		packageName := args[0]
 
 		p := &client.Package{
-			Name:    name,
+			Name:    packageName,
 			Publish: flags.shared,
 			// Annotations:
 			// Parameters:
@@ -61,8 +61,8 @@ var packageCreateCmd = &cobra.Command{
 }
 
 var packageUpdateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "A brief description of your command",
+	Use:   "update <name string>",
+	Short: "update an existing package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO :: parse annotations
@@ -74,10 +74,10 @@ var packageUpdateCmd = &cobra.Command{
 			return
 		}
 
-		name := args[0]
+		packageName := args[0]
 
 		p := &client.Package{
-			Name:    name,
+			Name:    packageName,
 			Publish: flags.shared,
 			// Annotations:
 			// Parameters:
@@ -93,8 +93,8 @@ var packageUpdateCmd = &cobra.Command{
 }
 
 var packageGetCmd = &cobra.Command{
-	Use:   "get",
-	Short: "A brief description of your command",
+	Use:   "get <name string>",
+	Short: "get package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
@@ -104,23 +104,23 @@ var packageGetCmd = &cobra.Command{
 			return
 		}
 
-		name := args[0]
+		packageName := args[0]
 
-		p, _, err := whisk.Packages.Fetch(name)
+		p, _, err := whisk.Packages.Fetch(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println("ok: got package ", name)
+		fmt.Println("ok: got package ", packageName)
 
 		spew.Dump(p)
 	},
 }
 
 var packageDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "A brief description of your command",
+	Use:   "delete <name string>",
+	Short: "delete package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
@@ -130,21 +130,21 @@ var packageDeleteCmd = &cobra.Command{
 			return
 		}
 
-		name := args[0]
+		packageName := args[0]
 
-		_, err = whisk.Packages.Delete(name)
+		_, err = whisk.Packages.Delete(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println("ok: deleted package ", name)
+		fmt.Println("ok: deleted package ", packageName)
 	},
 }
 
 var packageListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
+	Short: "list all packages",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error

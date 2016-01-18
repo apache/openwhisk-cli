@@ -42,4 +42,7 @@ var flags struct {
 
 	// package
 	serviceGuid string
+
+	// rule
+	auto bool
 }

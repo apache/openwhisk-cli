@@ -40,11 +40,11 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 ## To do's
 
 - [ ] finish all simple methods
-  + [ ] package
+  + [x] package
   + [ ] rule
   + [ ] trigger
 
-
+- [ ] How to properly parse k|v flags like annotation and parameter ??
 
 - [ ] Figure out how to properly define positional arguments with cobra / pflags.
 
@@ -62,10 +62,6 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 - review how other cli packages store props (to disk)
   + hugo
   + github
-
-- review whisk server
-  + [X] find out what resource structure is.
-  + [whisk swagger docs] (https://whisk.sl.cloud9.ibm.com/docs/index.html)
 
 - Cmd
   + implement loadConfig + updateConfig

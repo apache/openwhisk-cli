@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
@@ -64,9 +65,15 @@ var actionInvokeCmd = &cobra.Command{
 		// spew.Dump(params)
 		// // TODO :: parse params into K|V pairs
 
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
 		actionName := args[0]
-		blocking, _ := cmd.Flags().GetBool("blocking")
-		activation, _, err := whisk.Actions.Invoke(actionName, blocking)
+
+		activation, _, err := whisk.Actions.Invoke(actionName, flags.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
@@ -82,6 +89,14 @@ var actionGetCmd = &cobra.Command{
 	Short: "get action",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		var err error
+		if len(args) != 1 {
+			err = errors.New("Invalid argument")
+			fmt.Println(err)
+			return
+		}
+
 		actionName := args[0]
 		action, _, err := whisk.Actions.Fetch(actionName)
 		if err != nil {
