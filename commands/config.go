@@ -27,7 +27,7 @@ var propsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		props, _ := readProps(PropsFile)
 		for key, value := range props {
-			fmt.Printf("%s=%s", key, value)
+			fmt.Printf("%s=%s\n", key, value)
 		}
 	},
 }
@@ -57,6 +57,7 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 
 func readProps(path string) (props map[string]string, err error) {
 	// read file
+	props = map[string]string{}
 	file, err := os.Open(path)
 	if err != nil {
 		return
@@ -94,7 +95,7 @@ func writeProps(path string, props map[string]string) error {
 	defer writer.Flush()
 	for key, value := range props {
 		line := fmt.Sprintf("%s=%s", strings.ToUpper(key), value)
-		_, err := writer.WriteString(line)
+		_, err = fmt.Fprintln(writer, line)
 		if err != nil {
 			return err
 		}

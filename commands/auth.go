@@ -21,14 +21,11 @@ var authCmd = &cobra.Command{
 
 		authToken := args[0]
 
-		props, err := readProps(PropsFile)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		props, _ := readProps(PropsFile)
+
 		props["AUTH"] = authToken
 
-		err = writeProps(PropsFile, props)
+		err := writeProps(PropsFile, props)
 		if err != nil {
 			fmt.Println(err)
 			return
