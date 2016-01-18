@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net:443/api/v1/"
+	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net:443/api/v1"
 )
 
 type Client struct {
@@ -100,13 +100,16 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		return nil, err
 	}
 
-	// base64 encode the auth token, if present
+	c.addAuthHeader(req)
+
+	return req, nil
+}
+
+func (c *Client) addAuthHeader(req *http.Request) {
 	if c.Config.AuthToken != "" {
 		encodedAuthToken := base64.StdEncoding.EncodeToString([]byte(c.Config.AuthToken))
 		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", encodedAuthToken))
 	}
-
-	return req, nil
 }
 
 // NewUploadRequest creates an upload request. A relative URL can be provided in
@@ -152,8 +155,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 		// in case the caller wants to inspect it further
 		return resp, err
 	}
-
-	// spew.Dump(ioutil.ReadAll(resp.Body))
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {

@@ -17,6 +17,8 @@ func (s *NamespaceService) List() ([]Namespace, *http.Response, error) {
 		return nil, nil, err
 	}
 
+	s.client.addAuthHeader(req)
+
 	var namespaces []Namespace
 	resp, err := s.client.Do(req, &namespaces)
 	if err != nil {

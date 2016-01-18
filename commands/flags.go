@@ -12,7 +12,9 @@ var flags struct {
 	namespace string
 
 	// shared
-	blocking bool
+	blocking   bool
+	annotation []string
+	param      []string
 
 	// shared list
 	skip  int  // skip first N records
@@ -20,18 +22,16 @@ var flags struct {
 	full  bool // return full records (docs=true for client request)
 
 	// auth
-	x_type string
+	xType string
 
 	// action
-	docker     bool
-	copy       bool
-	pipe       bool
-	shared     bool
-	lib        string
-	annotation []string
-	param      []string
-	timeout    int
-	memory     int
+	docker  bool
+	copy    bool
+	pipe    bool
+	shared  bool
+	lib     string
+	timeout int
+	memory  int
 
 	// activation
 	upto    int // retrieve results up to certain time
@@ -40,4 +40,6 @@ var flags struct {
 
 	// namespace
 
+	// package
+	serviceGuid string
 }

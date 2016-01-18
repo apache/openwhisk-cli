@@ -73,6 +73,7 @@ func Execute() error {
 		versionCmd,
 
 		// hidden
+		configCmd,
 		propsCmd,
 	)
 

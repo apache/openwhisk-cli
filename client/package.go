@@ -26,11 +26,11 @@ type Binding struct {
 }
 
 type PackageListOptions struct {
-	Public bool   `url:"public,omitempty"`
-	Limit  string `url:"limit,omitempty"`
-	Skip   int    `url:"skip,omitempty"`
-	Since  int    `url:"since,omitempty"`
-	Docs   bool   `url:"docs,omitempty"`
+	Public bool `url:"public,omitempty"`
+	Limit  int  `url:"limit,omitempty"`
+	Skip   int  `url:"skip,omitempty"`
+	Since  int  `url:"since,omitempty"`
+	Docs   bool `url:"docs,omitempty"`
 }
 
 func (s *PackageService) List(options *PackageListOptions) ([]Package, *http.Response, error) {

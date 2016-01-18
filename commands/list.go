@@ -13,9 +13,9 @@ var listCmd = &cobra.Command{
 	Short: "list triggers, actions, and rules in the registry",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		listAll := flags.x_type == ""
+		listAll := flags.xType == ""
 
-		if (listAll) || (flags.x_type == "actions") {
+		if (listAll) || (flags.xType == "actions") {
 			actions, _, err := whisk.Actions.List(nil)
 			if err != nil {
 				return
@@ -24,7 +24,7 @@ var listCmd = &cobra.Command{
 			spew.Dump(actions)
 		}
 
-		if (listAll) || (flags.x_type == "triggers") {
+		if (listAll) || (flags.xType == "triggers") {
 
 			triggers, _, err := whisk.Triggers.List(nil)
 			if err != nil {
@@ -34,7 +34,7 @@ var listCmd = &cobra.Command{
 			spew.Dump(triggers)
 		}
 
-		if (listAll) || (flags.x_type == "rules") {
+		if (listAll) || (flags.xType == "rules") {
 
 			rules, _, err := whisk.Rules.List(nil)
 			if err != nil {
@@ -44,7 +44,7 @@ var listCmd = &cobra.Command{
 			spew.Dump(rules)
 		}
 
-		if (listAll) || (flags.x_type == "activations") {
+		if (listAll) || (flags.xType == "activations") {
 
 			activations, _, err := whisk.Activations.List(nil)
 			if err != nil {
@@ -59,7 +59,7 @@ var listCmd = &cobra.Command{
 
 func init() {
 
-	listCmd.Flags().StringVarP(&flags.x_type, "type", "t", "", "only list given type")
+	listCmd.Flags().StringVarP(&flags.xType, "type", "t", "", "only list given type")
 	listCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
 	listCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")
 

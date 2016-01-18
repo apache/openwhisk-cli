@@ -14,9 +14,13 @@ config:
 - `edge`
 
 - [X] load props and env. variables in main init.  Write a top-level persistent pre-run function to read the command line variables.
+
+**check these... was working**
 - [ ] add setter functions
   + [ ] `auth`
   + [ ] `namespace`
+
+
 
 
 ---
@@ -35,14 +39,20 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 ## To do's
 
+- [ ] finish all simple methods
+  + [ ] package
+  + [ ] rule
+  + [ ] trigger
+
+
+
 - [ ] Figure out how to properly define positional arguments with cobra / pflags.
 
 - [ ] Implement verbose mode to help with debugging.
 
-- [ ] Add flags as common variables. --> perhaps have a flag file ??
-
-- [ ] Action.Create with exec and all flags
-- [ ] Action.Invoke with params
+- [ ] finsh complex methods
+  + [ ] Action.Create with exec and all flags
+  + [ ] Action.Invoke with params
 
 - Local install
   - vagrant.
