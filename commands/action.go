@@ -37,29 +37,102 @@ var actionCreateCmd = &cobra.Command{
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
-		if len(args) != 2 {
+		var actionName, artifact string
+		if len(args) < 1 || len(args) > 2 {
 			err = errors.New("Invalid argument list")
 			fmt.Println(err)
 			return
 		}
 
-		actionName := args[0]
-		// artifactName := args[1]
+		actionName = args[0]
 
-		// flags.docker
-		// flags.copy
-		// flags.pipe
-		// flags.lib
-		// flags.package
-		// flags.param
-		// flags.annotation
+		if len(args) == 2 {
+			artifact = args[1]
+		}
 
 		exec := client.Exec{}
-		annotations := client.Annotations{}
-		parameters := client.Parameters{}
+
+		parameters, err := parseParameters()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		annotations, err := parseAnnotations()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
 		limits := client.Limits{
 			Timeout: flags.timeout,
 			Memory:  flags.memory,
+		}
+
+		if flags.docker {
+			exec.Image = artifact
+		} else if flags.copy {
+			existingAction, _, err := whisk.Actions.Fetch(actionName)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			exec = existingAction.Exec
+		} else if flags.pipe {
+			currentNamespace := whisk.Config.Namespace
+			whisk.Config.Namespace = "whisk.system"
+			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			exec = pipeAction.Exec
+			whisk.Config.Namespace = currentNamespace
+		} else if artifact != "" {
+			if _, err := os.Stat(artifact); err != nil {
+				// file does not exist
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			file, err := ioutil.ReadFile(artifact)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			exec.Code = string(file)
+
+		}
+
+		if flags.lib != "" {
+			file, err := os.Open(flags.lib)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			var r io.Reader
+			switch ext := filepath.Ext(file.Name()); ext {
+			case "tar":
+				r = tar.NewReader(file)
+			case "gzip":
+				r, err = gzip.NewReader(file)
+			default:
+				err = fmt.Errorf("Unrecognized file compression %s", ext)
+			}
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			lib, err := ioutil.ReadAll(r)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			exec.Init = base64.StdEncoding.EncodeToString(lib)
+
 		}
 
 		action := &client.Action{
@@ -74,10 +147,10 @@ var actionCreateCmd = &cobra.Command{
 		action, _, err = whisk.Actions.Insert(action, false)
 		if err != nil {
 			fmt.Println(err)
-			return
+			os.Exit(-1)
 		}
 
-		fmt.Println("ok: created action")
+		fmt.Println("ok: updated action")
 		spew.Dump(action)
 
 	},
@@ -202,7 +275,7 @@ var actionUpdateCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
-		fmt.Println("ok: created action")
+		fmt.Println("ok: updated action")
 		spew.Dump(action)
 
 	},
@@ -317,14 +390,16 @@ func init() {
 	actionCreateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionCreateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
 
-	// actionUpdateCmd
+	actionUpdateCmd.Flags().BoolVar(&flags.docker, "docker", false, "treat artifact as docker image path on dockerhub")
+	actionUpdateCmd.Flags().BoolVar(&flags.copy, "copy", false, "treat artifact as the name of an existing action")
+	actionUpdateCmd.Flags().BoolVar(&flags.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
+	actionUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
+	actionUpdateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
+	actionUpdateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
 
 	actionInvokeCmd.Flags().BoolP("json", "j", false, "output as JSON")
 	actionInvokeCmd.Flags().StringSliceP("param", "p", []string{}, "parameters")
 	actionInvokeCmd.Flags().BoolP("blocking", "b", false, "blocking invoke")
-
-	// actionGetCmd.
-	// actionDeleteCmd,
 
 	actionCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
 	actionCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
@@ -338,14 +413,4 @@ func init() {
 		actionDeleteCmd,
 		actionListCmd,
 	)
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// actionCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// actionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
