@@ -17,11 +17,20 @@ type Activation struct {
 
 	Subject      string `json:"subject,omitempty"`
 	ActivationID string `json:"activationId,omitempty"`
+	Cause        string `json:"cause,omitempty"`
 	Start        int    `json:"start,omitempty"`
 	End          int    `json:"end,omitempty"`
 	Response     `json:"response,omitempty"`
 	Logs         []Log `json:"logs,omitempty"`
 }
+
+type Response struct {
+	Status     string `json:"status,omitempty"`
+	StatusCode int    `json:"statusCode,omitempty"`
+	Result     `json:"result,omitempty"`
+}
+
+type Result map[string]interface{}
 
 type ActivationListOptions struct {
 	Name  string `url:"name,omitempty"`
@@ -30,11 +39,6 @@ type ActivationListOptions struct {
 	Since int    `url:"since,omitempty"`
 	Upto  int    `url:"upto,omitempty"`
 	Docs  bool   `url:"docs,omitempty"`
-}
-
-type Response struct {
-	Status string `json:"status,omitempty"`
-	Result string `json:"result,omitempty"`
 }
 
 type Log struct {

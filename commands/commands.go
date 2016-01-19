@@ -56,25 +56,5 @@ func initializeClient() (*client.Client, error) {
 }
 
 func Execute() error {
-	WskCmd.AddCommand(
-		authCmd,
-		listCmd,
-		whoamiCmd,
-		triggerCmd,
-		actionCmd,
-		sdkCmd,
-		ruleCmd,
-		activationCmd,
-		packageCmd,
-		healthCmd,
-		cleanCmd,
-		namespaceCmd,
-		versionCmd,
-
-		// hidden
-		configCmd,
-		propsCmd,
-	)
-
 	return WskCmd.Execute()
 }
