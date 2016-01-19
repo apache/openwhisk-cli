@@ -17,10 +17,10 @@ type Activation struct {
 
 	Subject      string `json:"subject,omitempty"`
 	ActivationID string `json:"activationId,omitempty"`
-	Start        string `json:"start,omitempty"`
-	End          string `json:"end,omitempty"`
+	Start        int    `json:"start,omitempty"`
+	End          int    `json:"end,omitempty"`
 	Result       `json:"result,omitempty"`
-	Logs         string `json:"logs,omitempty"`
+	Logs         []Log `json:"logs,omitempty"`
 }
 
 type ActivationListOptions struct {
@@ -35,6 +35,12 @@ type ActivationListOptions struct {
 type Result struct {
 	Status string                 `json:"status,omitempty"`
 	Value  map[string]interface{} `json:"value,omitempty"`
+}
+
+type Log struct {
+	Log    string `json:"log,omitempty"`
+	Stream string `json:"stream,omitempty"`
+	Time   string `json:"time,omitempty"`
 }
 
 func (s *ActivationService) List(options *ActivationListOptions) ([]Activation, *http.Response, error) {

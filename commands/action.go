@@ -138,8 +138,6 @@ var actionCreateCmd = &cobra.Command{
 			Limits:      limits,
 		}
 
-		printJSON(action)
-
 		action, resp, err := whisk.Actions.Insert(action, false)
 		if err != nil {
 			fmt.Println(resp.Status)
@@ -368,7 +366,7 @@ var actionListCmd = &cobra.Command{
 				publishState = "private"
 			}
 
-			fmt.Printf("%s\t\t\t\t%s", action.Name, publishState)
+			fmt.Printf("%s\t\t\t\t%s\n", action.Name, publishState)
 		}
 
 	},
