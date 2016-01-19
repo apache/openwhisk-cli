@@ -2,8 +2,9 @@
 
 - activation name vs activation id
   + python client uses name to look up, swagger says id.
-
 - what is the `--package` flag in `wsk action create --package` ?
+- package bind ?? whats the deal ?
+
 
 ## Notes
 
@@ -11,7 +12,7 @@ Order of variables: flags -> env -> .wsk
 
 1. load flags, env, and .wsk (props)
 2. for each value, check and assign in order
-3. initialize client + other variables that depend on valuesz
+3. initialize client + other variables that depend on values
 
 config:
 - `auth`

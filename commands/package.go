@@ -3,6 +3,8 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
@@ -20,11 +22,64 @@ var packageCmd = &cobra.Command{
 }
 
 var packageBindCmd = &cobra.Command{
-	Use:   "bind <name string>",
+	Use:   "bind <package string> <name string>",
 	Short: "bind parameters to the package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO :: find out what this does and implement it.
+		var err error
+		if len(args) != 2 {
+			err = errors.New("Invalid argument list")
+			fmt.Println(err)
+			return
+		}
+
+		bindingArg := args[0]
+		packageName := args[1]
+
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		annotations, err := parseAnnotations(flags.annotation)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		parsedBindingArg := strings.Split(bindingArg, ":")
+		bindingName := parsedBindingArg[0]
+		var bindingNamespace string
+		if len(parsedBindingArg) == 1 {
+			bindingNamespace = whisk.Config.Namespace
+		} else if len(parsedBindingArg) == 2 {
+			bindingNamespace = parsedBindingArg[1]
+		} else {
+			err = fmt.Errorf("Invalid binding argument %s", bindingArg)
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		binding := client.Binding{
+			Name:      bindingName,
+			Namespace: bindingNamespace,
+		}
+
+		p := &client.Package{
+			Name:        packageName,
+			Publish:     flags.shared,
+			Annotations: annotations,
+			Parameters:  parameters,
+			Binding:     binding,
+		}
+		p, _, err = whisk.Packages.Insert(p, false)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		spew.Dump(p)
 	},
 }
 
@@ -33,8 +88,6 @@ var packageCreateCmd = &cobra.Command{
 	Short: "create a new package",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO :: parse annotations
-		// TODO :: parse parameters
 		var err error
 		if len(args) != 1 {
 			err = errors.New("Invalid argument")
@@ -44,11 +97,23 @@ var packageCreateCmd = &cobra.Command{
 
 		packageName := args[0]
 
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		annotations, err := parseAnnotations(flags.annotation)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
 		p := &client.Package{
-			Name:    packageName,
-			Publish: flags.shared,
-			// Annotations:
-			// Parameters:
+			Name:        packageName,
+			Publish:     flags.shared,
+			Annotations: annotations,
+			Parameters:  parameters,
 		}
 		p, _, err = whisk.Packages.Insert(p, false)
 		if err != nil {
@@ -76,12 +141,25 @@ var packageUpdateCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		p := &client.Package{
-			Name:    packageName,
-			Publish: flags.shared,
-			// Annotations:
-			// Parameters:
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
 		}
+
+		annotations, err := parseAnnotations(flags.annotation)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		p := &client.Package{
+			Name:        packageName,
+			Publish:     flags.shared,
+			Annotations: annotations,
+			Parameters:  parameters,
+		}
+
 		p, _, err = whisk.Packages.Insert(p, true)
 		if err != nil {
 			fmt.Println(err)

@@ -52,13 +52,13 @@ var actionCreateCmd = &cobra.Command{
 
 		exec := client.Exec{}
 
-		parameters, err := parseParameters()
+		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)
 		}
 
-		annotations, err := parseAnnotations()
+		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)
@@ -157,7 +157,7 @@ var actionCreateCmd = &cobra.Command{
 }
 
 var actionUpdateCmd = &cobra.Command{
-	Use:   "update []",
+	Use:   "update <name string> <artifact string>",
 	Short: "update an existing action",
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -177,13 +177,13 @@ var actionUpdateCmd = &cobra.Command{
 
 		exec := client.Exec{}
 
-		parameters, err := parseParameters()
+		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)
 		}
 
-		annotations, err := parseAnnotations()
+		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)

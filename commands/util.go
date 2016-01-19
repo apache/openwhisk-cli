@@ -6,38 +6,40 @@ import (
 	"github.ibm.com/Bluemix/whisk-cli/client"
 )
 
-func parseParameters() (client.Parameters, error) {
+func parseKeyValueArray(args []string) ([]client.KeyValue, error) {
+	parsed := []client.KeyValue{}
+	if len(args)%2 != 0 {
+		err := errors.New("key|value arguments must be submitted in pairs")
+		return parsed, err
+	}
+
+	for i := 0; i < len(args); i += 2 {
+		keyValue := client.KeyValue{
+			Key:   args[i],
+			Value: args[i+1],
+		}
+		parsed = append(parsed, keyValue)
+
+	}
+	return parsed, nil
+}
+
+func parseParameters(args []string) (client.Parameters, error) {
 	parameters := client.Parameters{}
-	if len(flags.param)%2 != 0 {
-		err := errors.New("--param option must be key-value pairs")
+	parsedArgs, err := parseKeyValueArray(args)
+	if err != nil {
 		return parameters, err
 	}
-
-	for i := 0; i < len(flags.param); i += 2 {
-		keyValue := client.KeyValue{
-			Key:   flags.param[i],
-			Value: flags.param[i+1],
-		}
-		parameters = append(parameters, keyValue)
-
-	}
+	parameters = client.Parameters(parsedArgs)
 	return parameters, nil
 }
 
-func parseAnnotations() (client.Annotations, error) {
+func parseAnnotations(args []string) (client.Annotations, error) {
 	annotations := client.Annotations{}
-	if len(flags.param)%2 != 0 {
-		err := errors.New("--param option must be key-value pairs")
+	parsedArgs, err := parseKeyValueArray(args)
+	if err != nil {
 		return annotations, err
 	}
-
-	for i := 0; i < len(flags.param); i += 2 {
-		keyValue := client.KeyValue{
-			Key:   flags.param[i],
-			Value: flags.param[i+1],
-		}
-		annotations = append(annotations, keyValue)
-
-	}
+	annotations = client.Annotations(parsedArgs)
 	return annotations, nil
 }
