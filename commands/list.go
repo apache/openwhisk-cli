@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ var listCmd = &cobra.Command{
 				return
 			}
 			fmt.Println("actions")
-			spew.Dump(actions)
+			printJSON(actions)
 		}
 
 		if (listAll) || (flags.xType == "triggers") {
@@ -31,7 +30,7 @@ var listCmd = &cobra.Command{
 				return
 			}
 			fmt.Println("triggers")
-			spew.Dump(triggers)
+			printJSON(triggers)
 		}
 
 		if (listAll) || (flags.xType == "rules") {
@@ -41,7 +40,7 @@ var listCmd = &cobra.Command{
 				return
 			}
 			fmt.Println("rules")
-			spew.Dump(rules)
+			printJSON(rules)
 		}
 
 		if (listAll) || (flags.xType == "activations") {
@@ -51,7 +50,7 @@ var listCmd = &cobra.Command{
 				return
 			}
 			fmt.Println("activations")
-			spew.Dump(activations)
+			printJSON(activations)
 		}
 
 	},

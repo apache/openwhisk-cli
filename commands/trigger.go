@@ -6,7 +6,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -64,7 +63,7 @@ var triggerCreateCmd = &cobra.Command{
 
 		fmt.Println("ok: created trigger")
 
-		spew.Dump(trigger)
+		printJSON(trigger)
 	},
 }
 
@@ -101,7 +100,7 @@ var triggerUpdateCmd = &cobra.Command{
 
 		fmt.Println("ok: updated trigger")
 
-		spew.Dump(trigger)
+		printJSON(trigger)
 	},
 }
 
@@ -125,7 +124,7 @@ var triggerGetCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("ok: got trigger ", triggerName)
-		spew.Dump(trigger)
+		printJSON(trigger)
 	},
 }
 
@@ -167,7 +166,7 @@ var triggerListCmd = &cobra.Command{
 			return
 		}
 		fmt.Println(triggers)
-		spew.Dump(triggers)
+		printJSON(triggers)
 	},
 }
 

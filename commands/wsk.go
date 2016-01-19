@@ -1,10 +1,6 @@
 package commands
 
-import (
-	"fmt"
-
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 // WskCmd defines the entry point for the cli.
 var WskCmd = &cobra.Command{
@@ -13,8 +9,7 @@ var WskCmd = &cobra.Command{
 	Long:             `[TODO] Put "WHISK" in cool ascii font`,
 	PersistentPreRun: parseConfigFlags,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Print("Whisk!")
-		// Do Stuff Here
+		printLogo(apiVersion)
 	},
 }
 

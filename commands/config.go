@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +15,7 @@ var configCmd = &cobra.Command{
 	Use:    "config",
 	Short:  "Prints out whisk client configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		spew.Dump(whisk.Config)
+		printJSON(whisk.Config)
 	},
 }
 

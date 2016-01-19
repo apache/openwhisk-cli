@@ -13,7 +13,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -151,7 +150,7 @@ var actionCreateCmd = &cobra.Command{
 		}
 
 		fmt.Println("ok: updated action")
-		spew.Dump(action)
+		printJSON(action)
 
 	},
 }
@@ -276,7 +275,7 @@ var actionUpdateCmd = &cobra.Command{
 		}
 
 		fmt.Println("ok: updated action")
-		spew.Dump(action)
+		printJSON(action)
 
 	},
 }
@@ -303,7 +302,7 @@ var actionInvokeCmd = &cobra.Command{
 		}
 		// print out response
 		fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
-		spew.Dump(activation)
+		printJSON(activation)
 	},
 }
 
@@ -328,7 +327,7 @@ var actionGetCmd = &cobra.Command{
 		}
 		// print out response
 		fmt.Printf("ok: got action %s\n", actionName)
-		spew.Dump(action)
+		printJSON(action)
 	},
 }
 

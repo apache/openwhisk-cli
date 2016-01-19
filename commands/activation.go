@@ -6,7 +6,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +38,7 @@ var activationListCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("activations")
-		spew.Dump(activations)
+		printJSON(activations)
 	},
 }
 
@@ -61,7 +60,7 @@ var activationGetCmd = &cobra.Command{
 		}
 
 		fmt.Println("ok: got activation ", id)
-		spew.Dump(activation)
+		printJSON(activation)
 
 	},
 }
@@ -85,7 +84,7 @@ var activationLogsCmd = &cobra.Command{
 		}
 
 		fmt.Println("ok: got activation logs")
-		spew.Dump(activation)
+		printJSON(activation)
 	},
 }
 
@@ -108,7 +107,7 @@ var activationResultCmd = &cobra.Command{
 		}
 
 		fmt.Println("ok: got activation result")
-		spew.Dump(result)
+		printJSON(result)
 	},
 }
 

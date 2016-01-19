@@ -6,7 +6,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -109,7 +108,7 @@ var ruleCreateCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("ok: created rule ", ruleName)
-		spew.Dump(rule)
+		printJSON(rule)
 	},
 }
 
@@ -142,7 +141,7 @@ var ruleUpdateCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("ok: updated rule ", ruleName)
-		spew.Dump(rule)
+		printJSON(rule)
 	},
 }
 
@@ -166,7 +165,7 @@ var ruleGetCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("ok: got rule ", ruleName)
-		spew.Dump(rule)
+		printJSON(rule)
 	},
 }
 
@@ -210,7 +209,7 @@ var ruleListCmd = &cobra.Command{
 			return
 		}
 		fmt.Println("rules")
-		spew.Dump(rules)
+		printJSON(rules)
 	},
 }
 

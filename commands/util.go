@@ -2,7 +2,9 @@ package commands
 
 import (
 	"errors"
+	"fmt"
 
+	prettyjson "github.com/hokaccha/go-prettyjson"
 	"github.ibm.com/Bluemix/whisk-cli/client"
 )
 
@@ -42,4 +44,23 @@ func parseAnnotations(args []string) (client.Annotations, error) {
 	}
 	annotations = client.Annotations(parsedArgs)
 	return annotations, nil
+}
+
+func printLogo(version string) {
+
+	logo := `
+  _____ ____  __  __
+ |_   _|  _ \|  \/  |
+   | | | |_) | \  / |
+   | | |  _ <| |\/| |
+  _| |_| |_) | |  | |
+ |_____|____/|_|  |_|
+                       whisk`
+
+	fmt.Println(logo)
+}
+
+func printJSON(v interface{}) {
+	output, _ := prettyjson.Marshal(v)
+	fmt.Println(string(output))
 }

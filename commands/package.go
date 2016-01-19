@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -8,7 +9,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -79,7 +79,7 @@ var packageBindCmd = &cobra.Command{
 			return
 		}
 
-		spew.Dump(p)
+		printJSON(p)
 	},
 }
 
@@ -121,7 +121,7 @@ var packageCreateCmd = &cobra.Command{
 			return
 		}
 
-		spew.Dump(p)
+		printJSON(p)
 	},
 }
 
@@ -166,7 +166,7 @@ var packageUpdateCmd = &cobra.Command{
 			return
 		}
 
-		spew.Dump(p)
+		printJSON(p)
 	},
 }
 
@@ -192,7 +192,8 @@ var packageGetCmd = &cobra.Command{
 
 		fmt.Println("ok: got package ", packageName)
 
-		spew.Dump(p)
+		output, _ := json.MarshalIndent(p, "", "    ")
+		fmt.Printf("%s", output)
 	},
 }
 
@@ -240,7 +241,7 @@ var packageListCmd = &cobra.Command{
 
 		fmt.Println("packages")
 
-		spew.Dump(packages)
+		printJSON(packages)
 	},
 }
 
