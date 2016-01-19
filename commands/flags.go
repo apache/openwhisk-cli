@@ -35,9 +35,10 @@ var flags struct {
 	xPackage string
 
 	// activation
-	upto    int // retrieve results up to certain time
-	since   int // retrieve results after certain time
-	seconds int // stop polling for activation updates after certain time
+	action  string // retrieve results for this action
+	upto    int    // retrieve results up to certain time
+	since   int    // retrieve results after certain time
+	seconds int    // stop polling for activation updates after certain time
 
 	// namespace
 

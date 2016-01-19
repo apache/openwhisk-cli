@@ -27,6 +27,7 @@ var activationListCmd = &cobra.Command{
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &client.ActivationListOptions{
+			Name:  flags.action,
 			Limit: flags.limit,
 			Skip:  flags.skip,
 			Upto:  flags.upto,
@@ -122,6 +123,7 @@ var activationPollCmd = &cobra.Command{
 
 func init() {
 
+	activationListCmd.Flags().StringVarP(&flags.action, "action", "a", "", "retroeve activations for action")
 	activationListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
 	activationListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
 	activationListCmd.Flags().BoolVarP(&flags.full, "full", "f", false, "include full entity description")

@@ -13,7 +13,7 @@ type Action struct {
 	Namespace string `json:"namespace,omitempty"`
 	Name      string `json:"name,omitempty"`
 	Version   string `json:"version,omitempty"`
-	Publish   bool   `json:"publish,omitempty"` // NOTE :: this might not include in json if its false ... would be an issue if server default is true
+	Publish   bool   `json:"publish,omitempty"`
 
 	Exec        `json:"exec,omitempty"`
 	Annotations `json:"annotations,omitempty"`

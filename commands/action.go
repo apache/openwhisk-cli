@@ -1,8 +1,15 @@
 package commands
 
 import (
+	"archive/tar"
+	"compress/gzip"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
@@ -82,29 +89,102 @@ var actionUpdateCmd = &cobra.Command{
 	Long:  `[ TODO :: add longer description here ]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
-		if len(args) != 2 {
+		var actionName, artifact string
+		if len(args) < 1 || len(args) > 2 {
 			err = errors.New("Invalid argument list")
 			fmt.Println(err)
 			return
 		}
 
-		actionName := args[0]
-		// artifactName := args[1]
+		actionName = args[0]
 
-		// flags.docker
-		// flags.copy
-		// flags.pipe
-		// flags.lib
-		// flags.package
-		// flags.param
-		// flags.annotation
+		if len(args) == 2 {
+			artifact = args[1]
+		}
 
 		exec := client.Exec{}
-		annotations := client.Annotations{}
-		parameters := client.Parameters{}
+
+		parameters, err := parseParameters()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		annotations, err := parseAnnotations()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
 		limits := client.Limits{
 			Timeout: flags.timeout,
 			Memory:  flags.memory,
+		}
+
+		if flags.docker {
+			exec.Image = artifact
+		} else if flags.copy {
+			existingAction, _, err := whisk.Actions.Fetch(actionName)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			exec = existingAction.Exec
+		} else if flags.pipe {
+			currentNamespace := whisk.Config.Namespace
+			whisk.Config.Namespace = "whisk.system"
+			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			exec = pipeAction.Exec
+			whisk.Config.Namespace = currentNamespace
+		} else if artifact != "" {
+			if _, err := os.Stat(artifact); err != nil {
+				// file does not exist
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			file, err := ioutil.ReadFile(artifact)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			exec.Code = string(file)
+
+		}
+
+		if flags.lib != "" {
+			file, err := os.Open(flags.lib)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			var r io.Reader
+			switch ext := filepath.Ext(file.Name()); ext {
+			case "tar":
+				r = tar.NewReader(file)
+			case "gzip":
+				r, err = gzip.NewReader(file)
+			default:
+				err = fmt.Errorf("Unrecognized file compression %s", ext)
+			}
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+			lib, err := ioutil.ReadAll(r)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(-1)
+			}
+
+			exec.Init = base64.StdEncoding.EncodeToString(lib)
+
 		}
 
 		action := &client.Action{
@@ -119,7 +199,7 @@ var actionUpdateCmd = &cobra.Command{
 		action, _, err = whisk.Actions.Insert(action, true)
 		if err != nil {
 			fmt.Println(err)
-			return
+			os.Exit(-1)
 		}
 
 		fmt.Println("ok: created action")
@@ -134,11 +214,6 @@ var actionInvokeCmd = &cobra.Command{
 	Long:    `[ TODO :: add longer description here ]`,
 	Example: "invoke action --json --blocking -p key_1,val_1 -p key_2,val_2 action_name",
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// params, _ := cmd.Flags().GetStringSlice("param")
-		//
-		// spew.Dump(params)
-		// // TODO :: parse params into K|V pairs
 
 		var err error
 		if len(args) != 1 {

@@ -1,4 +1,9 @@
+## Questions
 
+- activation name vs activation id
+  + python client uses name to look up, swagger says id.
+
+- what is the `--package` flag in `wsk action create --package` ?
 
 ## Notes
 
@@ -19,7 +24,93 @@ config:
   + [X] `auth`
   + [X] `namespace`
 
+---
 
+
+```python
+
+def create(self, args, props, update):
+        exe = self.getExec(args, props)
+        if args.pipe:
+            if args.param is None:
+                args.param = []
+            args.param.append([ '_actions', json.dumps(self.csvToList(args.artifact))])
+
+        validExe = exe is not None and ('image' in exe or 'code' in exe)
+        if update or validExe: # if create action, then exe must be valid
+            payload = {
+               'name': args.name,
+               'annotations': getAnnotations(args),
+               'parameters': getParams(args),
+               'limits' : self.getLimits(args)
+            }
+            if validExe:
+                payload['exec'] = exe
+            self.addPublish(payload, args)
+            return self.put(args, props, update, json.dumps(payload))
+        else:
+            print 'the artifact "%s" is not a valid file. If this is a docker image, use --docker.' % args.artifact
+            return 2
+
+
+# creates { code: "js code", image: "docker image", initializer: "base64 encoded string" }
+# where code and image are mutually exclusive and initializer is optional
+def getExec(self, args, props):
+    exe = {}
+    if args.docker:
+        exe['image'] = args.artifact
+    elif args.copy:
+        existingAction = args.artifact
+        exe = self.getActionExec(args, props, existingAction)
+    elif args.pipe:
+        args2 = copy.copy(args) # shallow copy of args object
+        args2.namespace = 'whisk.system'
+        pipeAction = 'common/pipe'
+        exe = self.getActionExec(args2, props, pipeAction)
+    elif args.artifact is not None and os.path.isfile(args.artifact):
+        exe['code'] = open(args.artifact, 'rb').read()
+    if args.lib:
+        exe['initializer'] = base64.b64encode(args.lib.read())
+    return exe
+
+def getActionExec(self, args, props, name):
+    res = self.fetch(args, props, name)
+    resBody = res.read()
+    if res.status == httplib.OK:
+        execField = json.loads(resBody)['exec']
+    else:
+        execField = None
+    return execField
+
+```
+
+
+Action Create:
+
+```golang
+
+  if flags.docker
+    exec.image = artifact // what artifact ?
+
+  else if flags.copy
+    -> actions.Fetch(actionName), copy exec
+
+  else if flags.pipe
+    -> (copy args)
+    -> whisk.Config.Namespace = "whisk.system"
+    -> actionName = "common/pipe"
+    -> actions.Fetch(actionName), copy exec
+
+  else if artifact != "" && os.FileExists(artifact)
+    -> exec.code = os.ReadFile(artifact)
+
+  if flags.lib
+    -> exec.init = base64.Encode(flag.lib.read())  // lib is gzipped or tar file.
+
+
+
+
+```
 
 
 ---
@@ -31,17 +122,18 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
   + fill out methods.
     + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
 
-## Inconsistencies
-
-- activation name vs activation id
-  + python client uses name to look up, swagger says id.
-
 ## To do's
 
 - [ ] create action
-  - how to pass in file ?
+  + see above
 - [ ] verbose
+  + how to avoid putting this on the client ?
 - [ ] params / annotations
+  + check that len(args) % 2 == 0
+  + for i := 0; i < len(args); i+2{ ... }
+  + k := args[i]; v := args[i+1]
+- [ ] positional arguments
+- [ ] SDK
 
 
 - [X] finish all simple methods
@@ -55,7 +147,7 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 - [ ] Implement verbose mode to help with debugging.
 
-- [ ] finsh complex methods
+- [ ] finish complex methods
   + [ ] Action.Create with exec and all flags
   + [ ] Action.Invoke with params
 
