@@ -357,6 +357,7 @@ var actionListCmd = &cobra.Command{
 			Skip:  flags.skip,
 			Limit: flags.limit,
 		}
+
 		actions, _, err := whisk.Actions.List(options)
 		if err != nil {
 			fmt.Printf("error: %s", err)

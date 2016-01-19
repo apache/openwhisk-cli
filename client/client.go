@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net:443/api/v1"
+	defaultBaseURL = "https://whisk.stage1.ng.bluemix.net:443/api/v1/"
 )
 
 type Client struct {

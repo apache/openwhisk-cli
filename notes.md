@@ -6,8 +6,20 @@
 - package bind ?? whats the deal ?
 
 
+## Bugs
+
+* [ ] invalid memory error when there is no .wskprops file
+* [ ] "error: invalid character '<' looking for beginning of value%" when there is invalid auth (namespace?)
+  + missing trailing "/" --> this causes another issue...
+
 ## Notes
 
+
+
+
+
+
+---
 Order of variables: flags -> env -> .wsk
 
 1. load flags, env, and .wsk (props)
@@ -24,6 +36,52 @@ config:
 - [X] add setter functions
   + [X] `auth`
   + [X] `namespace`
+
+---
+
+package.bind ...
+
+```python
+
+def bind(self, args, props):
+        url = 'https://%(url)s/api/v1/%(namespace)s/packages/%(name)s' % {
+            'url': props['api'],
+            'namespace': urllib.quote(args.namespace),
+            'name': self.getSafeName(args.name)
+        }
+        split = args.package.split(':')
+        binding = {}
+        if (len(split) == 1):
+            binding = { 'name': split[0], 'namespace': args.namespace}
+        elif (len(split) == 2):
+            binding = { 'name': split[1], 'namespace': split[0]}
+        else:
+            print 'package name malformed. name or namespace/name allowed'
+            sys.exit(1)
+
+        payload = {
+            'name': args.name,
+            'binding': binding,
+            'annotations': getAnnotations(args),
+            'parameters': getParams(args)
+        }
+        args.shared = False
+        self.addPublish(payload, args)
+        headers= {
+            'Content-Type': 'application/json'
+        }
+        res = request('PUT', url, json.dumps(payload), headers, auth=args.auth, verbose=args.verbose)
+
+        resBody = res.read()
+        result = json.loads(resBody)
+
+        if res.status == httplib.OK:
+            print 'ok: created binding %(name)s ' % {'name': args.name }
+            return 0
+        else:
+            print 'error: ' + result['error']
+            return res.status
+```
 
 ---
 
