@@ -115,10 +115,10 @@ func (s *ActionService) Delete(actionName string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (s *ActionService) Invoke(actionName string, blocking bool) (*Activation, *http.Response, error) {
+func (s *ActionService) Invoke(actionName string, payload map[string]string, blocking bool) (*Activation, *http.Response, error) {
 	route := fmt.Sprintf("actions/%s?blocking=%t", actionName, blocking)
 
-	req, err := s.client.NewRequest("POST", route, nil)
+	req, err := s.client.NewRequest("POST", route, payload)
 	if err != nil {
 		return nil, nil, err
 	}

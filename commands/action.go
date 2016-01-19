@@ -4,15 +4,18 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -276,21 +279,45 @@ var actionUpdateCmd = &cobra.Command{
 }
 
 var actionInvokeCmd = &cobra.Command{
-	Use:     "invoke <name string>",
+	Use:     "invoke <name string> <payload string>",
 	Short:   "invoke action",
 	Long:    `[ TODO :: add longer description here ]`,
-	Example: "invoke action --json --blocking -p key_1,val_1 -p key_2,val_2 action_name",
+	Example: "invoke action --json --blocking -p key_1,val_1 -p key_2,val_2 action_name 'payload'",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var err error
-		if len(args) != 1 {
-			err = errors.New("Invalid argument")
+		var actionName, payloadArg string
+		spew.Dump(args)
+		if len(args) < 1 || len(args) > 2 {
+			err = errors.New("Invalid argument list")
 			fmt.Println(err)
 			return
 		}
-		actionName := args[0]
 
-		activation, _, err := whisk.Actions.Invoke(actionName, flags.blocking)
+		actionName = args[0]
+
+		payload := map[string]string{}
+
+		if len(args) == 2 {
+			payloadArg = args[1]
+			reader := strings.NewReader(payloadArg)
+			err = json.NewDecoder(reader).Decode(payload)
+			if err != nil {
+				payload["payload"] = payloadArg
+			}
+		}
+
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Printf("error: %s", err)
+			return
+		}
+
+		for _, parameter := range parameters {
+			payload[parameter.Key] = parameter.Value
+		}
+
+		activation, _, err := whisk.Actions.Invoke(actionName, payload, flags.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return

@@ -19,7 +19,7 @@ type Activation struct {
 	ActivationID string `json:"activationId,omitempty"`
 	Start        int    `json:"start,omitempty"`
 	End          int    `json:"end,omitempty"`
-	Result       `json:"result,omitempty"`
+	Response     `json:"response,omitempty"`
 	Logs         []Log `json:"logs,omitempty"`
 }
 
@@ -32,9 +32,9 @@ type ActivationListOptions struct {
 	Docs  bool   `url:"docs,omitempty"`
 }
 
-type Result struct {
-	Status string                 `json:"status,omitempty"`
-	Value  map[string]interface{} `json:"value,omitempty"`
+type Response struct {
+	Status string `json:"status,omitempty"`
+	Result string `json:"result,omitempty"`
 }
 
 type Log struct {
@@ -100,7 +100,7 @@ func (s *ActivationService) Logs(activationID string) (*Activation, *http.Respon
 	return activation, resp, nil
 }
 
-func (s *ActivationService) Result(activationID string) (*Result, *http.Response, error) {
+func (s *ActivationService) Result(activationID string) (*Response, *http.Response, error) {
 	route := fmt.Sprintf("activations/%s", activationID)
 
 	req, err := s.client.NewRequest("get", route, nil)
@@ -108,12 +108,12 @@ func (s *ActivationService) Result(activationID string) (*Result, *http.Response
 		return nil, nil, err
 	}
 
-	result := new(Result)
-	resp, err := s.client.Do(req, &result)
+	r := new(Response)
+	resp, err := s.client.Do(req, &r)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return result, resp, nil
+	return r, resp, nil
 
 }

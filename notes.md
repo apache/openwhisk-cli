@@ -31,6 +31,8 @@ function main(msg) {
 
 ## Questions
 
+- Swagger doc is different than actual response.
+  - action invoke response is {response: }
 - No --shared param in package list
 - activation name vs activation id
   + python client uses name to look up, swagger says id.
@@ -39,9 +41,9 @@ function main(msg) {
 
 
 ## Bugs
-
-* [ ] invalid memory error when there is no .wskprops file .. .. .. ..
-* [ ] "error: invalid character '<' looking for beginning of value%" when there is invalid auth (namespace?)
+* [ ] Params still having issues --> see action.Create hello2.js with all values
+* [X] invalid memory error when there is no .wskprops file .. .. .. ..
+* [X] "error: invalid character '<' looking for beginning of value%" when there is invalid auth (namespace?)
   + missing trailing "/" --> this causes another issue...
 
 ## Notes
@@ -211,6 +213,8 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
     + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
 
 ## To do's
+
+- [ ] actionInvokeCmd --> parse payload properly.
 
 - [ ] better error responses
   + read resp.Body for message.
