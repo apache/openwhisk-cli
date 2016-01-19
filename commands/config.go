@@ -49,7 +49,7 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 		u, err := url.Parse(edgeHost)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 		whisk.Config.BaseURL = u
 	}

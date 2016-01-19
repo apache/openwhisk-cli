@@ -1,10 +1,12 @@
 package client
 
 import (
+	"fmt"
 	"net/url"
 	"reflect"
 
 	"github.com/google/go-querystring/query"
+	"github.com/hokaccha/go-prettyjson"
 )
 
 // addOptions adds the parameters in opt as URL query parameters to s.  opt
@@ -27,4 +29,9 @@ func addRouteOptions(route string, options interface{}) (string, error) {
 
 	u.RawQuery = qs.Encode()
 	return u.String(), nil
+}
+
+func printJSON(v interface{}) {
+	output, _ := prettyjson.Marshal(v)
+	fmt.Println(string(output))
 }

@@ -23,17 +23,12 @@ import (
 var actionCmd = &cobra.Command{
 	Use:   "action",
 	Short: "work with actions",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("action called")
-	},
 }
 
 var actionCreateCmd = &cobra.Command{
 	Use:   "create <name string> <artifact string>",
 	Short: "create a new action",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var actionName, artifact string
@@ -54,13 +49,13 @@ var actionCreateCmd = &cobra.Command{
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		limits := client.Limits{
@@ -74,7 +69,7 @@ var actionCreateCmd = &cobra.Command{
 			existingAction, _, err := whisk.Actions.Fetch(actionName)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			exec = existingAction.Exec
 		} else if flags.pipe {
@@ -83,7 +78,7 @@ var actionCreateCmd = &cobra.Command{
 			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			exec = pipeAction.Exec
 			whisk.Config.Namespace = currentNamespace
@@ -91,13 +86,13 @@ var actionCreateCmd = &cobra.Command{
 			if _, err := os.Stat(artifact); err != nil {
 				// file does not exist
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			file, err := ioutil.ReadFile(artifact)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			exec.Code = string(file)
@@ -108,7 +103,7 @@ var actionCreateCmd = &cobra.Command{
 			file, err := os.Open(flags.lib)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			var r io.Reader
@@ -122,12 +117,12 @@ var actionCreateCmd = &cobra.Command{
 			}
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			lib, err := ioutil.ReadAll(r)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			exec.Init = base64.StdEncoding.EncodeToString(lib)
@@ -143,13 +138,15 @@ var actionCreateCmd = &cobra.Command{
 			Limits:      limits,
 		}
 
-		action, _, err = whisk.Actions.Insert(action, false)
+		printJSON(action)
+
+		action, resp, err := whisk.Actions.Insert(action, false)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
+			fmt.Println(resp.Status)
+			return
 		}
 
-		fmt.Println("ok: updated action")
+		fmt.Println("ok: created action")
 		printJSON(action)
 
 	},
@@ -158,7 +155,7 @@ var actionCreateCmd = &cobra.Command{
 var actionUpdateCmd = &cobra.Command{
 	Use:   "update <name string> <artifact string>",
 	Short: "update an existing action",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var actionName, artifact string
@@ -179,13 +176,13 @@ var actionUpdateCmd = &cobra.Command{
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		limits := client.Limits{
@@ -199,7 +196,7 @@ var actionUpdateCmd = &cobra.Command{
 			existingAction, _, err := whisk.Actions.Fetch(actionName)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			exec = existingAction.Exec
 		} else if flags.pipe {
@@ -208,7 +205,7 @@ var actionUpdateCmd = &cobra.Command{
 			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			exec = pipeAction.Exec
 			whisk.Config.Namespace = currentNamespace
@@ -216,13 +213,13 @@ var actionUpdateCmd = &cobra.Command{
 			if _, err := os.Stat(artifact); err != nil {
 				// file does not exist
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			file, err := ioutil.ReadFile(artifact)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			exec.Code = string(file)
@@ -233,7 +230,7 @@ var actionUpdateCmd = &cobra.Command{
 			file, err := os.Open(flags.lib)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			var r io.Reader
@@ -247,12 +244,12 @@ var actionUpdateCmd = &cobra.Command{
 			}
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 			lib, err := ioutil.ReadAll(r)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(-1)
+				return
 			}
 
 			exec.Init = base64.StdEncoding.EncodeToString(lib)
@@ -271,7 +268,7 @@ var actionUpdateCmd = &cobra.Command{
 		action, _, err = whisk.Actions.Insert(action, true)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		fmt.Println("ok: updated action")
@@ -309,7 +306,7 @@ var actionInvokeCmd = &cobra.Command{
 var actionGetCmd = &cobra.Command{
 	Use:   "get <name string>",
 	Short: "get action",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var err error
@@ -334,7 +331,7 @@ var actionGetCmd = &cobra.Command{
 var actionDeleteCmd = &cobra.Command{
 	Use:   "delete <name string>",
 	Short: "delete action",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		actionName := args[0]
 		_, err := whisk.Actions.Delete(actionName)
@@ -350,7 +347,7 @@ var actionDeleteCmd = &cobra.Command{
 var actionListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all actions",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &client.ActionListOptions{
 			Skip:  flags.skip,
@@ -397,13 +394,12 @@ func init() {
 	actionUpdateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionUpdateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
 
-	actionInvokeCmd.Flags().BoolP("json", "j", false, "output as JSON")
-	actionInvokeCmd.Flags().StringSliceP("param", "p", []string{}, "parameters")
-	actionInvokeCmd.Flags().BoolP("blocking", "b", false, "blocking invoke")
+	actionInvokeCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "parameters")
+	actionInvokeCmd.Flags().BoolVarP(&flags.blocking, "blocking", "b", false, "blocking invoke")
 
-	actionCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
-	actionCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
-	actionCmd.Flags().BoolVar(&flags.full, "full", false, "include full entity description")
+	actionListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
+	actionListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
+	actionListCmd.Flags().BoolVar(&flags.full, "full", false, "include full entity description")
 
 	actionCmd.AddCommand(
 		actionCreateCmd,

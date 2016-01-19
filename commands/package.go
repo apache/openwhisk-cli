@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
@@ -15,16 +14,12 @@ import (
 var packageCmd = &cobra.Command{
 	Use:   "package",
 	Short: "work with packages",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("package called")
-	},
 }
 
 var packageBindCmd = &cobra.Command{
 	Use:   "bind <package string> <name string>",
 	Short: "bind parameters to the package",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 2 {
@@ -39,13 +34,13 @@ var packageBindCmd = &cobra.Command{
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		parsedBindingArg := strings.Split(bindingArg, ":")
@@ -58,7 +53,7 @@ var packageBindCmd = &cobra.Command{
 		} else {
 			err = fmt.Errorf("Invalid binding argument %s", bindingArg)
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		binding := client.Binding{
@@ -86,7 +81,7 @@ var packageBindCmd = &cobra.Command{
 var packageCreateCmd = &cobra.Command{
 	Use:   "create <name string>",
 	Short: "create a new package",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -100,13 +95,13 @@ var packageCreateCmd = &cobra.Command{
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		p := &client.Package{
@@ -128,7 +123,7 @@ var packageCreateCmd = &cobra.Command{
 var packageUpdateCmd = &cobra.Command{
 	Use:   "update <name string>",
 	Short: "update an existing package",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO :: parse annotations
 		// TODO ::parse parameters
@@ -144,13 +139,13 @@ var packageUpdateCmd = &cobra.Command{
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		annotations, err := parseAnnotations(flags.annotation)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(-1)
+			return
 		}
 
 		p := &client.Package{
@@ -173,7 +168,7 @@ var packageUpdateCmd = &cobra.Command{
 var packageGetCmd = &cobra.Command{
 	Use:   "get <name string>",
 	Short: "get package",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -200,7 +195,7 @@ var packageGetCmd = &cobra.Command{
 var packageDeleteCmd = &cobra.Command{
 	Use:   "delete <name string>",
 	Short: "delete package",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -224,13 +219,15 @@ var packageDeleteCmd = &cobra.Command{
 var packageListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all packages",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
 		options := &client.PackageListOptions{
-			Skip:  flags.skip,
-			Limit: flags.limit,
+			Skip:   flags.skip,
+			Limit:  flags.limit,
+			Public: flags.shared,
+			Docs:   flags.full,
 		}
 
 		packages, _, err := whisk.Packages.List(options)
@@ -260,8 +257,10 @@ func init() {
 	packageBindCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
 	packageBindCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
 
+	packageListCmd.Flags().BoolVar(&flags.shared, "shared", false, "include publicly shared entities in the result")
 	packageListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
 	packageListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")
+	packageListCmd.Flags().BoolVar(&flags.full, "full", false, "include full entity description")
 
 	packageCmd.AddCommand(
 		packageBindCmd,

@@ -1,5 +1,37 @@
+## Screencast
+
+- `ls -FR`
+- `go build -o wsk main.go`
+- `ls -F`
+- `./wsk -h`
+- `./wsk auth `
+- `./wsk action -h`
+- `./wsk action create -h`
+- `vi hello.js`
+- write out code
+```golang
+function main(msg) {
+  return 'Hello ' + msg.name;
+}
+```
+- `ls -F`
+- `./wsk action create hello hello.js`
+- `./wsk action list`
+- `./wsk action get hello`
+- `./wsk action invoke hello --param name 'Damion Heredia'`
+- `./wsk activation list`
+- `./wsk activation get <activation ID>`
+<!-- packages / services ?? -->
+
+<!-- add cloudant package -->
+<!-- write message to cloudant ?? -->
+
+
+
+
 ## Questions
 
+- No --shared param in package list
 - activation name vs activation id
   + python client uses name to look up, swagger says id.
 - what is the `--package` flag in `wsk action create --package` ?
@@ -15,7 +47,7 @@
 ## Notes
 
 
-s
+
 ---
 Order of variables: flags -> env -> .wsk
 
@@ -179,6 +211,9 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
     + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
 
 ## To do's
+
+- [ ] better error responses
+  + read resp.Body for message.
 
 - [ ] Add support for environment variables
   - EDGE_HOST
@@ -378,7 +413,7 @@ func Execute() {
 			c.Println(c.UsageString())
 		}
 
-		os.Exit(-1)
+		return
 	}
 }
 

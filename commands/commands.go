@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.ibm.com/Bluemix/whisk-cli/client"
@@ -19,7 +18,7 @@ func init() {
 	PropsFile, err = homedir.Expand(defaultPropsFile)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(-1)
+		return
 	}
 
 	whisk, err = initializeClient()

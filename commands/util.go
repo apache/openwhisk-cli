@@ -46,18 +46,20 @@ func parseAnnotations(args []string) (client.Annotations, error) {
 	return annotations, nil
 }
 
-func printLogo(version string) {
+func logoText() string {
 
 	logo := `
-  _____ ____  __  __
- |_   _|  _ \|  \/  |
-   | | | |_) | \  / |
-   | | |  _ <| |\/| |
-  _| |_| |_) | |  | |
- |_____|____/|_|  |_|
-                       whisk`
 
-	fmt.Println(logo)
+__          ___     _     _
+\ \        / / |   (_)   | |
+ \ \  /\  / /| |__  _ ___| | __
+  \ \/  \/ / | '_ \| / __| |/ /
+   \  /\  /  | | | | \__ \   <
+    \/  \/   |_| |_|_|___/_|\_\
+
+			`
+
+	return logo
 }
 
 func printJSON(v interface{}) {

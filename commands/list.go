@@ -10,7 +10,7 @@ import (
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list triggers, actions, and rules in the registry",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		listAll := flags.xType == ""
 

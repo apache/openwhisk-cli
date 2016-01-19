@@ -6,16 +6,13 @@ import "github.com/spf13/cobra"
 var WskCmd = &cobra.Command{
 	Use:              "wsk",
 	Short:            "Whisk cloud computing command line interface.",
-	Long:             `[TODO] Put "WHISK" in cool ascii font`,
+	Long:             logoText(),
 	PersistentPreRun: parseConfigFlags,
-	Run: func(cmd *cobra.Command, args []string) {
-		printLogo(apiVersion)
-	},
 }
 
 func init() {
-	WskCmd.Flags().BoolVarP(&flags.edge, "edge", "e", false, "[TODO] test edge server directly, bypassing the master router")
-	WskCmd.PersistentFlags().BoolVarP(&flags.verbose, "verbose", "v", false, "[TODO] verbose output")
-	WskCmd.PersistentFlags().StringVarP(&flags.auth, "auth", "u", "", "[TODO] authorization key")
+	WskCmd.Flags().BoolVarP(&flags.edge, "edge", "e", false, "test edge server directly, bypassing the master router")
+	WskCmd.PersistentFlags().BoolVarP(&flags.verbose, "verbose", "v", false, "verbose output")
+	WskCmd.PersistentFlags().StringVarP(&flags.auth, "auth", "u", "", "authorization key")
 	WskCmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "", "[TODO] namespace")
 }

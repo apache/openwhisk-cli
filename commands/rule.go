@@ -13,17 +13,12 @@ import (
 var ruleCmd = &cobra.Command{
 	Use:   "rule",
 	Short: "work with rules",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("rule called")
-	},
 }
 
 var ruleEnableCmd = &cobra.Command{
 	Use:   "enable <name string>",
 	Short: "enable rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var err error
@@ -47,7 +42,7 @@ var ruleEnableCmd = &cobra.Command{
 var ruleDisableCmd = &cobra.Command{
 	Use:   "disable <name string>",
 	Short: "disable rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var err error
@@ -72,7 +67,7 @@ var ruleDisableCmd = &cobra.Command{
 var ruleStatusCmd = &cobra.Command{
 	Use:   "status <name string>",
 	Short: "get rule status",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: how is this different than "rule get" ??
 		fmt.Println("rule status called")
@@ -82,7 +77,7 @@ var ruleStatusCmd = &cobra.Command{
 var ruleCreateCmd = &cobra.Command{
 	Use:   "create <name string> <trigger string> <action string>",
 	Short: "create new rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 3 {
@@ -115,7 +110,7 @@ var ruleCreateCmd = &cobra.Command{
 var ruleUpdateCmd = &cobra.Command{
 	Use:   "update <name string> <trigger string> <action string>",
 	Short: "update existing rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 3 {
@@ -148,7 +143,7 @@ var ruleUpdateCmd = &cobra.Command{
 var ruleGetCmd = &cobra.Command{
 	Use:   "get <name string>",
 	Short: "get rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -172,7 +167,7 @@ var ruleGetCmd = &cobra.Command{
 var ruleDeleteCmd = &cobra.Command{
 	Use:   "delete <name string>",
 	Short: "delete rule",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -195,7 +190,7 @@ var ruleDeleteCmd = &cobra.Command{
 var ruleListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all rules",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ruleListOptions := &client.RuleListOptions{

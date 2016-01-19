@@ -11,7 +11,7 @@ import (
 var authCmd = &cobra.Command{
 	Use:   "auth <key string>",
 	Short: "add an authentication key to .wskprops",
-	Long:  `[ TODO :: add longer description here ]`,
+	
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			err := errors.New("Invalid auth argument")

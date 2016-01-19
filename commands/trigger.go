@@ -13,17 +13,12 @@ import (
 var triggerCmd = &cobra.Command{
 	Use:   "trigger",
 	Short: "work with triggers",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("trigger called")
-	},
 }
 
 var triggerFireCmd = &cobra.Command{
 	Use:   "fire <name string> <payload ?>",
 	Short: "fire trigger event",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO :: parse payload from args... how ?
 		// whisk.Triggers.Fire(triggerName, payload)
@@ -33,7 +28,7 @@ var triggerFireCmd = &cobra.Command{
 var triggerCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create new trigger",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// TODO :: parse annotation
@@ -70,7 +65,7 @@ var triggerCreateCmd = &cobra.Command{
 var triggerUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update existing trigger",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// TODO :: parse annotation
@@ -107,7 +102,7 @@ var triggerUpdateCmd = &cobra.Command{
 var triggerGetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "get trigger",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -131,7 +126,7 @@ var triggerGetCmd = &cobra.Command{
 var triggerDeleteCmd = &cobra.Command{
 	Use:   "delete <name string>",
 	Short: "delete trigger",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		if len(args) != 1 {
@@ -154,7 +149,7 @@ var triggerDeleteCmd = &cobra.Command{
 var triggerListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all triggers",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &client.TriggerListOptions{
 			Skip:  flags.skip,

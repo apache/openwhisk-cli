@@ -13,17 +13,12 @@ import (
 var activationCmd = &cobra.Command{
 	Use:   "activation",
 	Short: "work with activations",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("activation called")
-	},
 }
 
 var activationListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list activations",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &client.ActivationListOptions{
 			Name:  flags.action,
@@ -45,7 +40,7 @@ var activationListCmd = &cobra.Command{
 var activationGetCmd = &cobra.Command{
 	Use:   "get <id string>",
 	Short: "get activation",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			err := errors.New("Invalid ID argument")
@@ -68,7 +63,7 @@ var activationGetCmd = &cobra.Command{
 var activationLogsCmd = &cobra.Command{
 	Use:   "logs",
 	Short: "get the logs of an activation",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			err := errors.New("Invalid ID argument")
@@ -91,7 +86,7 @@ var activationLogsCmd = &cobra.Command{
 var activationResultCmd = &cobra.Command{
 	Use:   "result",
 	Short: "get the result of an activation",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			err := errors.New("Invalid ID argument")
@@ -114,7 +109,7 @@ var activationResultCmd = &cobra.Command{
 var activationPollCmd = &cobra.Command{
 	Use:   "poll",
 	Short: "poll continuously for log messages from currently running actions",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO :: implement activationPollCmd")
 	},

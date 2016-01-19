@@ -1,5 +1,5 @@
 
 
-function main() {
-  fmt.Print("Hello world");
+function main(msg) {
+  return 'Hello ' + msg.name;
 }

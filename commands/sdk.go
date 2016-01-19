@@ -10,17 +10,12 @@ import (
 var sdkCmd = &cobra.Command{
 	Use:   "sdk",
 	Short: "work with the sdk",
-	Long:  `[ TODO :: add longer description here ]`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("sdk called")
-	},
 }
 
 var sdkInstallCmd = &cobra.Command{
 	Use:   "install",
 	Short: "Install artifacts",
-	Long:  `[ TODO :: add longer description here ]`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("sdk install called")
