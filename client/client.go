@@ -33,6 +33,7 @@ type Config struct {
 	AuthToken string
 	BaseURL   *url.URL // NOTE :: Default is "whisk.stage1.ng.bluemix.net"
 	Version   string
+	Verbose   bool
 }
 
 func New(httpClient *http.Client, config *Config) (*Client, error) {
@@ -143,6 +144,23 @@ func (c *Client) addAuthHeader(req *http.Request) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
+
+	if c.Config.Verbose {
+		// TODO :: use a real template + printReqVerbose(req) function
+		txtTemplate := `
+{'EDGE_HOST': '%s', 'CLI_API_HOST': '%s', 'WHISK_VERSION_DATE': '%s'}
+========
+REQUEST:
+%s %s
+Headers sent:`
+		txt := fmt.Sprintf(txtTemplate, "?", c.Config.BaseURL, "?", req.Method, req.URL)
+
+		for key, value := range req.Header {
+			txt += fmt.Sprintf("\n\t{\n\t\t%s: %s\n\t}", key, value)
+		}
+		fmt.Println(txt)
+	}
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err

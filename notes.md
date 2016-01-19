@@ -8,17 +8,14 @@
 
 ## Bugs
 
-* [ ] invalid memory error when there is no .wskprops file
+* [ ] invalid memory error when there is no .wskprops file .. .. .. ..
 * [ ] "error: invalid character '<' looking for beginning of value%" when there is invalid auth (namespace?)
   + missing trailing "/" --> this causes another issue...
 
 ## Notes
 
 
-
-
-
-
+s
 ---
 Order of variables: flags -> env -> .wsk
 
@@ -183,9 +180,15 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 ## To do's
 
-- [ ] create action
+- [ ] Add support for environment variables
+  - EDGE_HOST
+  - CLI_API_HOST
+  - WHISK_VERSION_DATE
+
+- [x] create action
   + see above
 - [ ] verbose
+- [ ] Verbose (with a writer or something fancy)
   + how to avoid putting this on the client ?
 - [ ] params / annotations
   + check that len(args) % 2 == 0

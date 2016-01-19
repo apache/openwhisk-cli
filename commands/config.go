@@ -42,6 +42,10 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 		whisk.Config.Namespace = flags.namespace
 	}
 
+	if flags.verbose {
+		whisk.Config.Verbose = flags.verbose
+	}
+
 	if flags.edge != false {
 		u, err := url.Parse(edgeHost)
 		if err != nil {
@@ -53,14 +57,17 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 
 }
 
-// TODO :: handle file does not exist
+// NOTE :: does not return
+func readProps(path string) (map[string]string, error) {
 
-func readProps(path string) (props map[string]string, err error) {
-	// read file
-	props = map[string]string{}
+	props := map[string]string{}
+
+	// check if props file exists
+
 	file, err := os.Open(path)
 	if err != nil {
-		return
+		// If file does not exist, just return props.s
+		return props, nil
 	}
 	defer file.Close()
 
@@ -80,7 +87,7 @@ func readProps(path string) (props map[string]string, err error) {
 		props[kv[0]] = kv[1]
 	}
 
-	return
+	return props, nil
 
 }
 
