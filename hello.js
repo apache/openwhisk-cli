@@ -1,5 +1,3 @@
-
-
-function main(msg) {
-  return 'Hello ' + msg.name;
+function main(msg){
+  return 'Hello '  + msg.payload;
 }

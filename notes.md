@@ -1,10 +1,15 @@
 ## Screencast
 
-- `ls -FR`
+Setup:
+- delete .wskprops, hello.js, wsk
+- delete actions from whisk
+
+- `ls -R`
 - `go build -o wsk main.go`
-- `ls -F`
+- `ls`
 - `./wsk -h`
-- `./wsk auth `
+- `./wsk auth 6c31860c-67ec-4adf-84f5-e421a9d3050e:CShXVzgb0KmlLJ2Iej02p60SBsnZJXA7FCQThVDXLEw2z5faOZBnc9efgp8BuQ9U`
+- `./wsk config`
 - `./wsk action -h`
 - `./wsk action create -h`
 - `vi hello.js`
@@ -16,11 +21,9 @@ function main(msg) {
 ```
 - `ls -F`
 - `./wsk action create hello hello.js`
-- `./wsk action list`
-- `./wsk action get hello`
-- `./wsk action invoke hello --param name 'Damion Heredia'`
-- `./wsk activation list`
-- `./wsk activation get <activation ID>`
+- `./wsk action invoke -h`
+- `./wsk action invoke --blocking hello 'Damion Heredia'`
+
 <!-- packages / services ?? -->
 
 <!-- add cloudant package -->
@@ -31,6 +34,7 @@ function main(msg) {
 
 ## Questions
 
+- Server stalls when given bad code.
 - Swagger doc is different than actual response.
   - action invoke response is {response: }
 - No --shared param in package list

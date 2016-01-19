@@ -15,7 +15,6 @@ import (
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -279,15 +278,12 @@ var actionUpdateCmd = &cobra.Command{
 }
 
 var actionInvokeCmd = &cobra.Command{
-	Use:     "invoke <name string> <payload string>",
-	Short:   "invoke action",
-	Long:    `[ TODO :: add longer description here ]`,
-	Example: "invoke action --json --blocking -p key_1,val_1 -p key_2,val_2 action_name 'payload'",
+	Use:   "invoke <name string> <payload string>",
+	Short: "invoke action",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var err error
 		var actionName, payloadArg string
-		spew.Dump(args)
 		if len(args) < 1 || len(args) > 2 {
 			err = errors.New("Invalid argument list")
 			fmt.Println(err)
