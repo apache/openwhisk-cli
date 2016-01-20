@@ -1,42 +1,9 @@
-## Screencast
-
-Setup:
-- delete .wskprops, hello.js, wsk
-- delete actions from whisk
-
-- `ls -R`
-- `go build -o wsk main.go`
-- `ls`
-- `./wsk -h`
-- `./wsk auth 6c31860c-67ec-4adf-84f5-e421a9d3050e:CShXVzgb0KmlLJ2Iej02p60SBsnZJXA7FCQThVDXLEw2z5faOZBnc9efgp8BuQ9U`
-- `./wsk config`
-- `./wsk action -h`
-- `./wsk action create -h`
-- `vi hello.js`
-- write out code
-```golang
-function main(msg) {
-  return 'Hello ' + msg.name;
-}
-```
-- `ls -F`
-- `./wsk action create hello hello.js`
-- `./wsk action invoke -h`
-- `./wsk action invoke --blocking hello 'Damion Heredia'`
-
-<!-- packages / services ?? -->
-
-<!-- add cloudant package -->
-<!-- write message to cloudant ?? -->
-
 
 
 
 ## Questions
 
 - Server stalls when given bad code.
-- Swagger doc is different than actual response.
-  - action invoke response is {response: }
 - No --shared param in package list
 - activation name vs activation id
   + python client uses name to look up, swagger says id.
@@ -45,12 +12,30 @@ function main(msg) {
 
 
 ## Bugs
-* [ ] Params still having issues --> see action.Create hello2.js with all values
-* [X] invalid memory error when there is no .wskprops file .. .. .. ..
-* [X] "error: invalid character '<' looking for beginning of value%" when there is invalid auth (namespace?)
-  + missing trailing "/" --> this causes another issue...
+
 
 ## Notes
+
+
+Parsing params, annotations, and action#invoke payload --> as json data
+
+params and annotations --> attempt to parse as json into map[string]interface{}.  if it fails, then throw error
+
+payload is the same except for that if it is not valid json then obj is created "{payload: arg}".
+
+What about response object ??  Will also be a map[string]interface{} ?? 
+
+To start: --> change action invoke :payload to a map[string]interface{} and see if it breaks.
+
+Ok mostly working ...
+
+--> need to add it back in to
+- [x] trigger
+- [x] package
+- [x] rule ?
+
+
+What does trigger#fire return?  {id: "id"}
 
 
 

@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -76,7 +78,9 @@ func New(httpClient *http.Client, config *Config) (*Client, error) {
 
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 
-	// TODO :: Need to add namespace to request.
+	printJSON(body)
+
+	spew.Dump(body)
 
 	urlStr = fmt.Sprintf("%s/%s", c.Config.Namespace, urlStr)
 

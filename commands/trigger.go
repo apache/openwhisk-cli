@@ -1,8 +1,10 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.ibm.com/Bluemix/whisk-cli/client"
 
@@ -16,12 +18,52 @@ var triggerCmd = &cobra.Command{
 }
 
 var triggerFireCmd = &cobra.Command{
-	Use:   "fire <name string> <payload ?>",
+	Use:   "fire <name string> <payload string>",
 	Short: "fire trigger event",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO :: parse payload from args... how ?
-		// whisk.Triggers.Fire(triggerName, payload)
+
+		var err error
+		var triggerName, payloadArg string
+		if len(args) < 1 || len(args) > 2 {
+			err = errors.New("Invalid argument list")
+			fmt.Println(err)
+			return
+		}
+
+		triggerName = args[0]
+
+		payload := map[string]interface{}{}
+
+		if len(flags.param) > 0 {
+			parameters, err := parseParameters(flags.param)
+			if err != nil {
+				fmt.Printf("error: %s", err)
+				return
+			}
+
+			for key, value := range parameters {
+				payload[key] = value
+			}
+		}
+
+		if len(args) == 2 {
+			payloadArg = args[1]
+			reader := strings.NewReader(payloadArg)
+			err = json.NewDecoder(reader).Decode(&payload)
+			if err != nil {
+				payload["payload"] = payloadArg
+			}
+		}
+
+		_, _, err = whisk.Triggers.Fire(triggerName, payload)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("ok: fired trigger")
 	},
 }
 
@@ -30,9 +72,6 @@ var triggerCreateCmd = &cobra.Command{
 	Short: "create new trigger",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// TODO :: parse annotation
-		// TODO :: parse param
 
 		var err error
 		if len(args) != 1 {
@@ -43,10 +82,21 @@ var triggerCreateCmd = &cobra.Command{
 
 		triggerName := args[0]
 
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		annotations, err := parseAnnotations(flags.annotation)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		trigger := &client.Trigger{
-			Name: triggerName,
-			// Param
-			// Annotation
+			Name:        triggerName,
+			Parameters:  parameters,
+			Annotations: annotations,
 		}
 
 		trigger, _, err = whisk.Triggers.Insert(trigger, false)
@@ -68,9 +118,6 @@ var triggerUpdateCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// TODO :: parse annotation
-		// TODO :: parse param
-
 		var err error
 		if len(args) != 1 {
 			err = errors.New("Invalid argument")
@@ -79,11 +126,21 @@ var triggerUpdateCmd = &cobra.Command{
 		}
 
 		triggerName := args[0]
+		parameters, err := parseParameters(flags.param)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		annotations, err := parseAnnotations(flags.annotation)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		trigger := &client.Trigger{
-			Name: triggerName,
-			// Param
-			// Annotation
+			Name:        triggerName,
+			Parameters:  parameters,
+			Annotations: annotations,
 		}
 
 		trigger, _, err = whisk.Triggers.Insert(trigger, true)
@@ -167,15 +224,15 @@ var triggerListCmd = &cobra.Command{
 
 func init() {
 
-	triggerCreateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
-	triggerCreateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	triggerCreateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
+	triggerCreateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 	triggerCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
-	triggerUpdateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
-	triggerUpdateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	triggerUpdateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
+	triggerUpdateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 	triggerUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
-	triggerFireCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	triggerFireCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 
 	triggerListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
 	triggerListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")

@@ -13,8 +13,8 @@ var flags struct {
 
 	// shared
 	blocking   bool
-	annotation []string
-	param      []string
+	annotation string
+	param      string
 
 	// shared list
 	skip  int  // skip first N records

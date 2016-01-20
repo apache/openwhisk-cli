@@ -292,33 +292,37 @@ var actionInvokeCmd = &cobra.Command{
 
 		actionName = args[0]
 
-		payload := map[string]string{}
+		payload := map[string]interface{}{}
+
+		if len(flags.param) > 0 {
+			parameters, err := parseParameters(flags.param)
+			if err != nil {
+				fmt.Printf("error: %s", err)
+				return
+			}
+
+			for key, value := range parameters {
+				payload[key] = value
+			}
+		}
 
 		if len(args) == 2 {
 			payloadArg = args[1]
 			reader := strings.NewReader(payloadArg)
-			err = json.NewDecoder(reader).Decode(payload)
+			err = json.NewDecoder(reader).Decode(&payload)
 			if err != nil {
 				payload["payload"] = payloadArg
 			}
 		}
 
-		parameters, err := parseParameters(flags.param)
-		if err != nil {
-			fmt.Printf("error: %s", err)
-			return
-		}
-
-		for _, parameter := range parameters {
-			payload[parameter.Key] = parameter.Value
-		}
+		printJSON(payload)
 
 		activation, _, err := whisk.Actions.Invoke(actionName, payload, flags.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
 		}
-		// print out response
+
 		fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
 		printJSON(activation)
 	},
@@ -415,7 +419,7 @@ func init() {
 	actionUpdateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionUpdateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
 
-	actionInvokeCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "parameters")
+	actionInvokeCmd.Flags().StringVarP(&flags.param, "param", "p", "", "parameters")
 	actionInvokeCmd.Flags().BoolVarP(&flags.blocking, "blocking", "b", false, "blocking invoke")
 
 	actionListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")

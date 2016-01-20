@@ -244,18 +244,18 @@ var packageListCmd = &cobra.Command{
 
 func init() {
 
-	packageCreateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
-	packageCreateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	packageCreateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
+	packageCreateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 	packageCreateCmd.Flags().StringVarP(&flags.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
-	packageUpdateCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
-	packageUpdateCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	packageUpdateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
+	packageUpdateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 	packageUpdateCmd.Flags().StringVarP(&flags.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
 
-	packageBindCmd.Flags().StringSliceVarP(&flags.annotation, "annotation", "a", []string{}, "annotations")
-	packageBindCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "default parameters")
+	packageBindCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
+	packageBindCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
 
 	packageListCmd.Flags().BoolVar(&flags.shared, "shared", false, "include publicly shared entities in the result")
 	packageListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")

@@ -12,5 +12,5 @@ var testCmd = &cobra.Command{
 }
 
 func init() {
-	testCmd.Flags().StringSliceVarP(&flags.param, "param", "p", []string{}, "parameters")
+	testCmd.Flags().StringVarP(&flags.param, "param", "p", "", "parameters")
 }

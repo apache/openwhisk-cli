@@ -22,9 +22,9 @@ type Trigger struct {
 }
 
 type TriggerListOptions struct {
-	Limit int `url:"limit,omitempty"`
-	Skip  int    `url:"skip,omitempty"`
-	Docs  bool   `url:"docs,omitempty"`
+	Limit int  `url:"limit,omitempty"`
+	Skip  int  `url:"skip,omitempty"`
+	Docs  bool `url:"docs,omitempty"`
 }
 
 func (s *TriggerService) List(options *TriggerListOptions) ([]Trigger, *http.Response, error) {
@@ -101,7 +101,7 @@ func (s *TriggerService) Delete(triggerName string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (s *TriggerService) Fire(triggerName string, payload KeyValue) (*Trigger, *http.Response, error) {
+func (s *TriggerService) Fire(triggerName string, payload map[string]interface{}) (*Trigger, *http.Response, error) {
 	route := fmt.Sprintf("triggers/", triggerName)
 
 	req, err := s.client.NewRequest("POST", route, payload)
