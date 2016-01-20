@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -47,7 +47,7 @@ var packageBindCmd = &cobra.Command{
 		bindingName := parsedBindingArg[0]
 		var bindingNamespace string
 		if len(parsedBindingArg) == 1 {
-			bindingNamespace = whisk.Config.Namespace
+			bindingNamespace = client.Config.Namespace
 		} else if len(parsedBindingArg) == 2 {
 			bindingNamespace = parsedBindingArg[1]
 		} else {
@@ -56,19 +56,19 @@ var packageBindCmd = &cobra.Command{
 			return
 		}
 
-		binding := client.Binding{
+		binding := whisk.Binding{
 			Name:      bindingName,
 			Namespace: bindingNamespace,
 		}
 
-		p := &client.Package{
+		p := &whisk.Package{
 			Name:        packageName,
 			Publish:     flags.shared,
 			Annotations: annotations,
 			Parameters:  parameters,
 			Binding:     binding,
 		}
-		p, _, err = whisk.Packages.Insert(p, false)
+		p, _, err = client.Packages.Insert(p, false)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -104,13 +104,13 @@ var packageCreateCmd = &cobra.Command{
 			return
 		}
 
-		p := &client.Package{
+		p := &whisk.Package{
 			Name:        packageName,
 			Publish:     flags.shared,
 			Annotations: annotations,
 			Parameters:  parameters,
 		}
-		p, _, err = whisk.Packages.Insert(p, false)
+		p, _, err = client.Packages.Insert(p, false)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -148,14 +148,14 @@ var packageUpdateCmd = &cobra.Command{
 			return
 		}
 
-		p := &client.Package{
+		p := &whisk.Package{
 			Name:        packageName,
 			Publish:     flags.shared,
 			Annotations: annotations,
 			Parameters:  parameters,
 		}
 
-		p, _, err = whisk.Packages.Insert(p, true)
+		p, _, err = client.Packages.Insert(p, true)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -179,7 +179,7 @@ var packageGetCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		p, _, err := whisk.Packages.Get(packageName)
+		p, _, err := client.Packages.Get(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -206,7 +206,7 @@ var packageDeleteCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		_, err = whisk.Packages.Delete(packageName)
+		_, err = client.Packages.Delete(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -223,14 +223,14 @@ var packageListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
-		options := &client.PackageListOptions{
+		options := &whisk.PackageListOptions{
 			Skip:   flags.skip,
 			Limit:  flags.limit,
 			Public: flags.shared,
 			Docs:   flags.full,
 		}
 
-		packages, _, err := whisk.Packages.List(options)
+		packages, _, err := client.Packages.List(options)
 		if err != nil {
 			fmt.Println(err)
 			return

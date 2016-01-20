@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -20,14 +20,14 @@ var activationListCmd = &cobra.Command{
 	Short: "list activations",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		options := &client.ActivationListOptions{
+		options := &whisk.ActivationListOptions{
 			Name:  flags.action,
 			Limit: flags.limit,
 			Skip:  flags.skip,
 			Upto:  flags.upto,
 			Docs:  flags.full,
 		}
-		activations, _, err := whisk.Activations.List(options)
+		activations, _, err := client.Activations.List(options)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -48,7 +48,7 @@ var activationGetCmd = &cobra.Command{
 			return
 		}
 		id := args[0]
-		activation, _, err := whisk.Activations.Get(id)
+		activation, _, err := client.Activations.Get(id)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -72,7 +72,7 @@ var activationLogsCmd = &cobra.Command{
 		}
 
 		id := args[0]
-		activation, _, err := whisk.Activations.Logs(id)
+		activation, _, err := client.Activations.Logs(id)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -95,7 +95,7 @@ var activationResultCmd = &cobra.Command{
 		}
 
 		id := args[0]
-		result, _, err := whisk.Activations.Result(id)
+		result, _, err := client.Activations.Result(id)
 		if err != nil {
 			fmt.Println(err)
 			return

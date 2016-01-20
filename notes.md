@@ -143,7 +143,7 @@ def getExec(self, args, props):
         exe = self.getActionExec(args, props, existingAction)
     elif args.pipe:
         args2 = copy.copy(args) # shallow copy of args object
-        args2.namespace = 'whisk.system'
+        args2.namespace = 'client.system'
         pipeAction = 'common/pipe'
         exe = self.getActionExec(args2, props, pipeAction)
     elif args.artifact is not None and os.path.isfile(args.artifact):
@@ -176,7 +176,7 @@ Action Create:
 
   else if flags.pipe
     -> (copy args)
-    -> whisk.Config.Namespace = "whisk.system"
+    -> client.Config.Namespace = "client.system"
     -> actionName = "common/pipe"
     -> actions.Get(actionName), copy exec
 
@@ -199,7 +199,7 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 - Start working on command ...
   + fill out methods.
-    + first need to create a reference to the client...  Top-level variable. --> parse flags, then assign
+    + first need to create a reference to the whisk...  Top-level variable. --> parse flags, then assign
 
 ## To do's
 
@@ -285,10 +285,10 @@ NONE OF THIS MATTERS!  stuff is reloaded every time the
 
 - auth
   + include token in Client struct (base64 encoded?)
-  + Add Auth header in *Client.Request
+  + Add Auth header in *whisk.Request
 - verbose
   + include bool in Client struct
-  + print out in *Client.Do
+  + print out in *whisk.Do
 - BUT ALSO!!!
   + need to store on disk so that it is the same in between invocations.  This is done in cmd --> initialized the client based on contents of .wskprops
 
@@ -493,7 +493,7 @@ would be really nice if i could test this ...
 
 How to set namespace properly... ?
 
-stored in .wskprops, initialized in client.
+stored in .wskprops, initialized in whisk.
 client offers namespaceService.List() only.
 
 ---

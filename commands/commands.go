@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/mitchellh/go-homedir"
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 )
 
-var whisk *client.Client
+var client *whisk.Client
 
 // PropsFile is the path to the current props file (default ~/.wskprops).
 var PropsFile string
@@ -21,18 +21,11 @@ func init() {
 		return
 	}
 
-	whisk, err = initializeClient()
-
-}
-
-func initializeClient() (*client.Client, error) {
-	clientConfig := &client.Config{}
-
-	// read props
+	clientConfig := &whisk.Config{}
 
 	props, err := readProps(PropsFile)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	if namespace, hasProp := props["NAMESPACE"]; hasProp {
@@ -47,12 +40,11 @@ func initializeClient() (*client.Client, error) {
 	// Environment variables override prop file variables
 
 	// Setup client
-	whisk, err = client.New(http.DefaultClient, clientConfig)
+	client, err = whisk.New(http.DefaultClient, clientConfig)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return whisk, nil
 }
 
 func Execute() error {

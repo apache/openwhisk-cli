@@ -18,7 +18,7 @@ var namespaceListCmd = &cobra.Command{
 	Short: "lists all available namespaces",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		namespaces, _, err := whisk.Namespaces.List()
+		namespaces, _, err := client.Namespaces.List()
 		if err != nil {
 			fmt.Println(err)
 			return

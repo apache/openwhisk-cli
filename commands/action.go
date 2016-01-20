@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -46,7 +46,7 @@ var actionCreateCmd = &cobra.Command{
 			artifact = args[1]
 		}
 
-		exec := client.Exec{}
+		exec := whisk.Exec{}
 
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
@@ -60,7 +60,7 @@ var actionCreateCmd = &cobra.Command{
 			return
 		}
 
-		limits := client.Limits{
+		limits := whisk.Limits{
 			Timeout: flags.timeout,
 			Memory:  flags.memory,
 		}
@@ -68,22 +68,22 @@ var actionCreateCmd = &cobra.Command{
 		if flags.docker {
 			exec.Image = artifact
 		} else if flags.copy {
-			existingAction, _, err := whisk.Actions.Get(actionName)
+			existingAction, _, err := client.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			exec = existingAction.Exec
 		} else if flags.pipe {
-			currentNamespace := whisk.Config.Namespace
-			whisk.Config.Namespace = "whisk.system"
-			pipeAction, _, err := whisk.Actions.Get("common/pipe")
+			currentNamespace := client.Config.Namespace
+			client.Config.Namespace = "client.system"
+			pipeAction, _, err := client.Actions.Get("common/pipe")
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			exec = pipeAction.Exec
-			whisk.Config.Namespace = currentNamespace
+			client.Config.Namespace = currentNamespace
 		} else if artifact != "" {
 			if _, err := os.Stat(artifact); err != nil {
 				// file does not exist
@@ -131,7 +131,7 @@ var actionCreateCmd = &cobra.Command{
 
 		}
 
-		action := &client.Action{
+		action := &whisk.Action{
 			Name:        actionName,
 			Publish:     flags.shared,
 			Exec:        exec,
@@ -140,7 +140,7 @@ var actionCreateCmd = &cobra.Command{
 			Limits:      limits,
 		}
 
-		action, resp, err := whisk.Actions.Insert(action, false)
+		action, resp, err := client.Actions.Insert(action, false)
 		if err != nil {
 			fmt.Println(resp.Status)
 			return
@@ -171,7 +171,7 @@ var actionUpdateCmd = &cobra.Command{
 			artifact = args[1]
 		}
 
-		exec := client.Exec{}
+		exec := whisk.Exec{}
 
 		parameters, err := parseParameters(flags.param)
 		if err != nil {
@@ -185,7 +185,7 @@ var actionUpdateCmd = &cobra.Command{
 			return
 		}
 
-		limits := client.Limits{
+		limits := whisk.Limits{
 			Timeout: flags.timeout,
 			Memory:  flags.memory,
 		}
@@ -193,22 +193,22 @@ var actionUpdateCmd = &cobra.Command{
 		if flags.docker {
 			exec.Image = artifact
 		} else if flags.copy {
-			existingAction, _, err := whisk.Actions.Get(actionName)
+			existingAction, _, err := client.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			exec = existingAction.Exec
 		} else if flags.pipe {
-			currentNamespace := whisk.Config.Namespace
-			whisk.Config.Namespace = "whisk.system"
-			pipeAction, _, err := whisk.Actions.Get("common/pipe")
+			currentNamespace := client.Config.Namespace
+			client.Config.Namespace = "client.system"
+			pipeAction, _, err := client.Actions.Get("common/pipe")
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			exec = pipeAction.Exec
-			whisk.Config.Namespace = currentNamespace
+			client.Config.Namespace = currentNamespace
 		} else if artifact != "" {
 			if _, err := os.Stat(artifact); err != nil {
 				// file does not exist
@@ -256,7 +256,7 @@ var actionUpdateCmd = &cobra.Command{
 
 		}
 
-		action := &client.Action{
+		action := &whisk.Action{
 			Name:        actionName,
 			Publish:     flags.shared,
 			Exec:        exec,
@@ -265,7 +265,7 @@ var actionUpdateCmd = &cobra.Command{
 			Limits:      limits,
 		}
 
-		action, _, err = whisk.Actions.Insert(action, true)
+		action, _, err = client.Actions.Insert(action, true)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -317,7 +317,7 @@ var actionInvokeCmd = &cobra.Command{
 
 		printJSON(payload)
 
-		activation, _, err := whisk.Actions.Invoke(actionName, payload, flags.blocking)
+		activation, _, err := client.Actions.Invoke(actionName, payload, flags.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
@@ -342,7 +342,7 @@ var actionGetCmd = &cobra.Command{
 		}
 
 		actionName := args[0]
-		action, _, err := whisk.Actions.Get(actionName)
+		action, _, err := client.Actions.Get(actionName)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
@@ -359,7 +359,7 @@ var actionDeleteCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		actionName := args[0]
-		_, err := whisk.Actions.Delete(actionName)
+		_, err := client.Actions.Delete(actionName)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
@@ -374,12 +374,12 @@ var actionListCmd = &cobra.Command{
 	Short: "list all actions",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		options := &client.ActionListOptions{
+		options := &whisk.ActionListOptions{
 			Skip:  flags.skip,
 			Limit: flags.limit,
 		}
 
-		actions, _, err := whisk.Actions.List(options)
+		actions, _, err := client.Actions.List(options)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return

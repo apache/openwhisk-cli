@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -30,7 +30,7 @@ var ruleEnableCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		_, _, err = whisk.Rules.SetState(ruleName, "enable")
+		_, _, err = client.Rules.SetState(ruleName, "enable")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -54,7 +54,7 @@ var ruleDisableCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		_, _, err = whisk.Rules.SetState(ruleName, "disable")
+		_, _, err = client.Rules.SetState(ruleName, "disable")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -90,14 +90,14 @@ var ruleCreateCmd = &cobra.Command{
 		triggerName := args[1]
 		actionName := args[2]
 
-		rule := &client.Rule{
+		rule := &whisk.Rule{
 			Name:    ruleName,
 			Trigger: triggerName,
 			Action:  actionName,
 			Publish: flags.shared,
 		}
 
-		rule, _, err = whisk.Rules.Insert(rule, false)
+		rule, _, err = client.Rules.Insert(rule, false)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -123,14 +123,14 @@ var ruleUpdateCmd = &cobra.Command{
 		triggerName := args[1]
 		actionName := args[2]
 
-		rule := &client.Rule{
+		rule := &whisk.Rule{
 			Name:    ruleName,
 			Trigger: triggerName,
 			Action:  actionName,
 			Publish: flags.shared,
 		}
 
-		rule, _, err = whisk.Rules.Insert(rule, true)
+		rule, _, err = client.Rules.Insert(rule, true)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -154,7 +154,7 @@ var ruleGetCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		rule, _, err := whisk.Rules.Get(ruleName)
+		rule, _, err := client.Rules.Get(ruleName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -178,7 +178,7 @@ var ruleDeleteCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		_, err = whisk.Rules.Delete(ruleName)
+		_, err = client.Rules.Delete(ruleName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -193,12 +193,12 @@ var ruleListCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		ruleListOptions := &client.RuleListOptions{
+		ruleListOptions := &whisk.RuleListOptions{
 			Skip:  flags.skip,
 			Limit: flags.limit,
 		}
 
-		rules, _, err := whisk.Rules.List(ruleListOptions)
+		rules, _, err := client.Rules.List(ruleListOptions)
 		if err != nil {
 			fmt.Println(err)
 			return

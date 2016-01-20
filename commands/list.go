@@ -15,7 +15,7 @@ var listCmd = &cobra.Command{
 		listAll := flags.xType == ""
 
 		if (listAll) || (flags.xType == "actions") {
-			actions, _, err := whisk.Actions.List(nil)
+			actions, _, err := client.Actions.List(nil)
 			if err != nil {
 				return
 			}
@@ -25,7 +25,7 @@ var listCmd = &cobra.Command{
 
 		if (listAll) || (flags.xType == "triggers") {
 
-			triggers, _, err := whisk.Triggers.List(nil)
+			triggers, _, err := client.Triggers.List(nil)
 			if err != nil {
 				return
 			}
@@ -35,7 +35,7 @@ var listCmd = &cobra.Command{
 
 		if (listAll) || (flags.xType == "rules") {
 
-			rules, _, err := whisk.Rules.List(nil)
+			rules, _, err := client.Rules.List(nil)
 			if err != nil {
 				return
 			}
@@ -45,7 +45,7 @@ var listCmd = &cobra.Command{
 
 		if (listAll) || (flags.xType == "activations") {
 
-			activations, _, err := whisk.Activations.List(nil)
+			activations, _, err := client.Activations.List(nil)
 			if err != nil {
 				return
 			}

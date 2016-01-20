@@ -15,7 +15,7 @@ var configCmd = &cobra.Command{
 	Use:    "config",
 	Short:  "Prints out whisk client configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		printJSON(whisk.Config)
+		printJSON(client.Config)
 	},
 }
 
@@ -34,15 +34,15 @@ var propsCmd = &cobra.Command{
 func parseConfigFlags(cmd *cobra.Command, args []string) {
 
 	if flags.auth != "" {
-		whisk.Config.AuthToken = flags.auth
+		client.Config.AuthToken = flags.auth
 	}
 
 	if flags.namespace != "" {
-		whisk.Config.Namespace = flags.namespace
+		client.Config.Namespace = flags.namespace
 	}
 
 	if flags.verbose {
-		whisk.Config.Verbose = flags.verbose
+		client.Config.Verbose = flags.verbose
 	}
 
 	if flags.edge != false {
@@ -51,7 +51,7 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 			fmt.Println(err)
 			return
 		}
-		whisk.Config.BaseURL = u
+		client.Config.BaseURL = u
 	}
 
 }
@@ -65,7 +65,7 @@ func readProps(path string) (map[string]string, error) {
 
 	file, err := os.Open(path)
 	if err != nil {
-		// If file does not exist, just return props.s
+		// If file does not exist, just return props
 		return props, nil
 	}
 	defer file.Close()

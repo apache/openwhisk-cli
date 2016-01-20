@@ -6,19 +6,19 @@ import (
 	"strings"
 
 	prettyjson "github.com/hokaccha/go-prettyjson"
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 )
 
 // NOTE :: deprecated
-// func parseKeyValueArray(args []string) ([]client.KeyValue, error) {
-// 	parsed := []client.KeyValue{}
+// func parseKeyValueArray(args []string) ([]whisk.KeyValue, error) {
+// 	parsed := []whisk.KeyValue{}
 // 	if len(args)%2 != 0 {
 // 		err := errors.New("key|value arguments must be submitted in pairs")
 // 		return parsed, err
 // 	}
 //
 // 	for i := 0; i < len(args); i += 2 {
-// 		keyValue := client.KeyValue{
+// 		keyValue := whisk.KeyValue{
 // 			Key:   args[i],
 // 			Value: args[i+1],
 // 		}
@@ -28,8 +28,8 @@ import (
 // 	return parsed, nil
 // }
 
-func parseParameters(jsonStr string) (client.Parameters, error) {
-	parameters := client.Parameters{}
+func parseParameters(jsonStr string) (whisk.Parameters, error) {
+	parameters := whisk.Parameters{}
 	reader := strings.NewReader(jsonStr)
 	err := json.NewDecoder(reader).Decode(&parameters)
 	if err != nil {
@@ -38,8 +38,8 @@ func parseParameters(jsonStr string) (client.Parameters, error) {
 	return parameters, nil
 }
 
-func parseAnnotations(jsonStr string) (client.Annotations, error) {
-	annotations := client.Annotations{}
+func parseAnnotations(jsonStr string) (whisk.Annotations, error) {
+	annotations := whisk.Annotations{}
 	reader := strings.NewReader(jsonStr)
 	err := json.NewDecoder(reader).Decode(&annotations)
 	if err != nil {

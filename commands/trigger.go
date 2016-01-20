@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	client "github.ibm.com/Bluemix/go-whisk"
+	"github.ibm.com/Bluemix/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -56,7 +56,7 @@ var triggerFireCmd = &cobra.Command{
 			}
 		}
 
-		_, _, err = whisk.Triggers.Fire(triggerName, payload)
+		_, _, err = client.Triggers.Fire(triggerName, payload)
 
 		if err != nil {
 			fmt.Println(err)
@@ -93,13 +93,13 @@ var triggerCreateCmd = &cobra.Command{
 			return
 		}
 
-		trigger := &client.Trigger{
+		trigger := &whisk.Trigger{
 			Name:        triggerName,
 			Parameters:  parameters,
 			Annotations: annotations,
 		}
 
-		trigger, _, err = whisk.Triggers.Insert(trigger, false)
+		trigger, _, err = client.Triggers.Insert(trigger, false)
 
 		if err != nil {
 			fmt.Println(err)
@@ -137,13 +137,13 @@ var triggerUpdateCmd = &cobra.Command{
 			return
 		}
 
-		trigger := &client.Trigger{
+		trigger := &whisk.Trigger{
 			Name:        triggerName,
 			Parameters:  parameters,
 			Annotations: annotations,
 		}
 
-		trigger, _, err = whisk.Triggers.Insert(trigger, true)
+		trigger, _, err = client.Triggers.Insert(trigger, true)
 
 		if err != nil {
 			fmt.Println(err)
@@ -170,7 +170,7 @@ var triggerGetCmd = &cobra.Command{
 
 		triggerName := args[0]
 
-		trigger, _, err := whisk.Triggers.Get(triggerName)
+		trigger, _, err := client.Triggers.Get(triggerName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -194,7 +194,7 @@ var triggerDeleteCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		_, err = whisk.Triggers.Delete(ruleName)
+		_, err = client.Triggers.Delete(ruleName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -208,11 +208,11 @@ var triggerListCmd = &cobra.Command{
 	Short: "list all triggers",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		options := &client.TriggerListOptions{
+		options := &whisk.TriggerListOptions{
 			Skip:  flags.skip,
 			Limit: flags.limit,
 		}
-		triggers, _, err := whisk.Triggers.List(options)
+		triggers, _, err := client.Triggers.List(options)
 		if err != nil {
 			fmt.Println(err)
 			return
