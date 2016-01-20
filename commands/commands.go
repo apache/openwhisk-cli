@@ -40,7 +40,7 @@ func init() {
 	// Environment variables override prop file variables
 
 	// Setup client
-	client, err = whisk.New(http.DefaultClient, clientConfig)
+	client, err = whisk.NewClient(http.DefaultClient, clientConfig)
 	if err != nil {
 		return
 	}
