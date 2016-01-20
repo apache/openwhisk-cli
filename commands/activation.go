@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -48,7 +48,7 @@ var activationGetCmd = &cobra.Command{
 			return
 		}
 		id := args[0]
-		activation, _, err := whisk.Activations.Fetch(id)
+		activation, _, err := whisk.Activations.Get(id)
 		if err != nil {
 			fmt.Println(err)
 			return

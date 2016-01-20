@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -154,7 +154,7 @@ var ruleGetCmd = &cobra.Command{
 
 		ruleName := args[0]
 
-		rule, _, err := whisk.Rules.Fetch(ruleName)
+		rule, _, err := whisk.Rules.Get(ruleName)
 		if err != nil {
 			fmt.Println(err)
 			return

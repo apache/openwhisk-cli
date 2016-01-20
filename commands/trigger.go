@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -170,7 +170,7 @@ var triggerGetCmd = &cobra.Command{
 
 		triggerName := args[0]
 
-		trigger, _, err := whisk.Triggers.Fetch(triggerName)
+		trigger, _, err := whisk.Triggers.Get(triggerName)
 		if err != nil {
 			fmt.Println(err)
 			return

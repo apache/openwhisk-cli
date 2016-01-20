@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -179,7 +179,7 @@ var packageGetCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		p, _, err := whisk.Packages.Fetch(packageName)
+		p, _, err := whisk.Packages.Get(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return

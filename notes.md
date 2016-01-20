@@ -153,7 +153,7 @@ def getExec(self, args, props):
     return exe
 
 def getActionExec(self, args, props, name):
-    res = self.fetch(args, props, name)
+    res = self.Get(args, props, name)
     resBody = res.read()
     if res.status == httplib.OK:
         execField = json.loads(resBody)['exec']
@@ -172,13 +172,13 @@ Action Create:
     exec.image = artifact // what artifact ?
 
   else if flags.copy
-    -> actions.Fetch(actionName), copy exec
+    -> actions.Get(actionName), copy exec
 
   else if flags.pipe
     -> (copy args)
     -> whisk.Config.Namespace = "whisk.system"
     -> actionName = "common/pipe"
-    -> actions.Fetch(actionName), copy exec
+    -> actions.Get(actionName), copy exec
 
   else if artifact != "" && os.FileExists(artifact)
     -> exec.code = os.ReadFile(artifact)
@@ -203,7 +203,7 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 
 ## To do's
 
-- [ ] actionInvokeCmd --> parse payload properly.
+- [X] actionInvokeCmd --> parse payload properly.
 
 - [ ] better error responses
   + read resp.Body for message.
@@ -218,11 +218,8 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
 - [ ] verbose
 - [ ] Verbose (with a writer or something fancy)
   + how to avoid putting this on the client ?
-- [ ] params / annotations
-  + check that len(args) % 2 == 0
-  + for i := 0; i < len(args); i+2{ ... }
-  + k := args[i]; v := args[i+1]
-- [ ] positional arguments
+- [X] params / annotations
+- [X] positional arguments
 - [ ] SDK
 
 
@@ -231,15 +228,13 @@ Thinking about how to persist data in between wsk calls.  The way that the pytho
   + [X] rule
   + [X] trigger
 
-- [ ] How to properly parse k|v flags like annotation and parameter ??
-
 - [ ] Figure out how to properly define positional arguments with cobra / pflags.
 
 - [ ] Implement verbose mode to help with debugging.
 
-- [ ] finish complex methods
-  + [ ] Action.Create with exec and all flags
-  + [ ] Action.Invoke with params
+- [X] finish complex methods
+  + [X] Action.Create with exec and all flags
+  + [X] Action.Invoke with params
 
 - Local install
   - vagrant.

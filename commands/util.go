@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	prettyjson "github.com/hokaccha/go-prettyjson"
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 )
 
 // NOTE :: deprecated

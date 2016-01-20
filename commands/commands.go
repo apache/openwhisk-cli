@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/mitchellh/go-homedir"
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 )
 
 var whisk *client.Client

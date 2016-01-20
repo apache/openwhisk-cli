@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.ibm.com/Bluemix/whisk-cli/client"
+	client "github.ibm.com/Bluemix/go-whisk"
 
 	"github.com/spf13/cobra"
 )
@@ -68,7 +68,7 @@ var actionCreateCmd = &cobra.Command{
 		if flags.docker {
 			exec.Image = artifact
 		} else if flags.copy {
-			existingAction, _, err := whisk.Actions.Fetch(actionName)
+			existingAction, _, err := whisk.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -77,7 +77,7 @@ var actionCreateCmd = &cobra.Command{
 		} else if flags.pipe {
 			currentNamespace := whisk.Config.Namespace
 			whisk.Config.Namespace = "whisk.system"
-			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
+			pipeAction, _, err := whisk.Actions.Get("common/pipe")
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -193,7 +193,7 @@ var actionUpdateCmd = &cobra.Command{
 		if flags.docker {
 			exec.Image = artifact
 		} else if flags.copy {
-			existingAction, _, err := whisk.Actions.Fetch(actionName)
+			existingAction, _, err := whisk.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -202,7 +202,7 @@ var actionUpdateCmd = &cobra.Command{
 		} else if flags.pipe {
 			currentNamespace := whisk.Config.Namespace
 			whisk.Config.Namespace = "whisk.system"
-			pipeAction, _, err := whisk.Actions.Fetch("common/pipe")
+			pipeAction, _, err := whisk.Actions.Get("common/pipe")
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -342,7 +342,7 @@ var actionGetCmd = &cobra.Command{
 		}
 
 		actionName := args[0]
-		action, _, err := whisk.Actions.Fetch(actionName)
+		action, _, err := whisk.Actions.Get(actionName)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
