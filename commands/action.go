@@ -32,6 +32,7 @@ var actionCreateCmd = &cobra.Command{
 	Short: "create a new action",
 
 	Run: func(cmd *cobra.Command, args []string) {
+
 		var err error
 		var actionName, artifact string
 		if len(args) < 1 || len(args) > 2 {
@@ -67,6 +68,7 @@ var actionCreateCmd = &cobra.Command{
 
 		if flags.docker {
 			exec.Image = artifact
+
 		} else if flags.copy {
 			existingAction, _, err := client.Actions.Get(actionName)
 			if err != nil {
@@ -74,6 +76,7 @@ var actionCreateCmd = &cobra.Command{
 				return
 			}
 			exec = existingAction.Exec
+
 		} else if flags.pipe {
 			currentNamespace := client.Config.Namespace
 			client.Config.Namespace = "client.system"
@@ -84,21 +87,20 @@ var actionCreateCmd = &cobra.Command{
 			}
 			exec = pipeAction.Exec
 			client.Config.Namespace = currentNamespace
+
 		} else if artifact != "" {
 			if _, err := os.Stat(artifact); err != nil {
 				// file does not exist
 				fmt.Println(err)
 				return
 			}
-
 			file, err := ioutil.ReadFile(artifact)
 			if err != nil {
+
 				fmt.Println(err)
 				return
 			}
-
 			exec.Code = string(file)
-
 		}
 
 		if flags.lib != "" {

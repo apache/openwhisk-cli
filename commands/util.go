@@ -30,6 +30,9 @@ import (
 
 func parseParameters(jsonStr string) (whisk.Parameters, error) {
 	parameters := whisk.Parameters{}
+	if len(jsonStr) == 0 {
+		return parameters, nil
+	}
 	reader := strings.NewReader(jsonStr)
 	err := json.NewDecoder(reader).Decode(&parameters)
 	if err != nil {
@@ -40,6 +43,9 @@ func parseParameters(jsonStr string) (whisk.Parameters, error) {
 
 func parseAnnotations(jsonStr string) (whisk.Annotations, error) {
 	annotations := whisk.Annotations{}
+	if len(jsonStr) == 0 {
+		return annotations, nil
+	}
 	reader := strings.NewReader(jsonStr)
 	err := json.NewDecoder(reader).Decode(&annotations)
 	if err != nil {
