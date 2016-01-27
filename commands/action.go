@@ -49,27 +49,27 @@ var actionCreateCmd = &cobra.Command{
 
 		exec := whisk.Exec{}
 
-		parameters, err := parseParameters(flags.param)
+		parameters, err := parseParameters(flags.common.param)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		annotations, err := parseAnnotations(flags.annotation)
+		annotations, err := parseAnnotations(flags.common.annotation)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
 		limits := whisk.Limits{
-			Timeout: flags.timeout,
-			Memory:  flags.memory,
+			Timeout: flags.action.timeout,
+			Memory:  flags.action.memory,
 		}
 
-		if flags.docker {
+		if flags.action.docker {
 			exec.Image = artifact
 
-		} else if flags.copy {
+		} else if flags.action.copy {
 			existingAction, _, err := client.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
@@ -77,7 +77,7 @@ var actionCreateCmd = &cobra.Command{
 			}
 			exec = existingAction.Exec
 
-		} else if flags.pipe {
+		} else if flags.action.pipe {
 			currentNamespace := client.Config.Namespace
 			client.Config.Namespace = "client.system"
 			pipeAction, _, err := client.Actions.Get("common/pipe")
@@ -103,8 +103,8 @@ var actionCreateCmd = &cobra.Command{
 			exec.Code = string(file)
 		}
 
-		if flags.lib != "" {
-			file, err := os.Open(flags.lib)
+		if flags.action.lib != "" {
+			file, err := os.Open(flags.action.lib)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -135,7 +135,7 @@ var actionCreateCmd = &cobra.Command{
 
 		action := &whisk.Action{
 			Name:        actionName,
-			Publish:     flags.shared,
+			Publish:     flags.action.shared,
 			Exec:        exec,
 			Annotations: annotations,
 			Parameters:  parameters,
@@ -175,33 +175,33 @@ var actionUpdateCmd = &cobra.Command{
 
 		exec := whisk.Exec{}
 
-		parameters, err := parseParameters(flags.param)
+		parameters, err := parseParameters(flags.common.param)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		annotations, err := parseAnnotations(flags.annotation)
+		annotations, err := parseAnnotations(flags.common.annotation)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
 		limits := whisk.Limits{
-			Timeout: flags.timeout,
-			Memory:  flags.memory,
+			Timeout: flags.action.timeout,
+			Memory:  flags.action.memory,
 		}
 
-		if flags.docker {
+		if flags.action.docker {
 			exec.Image = artifact
-		} else if flags.copy {
+		} else if flags.action.copy {
 			existingAction, _, err := client.Actions.Get(actionName)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			exec = existingAction.Exec
-		} else if flags.pipe {
+		} else if flags.action.pipe {
 			currentNamespace := client.Config.Namespace
 			client.Config.Namespace = "client.system"
 			pipeAction, _, err := client.Actions.Get("common/pipe")
@@ -228,8 +228,8 @@ var actionUpdateCmd = &cobra.Command{
 
 		}
 
-		if flags.lib != "" {
-			file, err := os.Open(flags.lib)
+		if flags.action.lib != "" {
+			file, err := os.Open(flags.action.lib)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -260,7 +260,7 @@ var actionUpdateCmd = &cobra.Command{
 
 		action := &whisk.Action{
 			Name:        actionName,
-			Publish:     flags.shared,
+			Publish:     flags.action.shared,
 			Exec:        exec,
 			Annotations: annotations,
 			Parameters:  parameters,
@@ -296,8 +296,8 @@ var actionInvokeCmd = &cobra.Command{
 
 		payload := map[string]interface{}{}
 
-		if len(flags.param) > 0 {
-			parameters, err := parseParameters(flags.param)
+		if len(flags.common.param) > 0 {
+			parameters, err := parseParameters(flags.common.param)
 			if err != nil {
 				fmt.Printf("error: %s", err)
 				return
@@ -319,7 +319,7 @@ var actionInvokeCmd = &cobra.Command{
 
 		printJSON(payload)
 
-		activation, _, err := client.Actions.Invoke(actionName, payload, flags.blocking)
+		activation, _, err := client.Actions.Invoke(actionName, payload, flags.common.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
@@ -377,8 +377,8 @@ var actionListCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &whisk.ActionListOptions{
-			Skip:  flags.skip,
-			Limit: flags.limit,
+			Skip:  flags.common.skip,
+			Limit: flags.common.limit,
 		}
 
 		actions, _, err := client.Actions.List(options)
@@ -407,26 +407,26 @@ var actionListCmd = &cobra.Command{
 
 func init() {
 
-	actionCreateCmd.Flags().BoolVar(&flags.docker, "docker", false, "treat artifact as docker image path on dockerhub")
-	actionCreateCmd.Flags().BoolVar(&flags.copy, "copy", false, "treat artifact as the name of an existing action")
-	actionCreateCmd.Flags().BoolVar(&flags.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
-	actionCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
-	actionCreateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
-	actionCreateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
+	actionCreateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
+	actionCreateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
+	actionCreateCmd.Flags().BoolVar(&flags.action.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
+	actionCreateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
+	actionCreateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
+	actionCreateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 
-	actionUpdateCmd.Flags().BoolVar(&flags.docker, "docker", false, "treat artifact as docker image path on dockerhub")
-	actionUpdateCmd.Flags().BoolVar(&flags.copy, "copy", false, "treat artifact as the name of an existing action")
-	actionUpdateCmd.Flags().BoolVar(&flags.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
-	actionUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
-	actionUpdateCmd.Flags().StringVar(&flags.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
-	actionUpdateCmd.Flags().StringVar(&flags.xPackage, "package", "", "package")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
+	actionUpdateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
+	actionUpdateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 
-	actionInvokeCmd.Flags().StringVarP(&flags.param, "param", "p", "", "parameters")
-	actionInvokeCmd.Flags().BoolVarP(&flags.blocking, "blocking", "b", false, "blocking invoke")
+	actionInvokeCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "parameters")
+	actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, "blocking invoke")
 
-	actionListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
-	actionListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
-	actionListCmd.Flags().BoolVar(&flags.full, "full", false, "include full entity description")
+	actionListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
+	actionListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")
+	actionListCmd.Flags().BoolVar(&flags.common.full, "full", false, "include full entity description")
 
 	actionCmd.AddCommand(
 		actionCreateCmd,

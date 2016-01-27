@@ -35,8 +35,8 @@ var triggerFireCmd = &cobra.Command{
 
 		payload := map[string]interface{}{}
 
-		if len(flags.param) > 0 {
-			parameters, err := parseParameters(flags.param)
+		if len(flags.common.param) > 0 {
+			parameters, err := parseParameters(flags.common.param)
 			if err != nil {
 				fmt.Printf("error: %s", err)
 				return
@@ -82,12 +82,12 @@ var triggerCreateCmd = &cobra.Command{
 
 		triggerName := args[0]
 
-		parameters, err := parseParameters(flags.param)
+		parameters, err := parseParameters(flags.common.param)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		annotations, err := parseAnnotations(flags.annotation)
+		annotations, err := parseAnnotations(flags.common.annotation)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -126,12 +126,12 @@ var triggerUpdateCmd = &cobra.Command{
 		}
 
 		triggerName := args[0]
-		parameters, err := parseParameters(flags.param)
+		parameters, err := parseParameters(flags.common.param)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		annotations, err := parseAnnotations(flags.annotation)
+		annotations, err := parseAnnotations(flags.common.annotation)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -209,8 +209,8 @@ var triggerListCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &whisk.TriggerListOptions{
-			Skip:  flags.skip,
-			Limit: flags.limit,
+			Skip:  flags.common.skip,
+			Limit: flags.common.limit,
 		}
 		triggers, _, err := client.Triggers.List(options)
 		if err != nil {
@@ -224,18 +224,18 @@ var triggerListCmd = &cobra.Command{
 
 func init() {
 
-	triggerCreateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
-	triggerCreateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
-	triggerCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
+	triggerCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
+	triggerCreateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	triggerCreateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	triggerUpdateCmd.Flags().StringVarP(&flags.annotation, "annotation", "a", "", "annotations")
-	triggerUpdateCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
-	triggerUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
+	triggerUpdateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
+	triggerUpdateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	triggerUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	triggerFireCmd.Flags().StringVarP(&flags.param, "param", "p", "", "default parameters")
+	triggerFireCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
 
-	triggerListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
-	triggerListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 0, "only return this many entities from the collection")
+	triggerListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
+	triggerListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 0, "only return this many entities from the collection")
 
 	triggerCmd.AddCommand(
 		triggerFireCmd,

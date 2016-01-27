@@ -94,7 +94,7 @@ var ruleCreateCmd = &cobra.Command{
 			Name:    ruleName,
 			Trigger: triggerName,
 			Action:  actionName,
-			Publish: flags.shared,
+			Publish: flags.common.shared,
 		}
 
 		rule, _, err = client.Rules.Insert(rule, false)
@@ -127,7 +127,7 @@ var ruleUpdateCmd = &cobra.Command{
 			Name:    ruleName,
 			Trigger: triggerName,
 			Action:  actionName,
-			Publish: flags.shared,
+			Publish: flags.common.shared,
 		}
 
 		rule, _, err = client.Rules.Insert(rule, true)
@@ -194,8 +194,8 @@ var ruleListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ruleListOptions := &whisk.RuleListOptions{
-			Skip:  flags.skip,
-			Limit: flags.limit,
+			Skip:  flags.common.skip,
+			Limit: flags.common.limit,
 		}
 
 		rules, _, err := client.Rules.List(ruleListOptions)
@@ -210,15 +210,15 @@ var ruleListCmd = &cobra.Command{
 
 func init() {
 
-	ruleCreateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
-	ruleCreateCmd.Flags().BoolVar(&flags.auto, "auto", false, "autmatically enable rule after creating it")
+	ruleCreateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
+	ruleCreateCmd.Flags().BoolVar(&flags.rule.auto, "auto", false, "autmatically enable rule after creating it")
 
-	ruleUpdateCmd.Flags().BoolVar(&flags.shared, "shared", false, "shared action (default: private)")
+	ruleUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	ruleDeleteCmd.Flags().BoolVar(&flags.auto, "auto", false, "autmatically disable rule before deleting it")
+	ruleDeleteCmd.Flags().BoolVar(&flags.rule.auto, "auto", false, "autmatically disable rule before deleting it")
 
-	ruleListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
-	ruleListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
+	ruleListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
+	ruleListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")
 
 	ruleCmd.AddCommand(
 		ruleEnableCmd,

@@ -16,6 +16,49 @@
 
 ## Notes
 
+Updates to the client / command line api
+
+new top-level flags:
+- `--apihost`: whisk api host
+- `--apiversion`: whisk api version
+
+add `PropertyCmd`
+- use: "work with whisk properties"
+- set
+  + -u, --auth
+  + --apihost
+  + --apiversion
+  + --namespace
+
+- get
+  + -u, --auth
+  + --apihost
+  + --apiversion
+  + --cliversion
+  + --apibuild
+  + --namespace
+  + --all
+
+Namespace --> api is `:443/api/{apivesion}/namespaces/{namespace}`
+
+[x] remove top-level commands:
+- auth
+- list
+- whoami
+- health
+- clean
+- namespace
+- version
+
+remove top-level flags:
+- --auth
+
+
+Implemenmt sdk command
+- install
+  - component {docker, swift, iOS}
+
+---
 
 Parsing params, annotations, and action#invoke payload --> as json data
 

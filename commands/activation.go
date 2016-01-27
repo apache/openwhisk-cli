@@ -21,11 +21,12 @@ var activationListCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		options := &whisk.ActivationListOptions{
-			Name:  flags.action,
-			Limit: flags.limit,
-			Skip:  flags.skip,
-			Upto:  flags.upto,
-			Docs:  flags.full,
+			Name:  flags.activation.action,
+			Limit: flags.common.limit,
+			Skip:  flags.common.skip,
+			Upto:  flags.activation.upto,
+			Since: flags.activation.since,
+			Docs:  flags.common.full,
 		}
 		activations, _, err := client.Activations.List(options)
 		if err != nil {
@@ -117,12 +118,12 @@ var activationPollCmd = &cobra.Command{
 
 func init() {
 
-	activationListCmd.Flags().StringVarP(&flags.action, "action", "a", "", "retroeve activations for action")
-	activationListCmd.Flags().IntVarP(&flags.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
-	activationListCmd.Flags().IntVarP(&flags.limit, "limit", "l", 30, "only return this many entities from the collection")
-	activationListCmd.Flags().BoolVarP(&flags.full, "full", "f", false, "include full entity description")
-	activationListCmd.Flags().IntVar(&flags.upto, "upto", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
-	activationListCmd.Flags().IntVar(&flags.since, "since", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
+	activationListCmd.Flags().StringVarP(&flags.activation.action, "action", "a", "", "retrieve activations for action")
+	activationListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
+	activationListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")
+	activationListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, "include full entity description")
+	activationListCmd.Flags().IntVar(&flags.activation.upto, "upto", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
+	activationListCmd.Flags().IntVar(&flags.activation.since, "since", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
 
 	activationCmd.AddCommand(
 		activationListCmd,
