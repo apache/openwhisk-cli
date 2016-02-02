@@ -1,4 +1,6 @@
 # Whisk Command Line App
 
-`$ go build -o wsk main.go`
-`$ ./wsk -h`
+```shell
+$ go build -o wsk main.go
+$ ./wsk -h
+```
