@@ -1,34 +1,111 @@
 
-
-
-## Questions
-
-- Server stalls when given bad code.
-- No --shared param in package list
-- activation name vs activation id
-  + python client uses name to look up, swagger says id.
-- what is the `--package` flag in `wsk action create --package` ?
-- package bind ?? whats the deal ?
-
-
-## Bugs
-
+## Tasks
+- [ ] Environment variables
+  + what are they?
+  + unclear ...
+- [ ] sdk
+- [x] apibuild + cliversion
+- [x] props variable, revisited
+- [ ] Edge ?
 
 ## Notes
 
+[ ] Props -> namespace --> need to make a request to "/namespaces" first to get a list of legal namespaces, then confirm that requested is legal.
+
+
+---
+
+Need to consider how props is being stored ... --> need to have a single global props, with defaults
+
+
+top-level properties struct
+
+on init, load properties from .wskprops, environment, flags.
+
+initialize client config from properties.
+
+
+
+getProperties --> print out Properties --> according to flags set.
+
+setProperties -->
+
+  readProps
+
+  according to flags, update props
+  write props
+
+
+unsetProperties -->
+
+  readProps
+  delete relevant ones.
+  writeProps
+
+
+readProps -> map[string]string, ok
+writeProps(map[string]string) -> ok
+
+
+---
+
+
+Check that it is up to date...
+Anything known to be missing?
+
+SDK --> simple enough...  just do it.
+
+What's the deal with apibuild, and cliversion ?
+
+Do a side-by-side comparision of wsk versions.  should be the same, except formatting
+
+Anything else I'm missing?
+
+Environment variables.
+WHISK_APIVERSION
+WHISK_AUTH
+WHISK_etc..
+WHISK_
+
+
+
+
+---
+
 Updates to the client / command line api
+
+
+client changes:
+[X] add namespace get / list --> modify to be current (list is list triggers etc for current, get is list of namespaces)
+
+Get namespace contents:
+
+wsk namespace get --> GET /v1/namespaces/_
+wsk namespace get wilsonth@us.ibm.com --> GET /v1/namespaces/_/wilsonth--
+
+Get list of namespaces available
+
+wsk namespace list -> GET /v1/namespaces
+
+So ... --> update namespace client.
+
 
 new top-level flags:
 - `--apihost`: whisk api host
 - `--apiversion`: whisk api version
 
-add `PropertyCmd`
+[X] add `PropertyCmd`
+
+
+Need to remove persistent global flags and re-add. (auth etc.)
+
 - use: "work with whisk properties"
 - set
   + -u, --auth
   + --apihost
   + --apiversion
   + --namespace
+
 
 - get
   + -u, --auth
@@ -51,7 +128,10 @@ Namespace --> api is `:443/api/{apivesion}/namespaces/{namespace}`
 - version
 
 remove top-level flags:
-- --auth
+
+- --auth (added to local level ?)
+-
+
 
 
 Implemenmt sdk command

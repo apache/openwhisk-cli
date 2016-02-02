@@ -3,46 +3,35 @@ package commands
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"os"
 
-	"github.com/mitchellh/go-homedir"
 	"github.ibm.com/Bluemix/go-whisk/whisk"
 )
 
 var client *whisk.Client
 
-// PropsFile is the path to the current props file (default ~/.wskprops).
-var PropsFile string
-
 func init() {
 	var err error
-	PropsFile, err = homedir.Expand(defaultPropsFile)
+
+	baseURL, err := url.Parse(Properties.APIHost)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(-1)
 	}
 
-	clientConfig := &whisk.Config{}
-
-	props, err := readProps(PropsFile)
-	if err != nil {
-		return
+	clientConfig := &whisk.Config{
+		AuthToken: Properties.Auth,
+		Namespace: Properties.Namespace,
+		BaseURL:   baseURL,
+		Version:   Properties.APIVersion,
 	}
-
-	if namespace, hasProp := props["NAMESPACE"]; hasProp {
-		clientConfig.Namespace = namespace
-	}
-
-	if authToken, hasProp := props["AUTH"]; hasProp {
-		clientConfig.AuthToken = authToken
-	}
-
-	// TODO :: set clientConfig based on environment variables
-	// Environment variables override prop file variables
 
 	// Setup client
 	client, err = whisk.NewClient(http.DefaultClient, clientConfig)
 	if err != nil {
-		return
+		fmt.Println(err)
+		os.Exit(-1)
 	}
 
 }

@@ -13,16 +13,19 @@ var WskCmd = &cobra.Command{
 func init() {
 
 	WskCmd.AddCommand(
-		triggerCmd,
 		actionCmd,
-		sdkCmd,
-		ruleCmd,
 		activationCmd,
 		packageCmd,
+		ruleCmd,
+		triggerCmd,
+		sdkCmd,
+		propertyCmd,
 	)
 
 	WskCmd.Flags().BoolVarP(&flags.global.edge, "edge", "e", false, "test edge server directly, bypassing the master router")
 	WskCmd.PersistentFlags().BoolVarP(&flags.global.verbose, "verbose", "v", false, "verbose output")
 	WskCmd.PersistentFlags().StringVarP(&flags.global.auth, "auth", "u", "", "authorization key")
 	WskCmd.PersistentFlags().StringVarP(&flags.global.namespace, "namespace", "n", "", "namespace")
+	WskCmd.PersistentFlags().StringVar(&flags.global.apihost, "apihost", "", "whisk API host")
+	WskCmd.PersistentFlags().StringVar(&flags.global.apiversion, "apiversion", "", "whisk API version")
 }

@@ -9,25 +9,6 @@ import (
 	"github.ibm.com/Bluemix/go-whisk/whisk"
 )
 
-// NOTE :: deprecated
-// func parseKeyValueArray(args []string) ([]whisk.KeyValue, error) {
-// 	parsed := []whisk.KeyValue{}
-// 	if len(args)%2 != 0 {
-// 		err := errors.New("key|value arguments must be submitted in pairs")
-// 		return parsed, err
-// 	}
-//
-// 	for i := 0; i < len(args); i += 2 {
-// 		keyValue := whisk.KeyValue{
-// 			Key:   args[i],
-// 			Value: args[i+1],
-// 		}
-// 		parsed = append(parsed, keyValue)
-//
-// 	}
-// 	return parsed, nil
-// }
-
 func parseParameters(jsonStr string) (whisk.Parameters, error) {
 	parameters := whisk.Parameters{}
 	if len(jsonStr) == 0 {
