@@ -43,18 +43,22 @@ var propertySetCmd = &cobra.Command{
 
 		if flags.global.auth != "" {
 			props["AUTH"] = flags.global.auth
+			fmt.Println("ok: whisk auth set")
 		}
 
 		if flags.global.namespace != "" {
 			props["NAMESPACE"] = flags.global.namespace
+			fmt.Println("ok: whisk namespace set to ", namespace)
 		}
 
 		if flags.global.apihost != "" {
 			props["APIHOST"] = flags.global.apihost
+			fmt.Println("ok: whisk API host set to ", apiHost)
 		}
 
 		if flags.global.apiversion != "" {
 			props["APIVERSION"] = flags.global.apiversion
+			fmt.Println("ok: whisk API version set to ", apiVersion)
 		}
 
 		err = writeProps(PropsFile, props)
@@ -190,22 +194,34 @@ func loadProperties() error {
 
 	if authToken, hasProp := props["AUTH"]; hasProp {
 		Properties.Auth = authToken
-		fmt.Println("ok: whisk auth set")
+	}
+
+	if authToken := os.Getenv("WHISK_AUTH"); len(authToken) > 0 {
+		Properties.Auth = authToken
 	}
 
 	if apiVersion, hasProp := props["APIVERSION"]; hasProp {
 		Properties.APIVersion = apiVersion
-		fmt.Println("ok: whisk API version set to ", apiVersion)
+	}
+
+	if apiVersion := os.Getenv("WHISK_APIVERSION"); len(apiVersion) > 0 {
+		Properties.APIVersion = apiVersion
 	}
 
 	if apiHost, hasProp := props["APIHOST"]; hasProp {
 		Properties.APIHost = apiHost
-		fmt.Println("ok: whisk API host set to ", apiHost)
+	}
+
+	if apiHost := os.Getenv("WHISK_APIHOST"); len(apiHost) > 0 {
+		Properties.APIHost = apiHost
 	}
 
 	if namespace, hasProp := props["NAMESPACE"]; hasProp {
 		Properties.Namespace = namespace
-		fmt.Println("ok: whisk namespace set to ", namespace)
+	}
+
+	if namespace := os.Getenv("WHISK_NAMESPACE"); len(namespace) > 0 {
+		Properties.Namespace = namespace
 	}
 
 	return nil
