@@ -46,11 +46,6 @@ var propertySetCmd = &cobra.Command{
 			fmt.Println("ok: whisk auth set")
 		}
 
-		if namespace := flags.global.namespace; len(namespace) > 0 {
-			props["NAMESPACE"] = namespace
-			fmt.Println("ok: whisk namespace set to ", namespace)
-		}
-
 		if apiHost := flags.global.apihost; len(apiHost) > 0 {
 			props["APIHOST"] = apiHost
 			fmt.Println("ok: whisk API host set to ", apiHost)
@@ -59,6 +54,31 @@ var propertySetCmd = &cobra.Command{
 		if apiVersion := flags.global.apiversion; len(apiVersion) > 0 {
 			props["APIVERSION"] = apiVersion
 			fmt.Println("ok: whisk API version set to ", apiVersion)
+		}
+
+		if namespace := flags.global.namespace; len(namespace) > 0 {
+
+			namespaces, _, err := client.Namespaces.List()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			var validNamespace bool
+			for _, ns := range namespaces {
+				if ns.Name == namespace {
+					validNamespace = true
+				}
+			}
+
+			if !validNamespace {
+				err = fmt.Errorf("Invalid namespace %s", namespace)
+				fmt.Println(err)
+				return
+			}
+
+			props["NAMESPACE"] = namespace
+			fmt.Println("ok: whisk namespace set to ", namespace)
 		}
 
 		err = writeProps(PropsFile, props)
@@ -157,10 +177,15 @@ func init() {
 	propertyGetCmd.Flags().BoolVar(&flags.property.namespace, "namespace", false, "authorization key")
 	propertyGetCmd.Flags().BoolVar(&flags.property.all, "all", false, "all properties")
 
+	propertySetCmd.Flags().StringVarP(&flags.global.auth, "auth", "u", "", "authorization key")
+	propertySetCmd.Flags().StringVar(&flags.global.apihost, "apihost", "", "whisk API host")
+	propertySetCmd.Flags().StringVar(&flags.global.apiversion, "apiversion", "", "whisk API version")
+	propertySetCmd.Flags().StringVar(&flags.global.namespace, "namespace", "", "whisk namespace")
+
 	propertyUnsetCmd.Flags().BoolVarP(&flags.property.auth, "auth", "u", false, "authorization key")
 	propertyUnsetCmd.Flags().BoolVar(&flags.property.apihost, "apihost", false, "whisk API host")
 	propertyUnsetCmd.Flags().BoolVar(&flags.property.apiversion, "apiversion", false, "whisk API version")
-	propertyUnsetCmd.Flags().BoolVar(&flags.property.namespace, "namespace", false, "authorization key")
+	propertyUnsetCmd.Flags().BoolVar(&flags.property.namespace, "namespace", false, "whisk namespace")
 
 	err := loadProperties()
 	if err != nil {
@@ -179,10 +204,11 @@ func setDefaultProperties() {
 }
 
 func loadProperties() error {
+	var err error
 
 	setDefaultProperties()
 
-	PropsFile, err := homedir.Expand(defaultPropsFile)
+	PropsFile, err = homedir.Expand(defaultPropsFile)
 	if err != nil {
 		return err
 	}
@@ -298,6 +324,7 @@ func readProps(path string) (map[string]string, error) {
 }
 
 func writeProps(path string, props map[string]string) error {
+
 	file, err := os.Create(path)
 	if err != nil {
 		return err
