@@ -21,6 +21,8 @@ var Properties struct {
 	APIBuild   string
 	CLIVersion string
 	Namespace  string
+	EdgeHost   string
+	PropsFile  string
 }
 
 var propertyCmd = &cobra.Command{
@@ -136,15 +138,15 @@ var propertyGetCmd = &cobra.Command{
 		}
 
 		if flags.property.all || flags.property.apihost {
-			fmt.Println("whisk API host")
+			fmt.Println("whisk API host\t\t", Properties.APIHost)
 		}
 
 		if flags.property.all || flags.property.apiversion {
-			fmt.Println("whisk API version\t\t", Properties.APIVersion)
+			fmt.Println("whisk API version\t", Properties.APIVersion)
 		}
 
 		if flags.property.all || flags.property.cliversion {
-			fmt.Println("whisk CLI version\t\t", Properties.CLIVersion)
+			fmt.Println("whisk CLI version\t", Properties.CLIVersion)
 		}
 
 		if flags.property.all || flags.property.namespace {
@@ -187,20 +189,17 @@ func init() {
 	propertyUnsetCmd.Flags().BoolVar(&flags.property.apiversion, "apiversion", false, "whisk API version")
 	propertyUnsetCmd.Flags().BoolVar(&flags.property.namespace, "namespace", false, "whisk namespace")
 
-	err := loadProperties()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 }
 
 func setDefaultProperties() {
 	Properties.Auth = ""
 	Properties.Namespace = "_"
-	Properties.APIHost = ""
-	Properties.APIBuild = "2016-01-26T06:45:38-06:00"
+	Properties.APIHost = "https://whisk.stage1.ng.bluemix.net:443/api/"
+	Properties.APIBuild = ""
 	Properties.APIVersion = "v1"
 	Properties.CLIVersion = "2016-01-26T06:45:38-06:00"
+	Properties.EdgeHost = "10.81.188.22"
+	Properties.PropsFile = "~/.wskprops"
 }
 
 func loadProperties() error {
@@ -208,12 +207,12 @@ func loadProperties() error {
 
 	setDefaultProperties()
 
-	PropsFile, err = homedir.Expand(defaultPropsFile)
+	Properties.PropsFile, err = homedir.Expand(Properties.PropsFile)
 	if err != nil {
 		return err
 	}
 
-	props, err := readProps(PropsFile)
+	props, err := readProps(Properties.PropsFile)
 	if err != nil {
 		return err
 	}
@@ -255,20 +254,24 @@ func loadProperties() error {
 
 func parseConfigFlags(cmd *cobra.Command, args []string) {
 
-	if flags.global.auth != "" {
-		client.Config.AuthToken = flags.global.auth
+	if auth := flags.global.auth; len(auth) > 0 {
+		Properties.Auth = auth
+		client.Config.AuthToken = auth
 	}
 
-	if flags.global.namespace != "" {
-		client.Config.Namespace = flags.global.namespace
+	if namespace := flags.global.namespace; len(namespace) > 0 {
+		Properties.Namespace = namespace
+		client.Config.Namespace = namespace
 	}
 
-	if flags.global.apiversion != "" {
-		client.Config.Version = flags.global.apiversion
+	if apiVersion := flags.global.apiversion; len(apiVersion) > 0 {
+		Properties.APIVersion = apiVersion
+		client.Config.Version = apiVersion
 	}
 
-	if flags.global.apihost != "" {
-		u, err := url.Parse(flags.global.apihost)
+	if apiHost := flags.global.apihost; len(apiHost) > 0 {
+		Properties.APIHost = apiHost
+		u, err := url.Parse(apiHost)
 		if err == nil {
 			client.Config.BaseURL = u
 		} else {
@@ -280,16 +283,14 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 		client.Config.Verbose = flags.global.verbose
 	}
 
-	// TODO :: confirm this is correct
-	if flags.global.edge != false {
-		u, err := url.Parse(edgeHost)
-		if err != nil {
+	if flags.global.edge {
+		u, err := url.Parse(Properties.EdgeHost)
+		if err == nil {
+			client.Config.BaseURL = u
+		} else {
 			fmt.Println(err)
-			return
 		}
-		client.Config.BaseURL = u
 	}
-
 }
 
 func readProps(path string) (map[string]string, error) {

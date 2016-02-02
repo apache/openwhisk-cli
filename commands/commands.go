@@ -14,6 +14,12 @@ var client *whisk.Client
 func init() {
 	var err error
 
+	err = loadProperties()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+
 	baseURL, err := url.Parse(Properties.APIHost)
 	if err != nil {
 		fmt.Println(err)
@@ -26,6 +32,8 @@ func init() {
 		BaseURL:   baseURL,
 		Version:   Properties.APIVersion,
 	}
+
+	printJSON(clientConfig)
 
 	// Setup client
 	client, err = whisk.NewClient(http.DefaultClient, clientConfig)
