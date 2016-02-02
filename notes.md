@@ -3,14 +3,15 @@
 - [X] Environment variables
   + what are they?
   + unclear ...
-- [ ] sdk
+- [x] sdk
 - [x] apibuild + cliversion
 - [x] props variable, revisited
 - [ ] Edge ?
 
+
 ## Notes
 
-[ ] Props -> namespace --> need to make a request to "/namespaces" first to get a list of legal namespaces, then confirm that requested is legal.
+[x] Props -> namespace --> need to make a request to "/namespaces" first to get a list of legal namespaces, then confirm that requested is legal.
 
 
 ---
