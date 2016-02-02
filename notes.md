@@ -1,6 +1,6 @@
 
 ## Tasks
-- [ ] Environment variables
+- [X] Environment variables
   + what are they?
   + unclear ...
 - [ ] sdk

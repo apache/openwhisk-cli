@@ -41,23 +41,23 @@ var propertySetCmd = &cobra.Command{
 
 		// read in each flag, update if necessary
 
-		if flags.global.auth != "" {
-			props["AUTH"] = flags.global.auth
+		if auth := flags.global.auth; len(auth) > 0 {
+			props["AUTH"] = auth
 			fmt.Println("ok: whisk auth set")
 		}
 
-		if flags.global.namespace != "" {
-			props["NAMESPACE"] = flags.global.namespace
+		if namespace := flags.global.namespace; len(namespace) > 0 {
+			props["NAMESPACE"] = namespace
 			fmt.Println("ok: whisk namespace set to ", namespace)
 		}
 
-		if flags.global.apihost != "" {
-			props["APIHOST"] = flags.global.apihost
+		if apiHost := flags.global.apihost; len(apiHost) > 0 {
+			props["APIHOST"] = apiHost
 			fmt.Println("ok: whisk API host set to ", apiHost)
 		}
 
-		if flags.global.apiversion != "" {
-			props["APIVERSION"] = flags.global.apiversion
+		if apiVersion := flags.global.apiversion; len(apiVersion) > 0 {
+			props["APIVERSION"] = apiVersion
 			fmt.Println("ok: whisk API version set to ", apiVersion)
 		}
 
