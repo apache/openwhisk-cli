@@ -62,6 +62,13 @@ var namespaceGetCmd = &cobra.Command{
 	},
 }
 
+// listCmd is a shortcut for "wsk namespace get _"
+var listCmd = &cobra.Command{
+	Use:   "list <namespace string>",
+	Short: "list triggers, actions, and rules in the registry for a namespace",
+	Run:   namespaceGetCmd.Run,
+}
+
 func init() {
 	namespaceCmd.AddCommand(
 		namespaceListCmd,

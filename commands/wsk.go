@@ -20,6 +20,8 @@ func init() {
 		triggerCmd,
 		sdkCmd,
 		propertyCmd,
+		namespaceCmd,
+		listCmd,
 	)
 
 	WskCmd.Flags().BoolVarP(&flags.global.edge, "edge", "e", false, "test edge server directly, bypassing the master router")
