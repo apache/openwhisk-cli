@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.ibm.com/Bluemix/go-whisk/whisk"
+	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 )
 
 var client *whisk.Client

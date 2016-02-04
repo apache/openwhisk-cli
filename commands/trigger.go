@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.ibm.com/Bluemix/go-whisk/whisk"
+	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
 )

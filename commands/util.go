@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	prettyjson "github.com/hokaccha/go-prettyjson"
-	"github.ibm.com/Bluemix/go-whisk/whisk"
+	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 )
 
 func parseParameters(jsonStr string) (whisk.Parameters, error) {
