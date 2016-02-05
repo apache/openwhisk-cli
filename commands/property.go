@@ -248,8 +248,6 @@ func loadProperties() error {
 		Properties.Namespace = namespace
 	}
 
-	printJSON(Properties)
-
 	return nil
 }
 
