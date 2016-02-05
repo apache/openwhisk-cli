@@ -6,10 +6,24 @@
 - [x] sdk
 - [x] apibuild + cliversion
 - [x] props variable, revisited
-- [ ] Edge ?
+- [_] Edge ?
+-
+
 
 
 ## Notes
+
+Edge
+Breaks on ip / invalid
+
+- [ ] Need to be able to fail gracefully when something breaks --> currently breaking on invalid baseAPI / host --> also, provide wrapper around command --> if it fails, fail gracefully
+
+- [ ] Verbose not set in properties.
+
+
+---
+
+
 
 [x] Props -> namespace --> need to make a request to "/namespaces" first to get a list of legal namespaces, then confirm that requested is legal.
 

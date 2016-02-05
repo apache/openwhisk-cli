@@ -155,7 +155,9 @@ var propertyGetCmd = &cobra.Command{
 
 		if flags.property.all || flags.property.apibuild {
 			info, _, err := client.Info.Get()
-			if err == nil {
+			if err != nil {
+				fmt.Println(err)
+			} else {
 				fmt.Println("whisk API build\t\t", info.Build)
 			}
 		}
