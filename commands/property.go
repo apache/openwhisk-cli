@@ -271,13 +271,13 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 	}
 
 	if apiHost := flags.global.apihost; len(apiHost) > 0 {
+		fmt.Println(apiHost)
 		Properties.APIHost = apiHost
-		u, err := url.Parse(apiHost)
+		u, err := url.ParseRequestURI(apiHost)
 		if err == nil {
 			client.Config.BaseURL = u
 		} else {
 			fmt.Println(err)
-			fmt.Println("Invalid apihost value")
 			os.Exit(-1)
 		}
 	}

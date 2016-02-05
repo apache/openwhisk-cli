@@ -142,9 +142,9 @@ var actionCreateCmd = &cobra.Command{
 			Limits:      limits,
 		}
 
-		action, resp, err := client.Actions.Insert(action, false)
+		action, _, err = client.Actions.Insert(action, false)
 		if err != nil {
-			fmt.Println(resp.Status)
+			fmt.Println(err)
 			return
 		}
 
