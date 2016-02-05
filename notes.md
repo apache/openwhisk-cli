@@ -13,13 +13,15 @@
 
 ## Notes
 
-- [ ] fails gracelessly when given invalid url as apiHOST
+- [x] fails gracelessly when given invalid url as apiHOST
 
-- [ ] edge broken
+- [x] edge broken
   - needs protocol / https
 
 
-- [ ] Need to be able to fail gracefully when something breaks --> currently breaking on invalid baseAPI / host --> also, provide wrapper around command --> if it fails, fail gracefully
+- [ ] set property broken
+
+- [ ] (unable to assign apihost with flag) 
 
 
 - [x] apibuild does not print out

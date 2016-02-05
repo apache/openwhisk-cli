@@ -33,8 +33,6 @@ func init() {
 		Version:   Properties.APIVersion,
 	}
 
-	printJSON(clientConfig)
-
 	// Setup client
 	client, err = whisk.NewClient(http.DefaultClient, clientConfig)
 	if err != nil {

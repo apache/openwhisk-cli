@@ -9,7 +9,7 @@ import (
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Application exited")
+			fmt.Println("Application exited unexpectedly")
 		}
 	}()
 

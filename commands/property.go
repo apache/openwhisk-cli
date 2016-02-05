@@ -11,9 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// PropsFile is the path to the current props file (default ~/.wskprops).
-var PropsFile string
-
 var Properties struct {
 	Auth       string
 	APIHost    string
@@ -35,7 +32,7 @@ var propertySetCmd = &cobra.Command{
 	Short: "set property",
 	Run: func(cmd *cobra.Command, args []string) {
 		// get current props
-		props, err := readProps(PropsFile)
+		props, err := readProps(Properties.PropsFile)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -83,7 +80,7 @@ var propertySetCmd = &cobra.Command{
 			fmt.Println("ok: whisk namespace set to ", namespace)
 		}
 
-		err = writeProps(PropsFile, props)
+		err = writeProps(Properties.PropsFile, props)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -96,7 +93,7 @@ var propertyUnsetCmd = &cobra.Command{
 	Use:   "unset",
 	Short: "unset property",
 	Run: func(cmd *cobra.Command, args []string) {
-		props, err := readProps(PropsFile)
+		props, err := readProps(Properties.PropsFile)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -120,7 +117,7 @@ var propertyUnsetCmd = &cobra.Command{
 			delete(props, "APIVERSION")
 		}
 
-		err = writeProps(PropsFile, props)
+		err = writeProps(Properties.PropsFile, props)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -250,6 +247,8 @@ func loadProperties() error {
 	if namespace := os.Getenv("WHISK_NAMESPACE"); len(namespace) > 0 {
 		Properties.Namespace = namespace
 	}
+
+	printJSON(Properties)
 
 	return nil
 }
