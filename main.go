@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.ibm.com/Bluemix/whisk-cli/commands"
+	"github.ibm.com/BlueMix-Fabric/go-whisk-cli/commands"
 )
 
 func main() {
