@@ -200,7 +200,7 @@ func setDefaultProperties() {
 	Properties.APIBuild = ""
 	Properties.APIVersion = "v1"
 	Properties.CLIVersion = "2016-01-26T06:45:38-06:00"
-	Properties.EdgeHost = "10.81.188.22"
+	Properties.EdgeHost = "https://10.81.188.22"
 	Properties.PropsFile = "~/.wskprops"
 }
 
@@ -278,6 +278,8 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 			client.Config.BaseURL = u
 		} else {
 			fmt.Println(err)
+			fmt.Println("Invalid apihost value")
+			os.Exit(-1)
 		}
 	}
 

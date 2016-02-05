@@ -7,6 +7,12 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Application exited")
+		}
+	}()
+
 	if err := commands.Execute(); err != nil {
 		fmt.Println(err)
 		return

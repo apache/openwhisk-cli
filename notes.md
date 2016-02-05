@@ -6,20 +6,25 @@
 - [x] sdk
 - [x] apibuild + cliversion
 - [x] props variable, revisited
-- [_] Edge ?
+- [x] Edge ?
 -
 
 
 
 ## Notes
 
-Edge
-Breaks on ip / invalid
+- [ ] fails gracelessly when given invalid url as apiHOST
+
+- [ ] edge broken
+  - needs protocol / https
+
 
 - [ ] Need to be able to fail gracefully when something breaks --> currently breaking on invalid baseAPI / host --> also, provide wrapper around command --> if it fails, fail gracefully
 
-- [ ] Verbose not set in properties.
 
+- [x] apibuild does not print out
+--> client.Info.Get()
+    --> info is blank --> print out response body
 
 ---
 
