@@ -47,10 +47,15 @@ var flags struct {
 	}
 
 	activation struct {
-		action  string // retrieve results for this action
-		upto    int    // retrieve results up to certain time
-		since   int    // retrieve results after certain time
-		seconds int    // stop polling for activation upda
+		action       string // retrieve results for this action
+		upto         int64  // retrieve results up to certain time
+		since        int64  // retrieve results after certain time
+		seconds      int    // stop polling for activation upda
+		sinceSeconds int
+		sinceMinutes int
+		sinceHours   int
+		sinceDays    int
+		exit         int
 	}
 
 	xPackage struct {

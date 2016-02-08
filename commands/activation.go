@@ -3,10 +3,19 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
 	"github.com/spf13/cobra"
+)
+
+const (
+	PollInterval = time.Second * 2
+	Delay        = time.Second * 5
 )
 
 // activationCmd represents the activation command
@@ -108,11 +117,93 @@ var activationResultCmd = &cobra.Command{
 }
 
 var activationPollCmd = &cobra.Command{
-	Use:   "poll",
+	Use:   "poll <namespace string>",
 	Short: "poll continuously for log messages from currently running actions",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO :: implement activationPollCmd")
+		var name string
+		if len(args) == 1 {
+			name = args[0]
+		}
+
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		signal.Notify(c, syscall.SIGTERM)
+		go func() {
+			<-c
+			fmt.Println("Poll terminated")
+			os.Exit(1)
+		}()
+		fmt.Println("Enter Ctrl-c to exit.")
+
+		pollSince := time.Now()
+		reported := []string{}
+
+		if flags.activation.sinceSeconds+
+			flags.activation.sinceMinutes+
+			flags.activation.sinceHours+
+			flags.activation.sinceDays ==
+			0 {
+			options := &whisk.ActivationListOptions{
+				Limit: 1,
+				Docs:  true,
+			}
+			activationList, _, _ := client.Activations.List(options)
+			if len(activationList) > 0 {
+				lastActivation := activationList[0]
+				pollSince = time.Unix(lastActivation.Start+1, 0).Add(Delay)
+			}
+		} else {
+			t0 := time.Now()
+
+			duration, err := time.ParseDuration(fmt.Sprintf("%ds %dm %dh",
+				flags.activation.sinceSeconds,
+				flags.activation.sinceMinutes,
+				flags.activation.sinceHours+
+					flags.activation.sinceDays*24,
+			))
+			if err == nil {
+				pollSince = t0.Add(-duration)
+			}
+		}
+
+		fmt.Println("Polling for logs")
+		localStartTime := time.Now()
+		for {
+			if flags.activation.exit > 0 {
+				localDuration := time.Since(localStartTime)
+				if int(localDuration.Seconds()) > flags.activation.exit {
+					return
+				}
+			}
+
+			options := &whisk.ActivationListOptions{
+				Name:  name,
+				Since: pollSince.Unix(),
+				Docs:  true,
+			}
+
+			activations, _, err := client.Activations.List(options)
+			if err != nil {
+				continue
+			}
+
+			for _, activation := range activations {
+				for _, id := range reported {
+					if id == activation.ActivationID {
+						continue
+					}
+				}
+				fmt.Printf("\nActivation: %s (%s)\n", activation.Name, activation.ActivationID)
+				printJSON(activation.Logs)
+
+				reported = append(reported, activation.ActivationID)
+				if activationTime := time.Unix(activation.Start, 0); activationTime.After(pollSince) {
+					pollSince = activationTime
+				}
+			}
+			time.Sleep(time.Second * 2)
+		}
 	},
 }
 
@@ -122,8 +213,14 @@ func init() {
 	activationListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
 	activationListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")
 	activationListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, "include full entity description")
-	activationListCmd.Flags().IntVar(&flags.activation.upto, "upto", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
-	activationListCmd.Flags().IntVar(&flags.activation.since, "since", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
+	activationListCmd.Flags().Int64Var(&flags.activation.upto, "upto", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
+	activationListCmd.Flags().Int64Var(&flags.activation.since, "since", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
+
+	activationPollCmd.Flags().IntVarP(&flags.activation.exit, "exit", "e", 0, "exit after this many seconds")
+	activationPollCmd.Flags().IntVar(&flags.activation.sinceSeconds, "since-seconds", 0, "start polling for activations this many seconds ago")
+	activationPollCmd.Flags().IntVar(&flags.activation.sinceMinutes, "since-minutes", 0, "start polling for activations this many minutes ago")
+	activationPollCmd.Flags().IntVar(&flags.activation.sinceHours, "since-hours", 0, "start polling for activations this many hours ago")
+	activationPollCmd.Flags().IntVar(&flags.activation.sinceDays, "since-days", 0, "start polling for activations this many days ago")
 
 	activationCmd.AddCommand(
 		activationListCmd,

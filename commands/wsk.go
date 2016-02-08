@@ -24,7 +24,7 @@ func init() {
 		listCmd,
 	)
 
-	WskCmd.PersistentFlags().BoolVarP(&flags.global.edge, "edge", "e", false, "test edge server directly, bypassing the master router")
+	WskCmd.PersistentFlags().BoolVar(&flags.global.edge, "edge", false, "test edge server directly, bypassing the master router")
 	WskCmd.PersistentFlags().BoolVarP(&flags.global.verbose, "verbose", "v", false, "verbose output")
 	WskCmd.PersistentFlags().StringVarP(&flags.global.auth, "auth", "u", "", "authorization key")
 	WskCmd.PersistentFlags().StringVarP(&flags.global.namespace, "namespace", "n", "", "namespace")

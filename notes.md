@@ -9,19 +9,52 @@
 - [x] Edge ?
 -
 
+---
 
++ parse toml file into properties and constants
++
 
 ## Notes
 
+Now testing...  first, read through the tests and make sure that they look like they should pass...
+- [ ] make a list of potentially failing tests -->
+  + [ ] activation poll
+    + add method
+      + in python app, `poll` wraps `console`
+        + console
+          + if no `since-`flags have been passed, then return fetch most recent (activation.list({limit:1,}))
+          + else, once a second do:
+            +
+
+    + add flags
+      + sinceSeconds [int ?]
+      + sinceMinutes
+      + sinceHours
+      + sinceDays
+      + exit int
+
+  + [ ] namespace list --> type ?
+  + [ ] action create --> sequence ?
+  + [ ] add package refresh command / client action
+  + [ ] action create  --> add flags [ and maybe add to client as well ]
+    + [ ] memory
+    + [ ] sequence
+    + [ ] param
+    + [ ] annotation
+    + [ ] timeout
+
+- [ ] fix or approve tests in list
+
+---
 - [x] fails gracelessly when given invalid url as apiHOST
 
 - [x] edge broken
   - needs protocol / https
 
 
-- [ ] set property broken
+- [x] set property broken
 
-- [ ] (unable to assign apihost with flag) 
+- [x] (unable to assign apihost with flag)
 
 
 - [x] apibuild does not print out
