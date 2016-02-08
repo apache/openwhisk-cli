@@ -40,6 +40,7 @@ var flags struct {
 		copy     bool
 		pipe     bool
 		shared   bool
+		sequence bool
 		lib      string
 		timeout  int
 		memory   int

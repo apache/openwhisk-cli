@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
@@ -242,6 +243,64 @@ var packageListCmd = &cobra.Command{
 	},
 }
 
+var packageRefreshCmd = &cobra.Command{
+	Use:   "refresh <namespace string>",
+	Short: "refresh package bindings",
+
+	Run: func(cmd *cobra.Command, args []string) {
+		var err error
+
+		if len(args) == 1 {
+			namespace := args[0]
+			currentNamespace := client.Config.Namespace
+			client.Config.Namespace = namespace
+			defer func() {
+				client.Config.Namespace = currentNamespace
+			}()
+		}
+
+		updates, resp, err := client.Packages.Refresh()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		switch resp.StatusCode {
+		case http.StatusOK:
+			fmt.Printf("\n%s refreshed successfully\n", client.Config.Namespace)
+
+			if len(updates.Added) > 0 {
+				fmt.Println("created bindings:")
+				printJSON(updates.Added)
+			} else {
+				fmt.Println("no bindings created")
+			}
+
+			if len(updates.Updated) > 0 {
+				fmt.Println("updated bindings:")
+				printJSON(updates.Updated)
+			} else {
+				fmt.Println("no bindings updated")
+			}
+
+			if len(updates.Deleted) > 0 {
+				fmt.Println("deleted bindings:")
+				printJSON(updates.Deleted)
+			} else {
+				fmt.Println("no bindings deleted")
+			}
+
+		case http.StatusNotImplemented:
+			fmt.Println("error: This feature is not implemented in the targeted deployment")
+			return
+		default:
+			fmt.Println("error: ", resp.Status)
+			return
+		}
+
+	},
+}
+
 func init() {
 
 	packageCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
@@ -269,5 +328,6 @@ func init() {
 		packageGetCmd,
 		packageDeleteCmd,
 		packageListCmd,
+		packageRefreshCmd,
 	)
 }

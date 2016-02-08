@@ -18,7 +18,7 @@
 
 Now testing...  first, read through the tests and make sure that they look like they should pass...
 - [ ] make a list of potentially failing tests -->
-  + [ ] activation poll
+  + [x] activation poll
     + add method
       + in python app, `poll` wraps `console`
         + console
@@ -34,9 +34,12 @@ Now testing...  first, read through the tests and make sure that they look like 
       + exit int
 
   + [ ] namespace list --> type ?
-  + [ ] action create --> sequence ?
   + [ ] add package refresh command / client action
-  + [ ] action create  --> add flags [ and maybe add to client as well ]
+    + `refresh` command
+      + just takes an optional namespace argument
+    + service
+      +
+  + [x] action create  --> add flags [ and maybe add to client as well ]
     + [ ] memory
     + [ ] sequence
     + [ ] param

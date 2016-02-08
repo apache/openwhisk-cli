@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
@@ -32,116 +33,11 @@ var actionCreateCmd = &cobra.Command{
 	Short: "create a new action",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		var err error
-		var actionName, artifact string
-		if len(args) < 1 || len(args) > 2 {
-			err = errors.New("Invalid argument list")
-			fmt.Println(err)
-			return
-		}
-
-		actionName = args[0]
-
-		if len(args) == 2 {
-			artifact = args[1]
-		}
-
-		exec := whisk.Exec{}
-
-		parameters, err := parseParameters(flags.common.param)
+		action, err := parseAction(cmd, args)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-
-		annotations, err := parseAnnotations(flags.common.annotation)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		limits := whisk.Limits{
-			Timeout: flags.action.timeout,
-			Memory:  flags.action.memory,
-		}
-
-		if flags.action.docker {
-			exec.Image = artifact
-
-		} else if flags.action.copy {
-			existingAction, _, err := client.Actions.Get(actionName)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			exec = existingAction.Exec
-
-		} else if flags.action.pipe {
-			currentNamespace := client.Config.Namespace
-			client.Config.Namespace = "client.system"
-			pipeAction, _, err := client.Actions.Get("common/pipe")
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			exec = pipeAction.Exec
-			client.Config.Namespace = currentNamespace
-
-		} else if artifact != "" {
-			if _, err := os.Stat(artifact); err != nil {
-				// file does not exist
-				fmt.Println(err)
-				return
-			}
-			file, err := ioutil.ReadFile(artifact)
-			if err != nil {
-
-				fmt.Println(err)
-				return
-			}
-			exec.Code = string(file)
-		}
-
-		if flags.action.lib != "" {
-			file, err := os.Open(flags.action.lib)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			var r io.Reader
-			switch ext := filepath.Ext(file.Name()); ext {
-			case "tar":
-				r = tar.NewReader(file)
-			case "gzip":
-				r, err = gzip.NewReader(file)
-			default:
-				err = fmt.Errorf("Unrecognized file compression %s", ext)
-			}
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			lib, err := ioutil.ReadAll(r)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			exec.Init = base64.StdEncoding.EncodeToString(lib)
-
-		}
-
-		action := &whisk.Action{
-			Name:        actionName,
-			Publish:     flags.action.shared,
-			Exec:        exec,
-			Annotations: annotations,
-			Parameters:  parameters,
-			Limits:      limits,
-		}
-
 		action, _, err = client.Actions.Insert(action, false)
 		if err != nil {
 			fmt.Println(err)
@@ -159,114 +55,11 @@ var actionUpdateCmd = &cobra.Command{
 	Short: "update an existing action",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var err error
-		var actionName, artifact string
-		if len(args) < 1 || len(args) > 2 {
-			err = errors.New("Invalid argument list")
-			fmt.Println(err)
-			return
-		}
-
-		actionName = args[0]
-
-		if len(args) == 2 {
-			artifact = args[1]
-		}
-
-		exec := whisk.Exec{}
-
-		parameters, err := parseParameters(flags.common.param)
+		action, err := parseAction(cmd, args)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-
-		annotations, err := parseAnnotations(flags.common.annotation)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		limits := whisk.Limits{
-			Timeout: flags.action.timeout,
-			Memory:  flags.action.memory,
-		}
-
-		if flags.action.docker {
-			exec.Image = artifact
-		} else if flags.action.copy {
-			existingAction, _, err := client.Actions.Get(actionName)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			exec = existingAction.Exec
-		} else if flags.action.pipe {
-			currentNamespace := client.Config.Namespace
-			client.Config.Namespace = "client.system"
-			pipeAction, _, err := client.Actions.Get("common/pipe")
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			exec = pipeAction.Exec
-			client.Config.Namespace = currentNamespace
-		} else if artifact != "" {
-			if _, err := os.Stat(artifact); err != nil {
-				// file does not exist
-				fmt.Println(err)
-				return
-			}
-
-			file, err := ioutil.ReadFile(artifact)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			exec.Code = string(file)
-
-		}
-
-		if flags.action.lib != "" {
-			file, err := os.Open(flags.action.lib)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			var r io.Reader
-			switch ext := filepath.Ext(file.Name()); ext {
-			case "tar":
-				r = tar.NewReader(file)
-			case "gzip":
-				r, err = gzip.NewReader(file)
-			default:
-				err = fmt.Errorf("Unrecognized file compression %s", ext)
-			}
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			lib, err := ioutil.ReadAll(r)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			exec.Init = base64.StdEncoding.EncodeToString(lib)
-
-		}
-
-		action := &whisk.Action{
-			Name:        actionName,
-			Publish:     flags.action.shared,
-			Exec:        exec,
-			Annotations: annotations,
-			Parameters:  parameters,
-			Limits:      limits,
-		}
-
 		action, _, err = client.Actions.Insert(action, true)
 		if err != nil {
 			fmt.Println(err)
@@ -401,6 +194,113 @@ var actionListCmd = &cobra.Command{
 	},
 }
 
+func parseAction(cmd *cobra.Command, args []string) (*whisk.Action, error) {
+	var err error
+	var actionName, artifact string
+	if len(args) < 1 || len(args) > 2 {
+		err = errors.New("Invalid argument list")
+		return nil, err
+	}
+
+	actionName = args[0]
+
+	if len(args) == 2 {
+		artifact = args[1]
+	}
+
+	exec := whisk.Exec{}
+
+	parameters, err := parseParameters(flags.common.param)
+	if err != nil {
+		return nil, err
+	}
+
+	annotations, err := parseAnnotations(flags.common.annotation)
+	if err != nil {
+		return nil, err
+	}
+
+	limits := whisk.Limits{
+		Timeout: flags.action.timeout,
+		Memory:  flags.action.memory,
+	}
+
+	if flags.action.docker {
+		exec.Image = artifact
+	} else if flags.action.copy {
+		existingAction, _, err := client.Actions.Get(actionName)
+		if err != nil {
+			return nil, err
+		}
+		exec = existingAction.Exec
+	} else if flags.action.sequence {
+		currentNamespace := client.Config.Namespace
+		client.Config.Namespace = "whisk.system"
+		pipeAction, _, err := client.Actions.Get("system/pipe")
+		if err != nil {
+			return nil, err
+		}
+		exec = pipeAction.Exec
+		client.Config.Namespace = currentNamespace
+	} else if artifact != "" {
+		stat, err := os.Stat(artifact)
+		if err != nil {
+			// file does not exist
+			return nil, err
+		}
+
+		file, err := ioutil.ReadFile(artifact)
+		if err != nil {
+			return nil, err
+		}
+
+		exec.Code = string(file)
+
+		if matched, _ := regexp.MatchString(".swift$", stat.Name()); matched {
+			exec.Kind = "swift"
+		} else {
+			exec.Kind = "nodejs"
+		}
+	}
+
+	if flags.action.lib != "" {
+		file, err := os.Open(flags.action.lib)
+		if err != nil {
+			return nil, err
+		}
+
+		var r io.Reader
+		switch ext := filepath.Ext(file.Name()); ext {
+		case "tar":
+			r = tar.NewReader(file)
+		case "gzip":
+			r, err = gzip.NewReader(file)
+		default:
+			err = fmt.Errorf("Unrecognized file compression %s", ext)
+		}
+		if err != nil {
+			return nil, err
+		}
+		lib, err := ioutil.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+
+		exec.Init = base64.StdEncoding.EncodeToString(lib)
+	}
+
+	action := &whisk.Action{
+		Name:        actionName,
+		Publish:     flags.action.shared,
+		Exec:        exec,
+		Annotations: annotations,
+		Parameters:  parameters,
+		Limits:      limits,
+	}
+
+	return action, nil
+}
+
 ///////////
 // Flags //
 ///////////
@@ -409,17 +309,25 @@ func init() {
 
 	actionCreateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
 	actionCreateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
-	actionCreateCmd.Flags().BoolVar(&flags.action.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
+	actionCreateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, "treat artifact as comma separated sequence of actions to invoke")
 	actionCreateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
 	actionCreateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionCreateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
+	actionCreateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")
+	actionCreateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", 0, "the memory limit in MB of the container that runs the action")
+	actionCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
+	actionCreateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
 
 	actionUpdateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
 	actionUpdateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
-	actionUpdateCmd.Flags().BoolVar(&flags.action.pipe, "pipe", false, "pipe treat artifact as comma separated sequence of actions to invoke")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, "treat artifact as comma separated sequence of actions to invoke")
 	actionUpdateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
 	actionUpdateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionUpdateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
+	actionUpdateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")
+	actionUpdateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", 0, "the memory limit in MB of the container that runs the action")
+	actionUpdateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
+	actionUpdateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
 
 	actionInvokeCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "parameters")
 	actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, "blocking invoke")
