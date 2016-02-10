@@ -9,3 +9,6 @@
 `$ go build -o wsk main.go`
 
 `$ ./wsk -h`
+
+
+[Whisk Command Line Tutorial](https://github.rtp.raleigh.ibm.com/whisk-development/whisk/blob/master/blue/docs/tutorial/WhiskCliTutorial.md)
