@@ -96,8 +96,8 @@ var actionInvokeCmd = &cobra.Command{
 				return
 			}
 
-			for key, value := range parameters {
-				payload[key] = value
+			for _, param := range parameters {
+				payload[param.Key] = param.Value
 			}
 		}
 
@@ -315,8 +315,8 @@ func init() {
 	actionCreateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 	actionCreateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")
 	actionCreateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", 0, "the memory limit in MB of the container that runs the action")
-	actionCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	actionCreateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	actionCreateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	actionCreateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 
 	actionUpdateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
 	actionUpdateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
@@ -326,10 +326,10 @@ func init() {
 	actionUpdateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 	actionUpdateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")
 	actionUpdateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", 0, "the memory limit in MB of the container that runs the action")
-	actionUpdateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	actionUpdateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	actionUpdateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	actionUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 
-	actionInvokeCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "parameters")
+	actionInvokeCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "parameters")
 	actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, "blocking invoke")
 
 	actionListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")

@@ -15,13 +15,15 @@ var flags struct {
 	}
 
 	common struct {
-		blocking   bool
-		annotation string
-		param      string
-		shared     bool // AKA "public" or "publish"
-		skip       int  // skip first N records
-		limit      int  // return max N records
-		full       bool // return full records (docs=true for client request)
+		blocking bool
+		// annotation string
+		annotation []string
+		// param      string
+		param  []string
+		shared bool // AKA "public" or "publish"
+		skip   int  // skip first N records
+		limit  int  // return max N records
+		full   bool // return full records (docs=true for client request)
 	}
 
 	// TODO :: consider using a sub-struct to namespace these.. like property struct { auth bool } etc.  then &flags.property.auth

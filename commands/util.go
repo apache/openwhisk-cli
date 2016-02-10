@@ -1,39 +1,80 @@
 package commands
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"strings"
+
+	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
 	prettyjson "github.com/hokaccha/go-prettyjson"
-	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 )
 
-func parseParameters(jsonStr string) (whisk.Parameters, error) {
+func parseKeyValueArray(args []string) ([]whisk.KeyValue, error) {
+	parsed := []whisk.KeyValue{}
+	if len(args)%2 != 0 {
+		err := errors.New("key|value arguments must be submitted in comma-separated pairs")
+		return parsed, err
+	}
+
+	for i := 0; i < len(args); i += 2 {
+		keyValue := whisk.KeyValue{
+			Key:   args[i],
+			Value: args[i+1],
+		}
+		parsed = append(parsed, keyValue)
+
+	}
+	return parsed, nil
+}
+
+func parseParameters(args []string) (whisk.Parameters, error) {
 	parameters := whisk.Parameters{}
-	if len(jsonStr) == 0 {
-		return parameters, nil
-	}
-	reader := strings.NewReader(jsonStr)
-	err := json.NewDecoder(reader).Decode(&parameters)
+	parsedArgs, err := parseKeyValueArray(args)
 	if err != nil {
-		return nil, err
+		return parameters, err
 	}
+	parameters = whisk.Parameters(parsedArgs)
 	return parameters, nil
 }
 
-func parseAnnotations(jsonStr string) (whisk.Annotations, error) {
+func parseAnnotations(args []string) (whisk.Annotations, error) {
 	annotations := whisk.Annotations{}
-	if len(jsonStr) == 0 {
-		return annotations, nil
-	}
-	reader := strings.NewReader(jsonStr)
-	err := json.NewDecoder(reader).Decode(&annotations)
+	parsedArgs, err := parseKeyValueArray(args)
 	if err != nil {
-		return nil, err
+		return annotations, err
 	}
+	annotations = whisk.Annotations(parsedArgs)
 	return annotations, nil
 }
+
+//
+//
+//
+// func parseParameters(jsonStr string) (whisk.Parameters, error) {
+// 	parameters := whisk.Parameters{}
+// 	if len(jsonStr) == 0 {
+// 		return parameters, nil
+// 	}
+// 	reader := strings.NewReader(jsonStr)
+// 	err := json.NewDecoder(reader).Decode(&parameters)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return parameters, nil
+// }
+//
+// func parseAnnotations(jsonStr string) (whisk.Annotations, error) {
+// 	annotations := whisk.Annotations{}
+// 	if len(jsonStr) == 0 {
+// 		return annotations, nil
+// 	}
+// 	reader := strings.NewReader(jsonStr)
+// 	err := json.NewDecoder(reader).Decode(&annotations)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return annotations, nil
+// }
 
 func logoText() string {
 

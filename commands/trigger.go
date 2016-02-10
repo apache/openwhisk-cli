@@ -42,8 +42,8 @@ var triggerFireCmd = &cobra.Command{
 				return
 			}
 
-			for key, value := range parameters {
-				payload[key] = value
+			for _, param := range parameters {
+				payload[param.Key] = param.Value
 			}
 		}
 
@@ -224,15 +224,15 @@ var triggerListCmd = &cobra.Command{
 
 func init() {
 
-	triggerCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	triggerCreateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	triggerCreateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	triggerCreateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 	triggerCreateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	triggerUpdateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	triggerUpdateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	triggerUpdateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	triggerUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 	triggerUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	triggerFireCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	triggerFireCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 
 	triggerListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
 	triggerListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 0, "only return this many entities from the collection")

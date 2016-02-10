@@ -303,18 +303,18 @@ var packageRefreshCmd = &cobra.Command{
 
 func init() {
 
-	packageCreateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	packageCreateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	packageCreateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	packageCreateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 	packageCreateCmd.Flags().StringVarP(&flags.xPackage.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageCreateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	packageUpdateCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	packageUpdateCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	packageUpdateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	packageUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 	packageUpdateCmd.Flags().StringVarP(&flags.xPackage.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	packageBindCmd.Flags().StringVarP(&flags.common.annotation, "annotation", "a", "", "annotations")
-	packageBindCmd.Flags().StringVarP(&flags.common.param, "param", "p", "", "default parameters")
+	packageBindCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
+	packageBindCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 
 	packageListCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "include publicly shared entities in the result")
 	packageListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
