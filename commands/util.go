@@ -69,44 +69,44 @@ func printList(collection interface{}) {
 func printActionList(actions []whisk.Action) {
 	boldPrintf("actions\n")
 	for _, action := range actions {
-		publishStr := "private"
+		publishState := "private"
 		if action.Publish {
-			publishStr = "public"
+			publishState = "public"
 		}
-		fmt.Printf("/%s/%s%30s\n", action.Namespace, action.Name, publishStr)
+		fmt.Printf("/%s/%s%30s\n", action.Namespace, action.Name, publishState)
 	}
 }
 
 func printTriggerList(triggers []whisk.Trigger) {
 	boldPrintf("triggers\n")
 	for _, trigger := range triggers {
-		publishStr := "private"
+		publishState := "private"
 		if trigger.Publish {
-			publishStr = "public"
+			publishState = "public"
 		}
-		fmt.Printf("/%s/%s%30s\n", trigger.Namespace, trigger.Name, publishStr)
+		fmt.Printf("/%s/%s%30s\n", trigger.Namespace, trigger.Name, publishState)
 	}
 }
 
 func printPackageList(packages []whisk.Package) {
 	boldPrintf("packages\n")
 	for _, xpackage := range packages {
-		publishStr := "private"
+		publishState := "private"
 		if xpackage.Publish {
-			publishStr = "public"
+			publishState = "public"
 		}
-		fmt.Printf("/%s/%s%30s\n", xpackage.Namespace, xpackage.Name, publishStr)
+		fmt.Printf("/%s/%s%30s\n", xpackage.Namespace, xpackage.Name, publishState)
 	}
 }
 
 func printRuleList(rules []whisk.Rule) {
 	boldPrintf("rules\n")
 	for _, rule := range rules {
-		publishStr := "private"
+		publishState := "private"
 		if rule.Publish {
-			publishStr = "public"
+			publishState = "public"
 		}
-		fmt.Printf("/%s/%s%30s\n", rule.Namespace, rule.Name, publishStr)
+		fmt.Printf("/%s/%s%30s\n", rule.Namespace, rule.Name, publishState)
 	}
 }
 

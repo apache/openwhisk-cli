@@ -179,18 +179,7 @@ var actionListCmd = &cobra.Command{
 			fmt.Printf("error: %s", err)
 			return
 		}
-		fmt.Printf("actions\n")
-		for _, action := range actions {
-			var publishState string
-			if action.Publish {
-				publishState = "public"
-			} else {
-				publishState = "private"
-			}
-
-			fmt.Printf("%s\t\t\t\t%s\n", action.Name, publishState)
-		}
-
+		printList(actions)
 	},
 }
 
