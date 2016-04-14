@@ -16,6 +16,7 @@ import (
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +45,7 @@ var actionCreateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("ok: created action %s", action.Name)
+		fmt.Printf("%s created action %s", color.GreenString("ok:"), boldString(action.Name))
 	},
 }
 
@@ -115,11 +116,11 @@ var actionInvokeCmd = &cobra.Command{
 		if flags.common.blocking && flags.action.result {
 			printJSON(activation.Response.Result)
 		} else if flags.common.blocking {
-			fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
+			fmt.Printf("%s invoked %s with id %s\n", color.GreenString("ok:"), boldString(actionName), boldString(activation.ActivationID))
 			boldPrintf("response:\n")
 			printJSON(activation.Response)
 		} else {
-			fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
+			fmt.Printf("%s invoked %s with id %s\n", color.GreenString("ok:"), boldString(actionName), boldString(activation.ActivationID))
 		}
 
 	},
@@ -145,7 +146,7 @@ var actionGetCmd = &cobra.Command{
 			return
 		}
 		// print out response
-		fmt.Printf("ok: got action %s\n", actionName)
+		fmt.Printf("%s got action %s\n", color.GreenString("ok:"), boldString(actionName))
 		printJSON(action)
 	},
 }
@@ -162,7 +163,7 @@ var actionDeleteCmd = &cobra.Command{
 			return
 		}
 		// print out response
-		fmt.Printf("ok: deleted action %s\n", actionName)
+		fmt.Printf("%s deleted action %s\n", color.GreenString("ok:"), boldString(actionName))
 	},
 }
 
@@ -301,7 +302,7 @@ func init() {
 	actionCreateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
 	actionCreateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
 	actionCreateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, "treat artifact as comma separated sequence of actions to invoke")
-	actionCreateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
+	actionCreateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "shared action (default: private)")
 	actionCreateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionCreateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 	actionCreateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")
@@ -312,7 +313,7 @@ func init() {
 	actionUpdateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, "treat artifact as docker image path on dockerhub")
 	actionUpdateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, "treat artifact as the name of an existing action")
 	actionUpdateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, "treat artifact as comma separated sequence of actions to invoke")
-	actionUpdateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "add library to artifact (must be a gzipped tar file)")
+	actionUpdateCmd.Flags().BoolVar(&flags.action.shared, "shared", false, "shared action (default: private)")
 	actionUpdateCmd.Flags().StringVar(&flags.action.lib, "lib", "", "add library to artifact (must be a gzipped tar file)")
 	actionUpdateCmd.Flags().StringVar(&flags.action.xPackage, "package", "", "package")
 	actionUpdateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", 0, "the timeout limit in miliseconds when the action will be terminated")

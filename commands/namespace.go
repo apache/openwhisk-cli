@@ -44,7 +44,7 @@ var namespaceGetCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("entities in namespace: %s\n", bold(namespace.Name))
+		fmt.Printf("entities in namespace: %s\n", boldString(namespace.Name))
 		printList(namespace.Contents.Packages)
 		printList(namespace.Contents.Actions)
 		printList(namespace.Contents.Triggers)

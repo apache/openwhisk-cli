@@ -48,7 +48,7 @@ func parseAnnotations(args []string) (whisk.Annotations, error) {
 	return annotations, nil
 }
 
-var bold = color.New(color.Bold).SprintFunc()
+var boldString = color.New(color.Bold).SprintFunc()
 var boldPrintf = color.New(color.Bold).PrintfFunc()
 
 func printList(collection interface{}) {
