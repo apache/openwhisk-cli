@@ -6,6 +6,7 @@ import (
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
+	"github.com/fatih/color"
 	prettyjson "github.com/hokaccha/go-prettyjson"
 )
 
@@ -45,6 +46,75 @@ func parseAnnotations(args []string) (whisk.Annotations, error) {
 	}
 	annotations = whisk.Annotations(parsedArgs)
 	return annotations, nil
+}
+
+var bold = color.New(color.Bold).SprintFunc()
+var boldPrintf = color.New(color.Bold).PrintfFunc()
+
+func printList(collection interface{}) {
+	switch collection := collection.(type) {
+	case []whisk.Action:
+		printActionList(collection)
+	case []whisk.Trigger:
+		printTriggerList(collection)
+	case []whisk.Package:
+		printPackageList(collection)
+	case []whisk.Rule:
+		printRuleList(collection)
+	case []whisk.Namespace:
+		printNamespaceList(collection)
+	}
+}
+
+func printActionList(actions []whisk.Action) {
+	boldPrintf("actions\n")
+	for _, action := range actions {
+		publishStr := "private"
+		if action.Publish {
+			publishStr = "public"
+		}
+		fmt.Printf("/%s/%s%30s\n", action.Namespace, action.Name, publishStr)
+	}
+}
+
+func printTriggerList(triggers []whisk.Trigger) {
+	boldPrintf("triggers\n")
+	for _, trigger := range triggers {
+		publishStr := "private"
+		if trigger.Publish {
+			publishStr = "public"
+		}
+		fmt.Printf("/%s/%s%30s\n", trigger.Namespace, trigger.Name, publishStr)
+	}
+}
+
+func printPackageList(packages []whisk.Package) {
+	boldPrintf("packages\n")
+	for _, xpackage := range packages {
+		publishStr := "private"
+		if xpackage.Publish {
+			publishStr = "public"
+		}
+		fmt.Printf("/%s/%s%30s\n", xpackage.Namespace, xpackage.Name, publishStr)
+	}
+}
+
+func printRuleList(rules []whisk.Rule) {
+	boldPrintf("rules\n")
+	for _, rule := range rules {
+		publishStr := "private"
+		if rule.Publish {
+			publishStr = "public"
+		}
+		fmt.Printf("/%s/%s%30s\n", rule.Namespace, rule.Name, publishStr)
+	}
+}
+
+func printNamespaceList(namespaces []whisk.Namespace) {
+	boldPrintf("namespaces\n")
+	for _, namespace := range namespaces {
+		fmt.Printf("%s\n", namespace.Name)
+	}
 }
 
 //

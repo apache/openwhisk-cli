@@ -24,12 +24,7 @@ var namespaceListCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-
-		fmt.Println("namespaces")
-		for _, namespace := range namespaces {
-			fmt.Println(namespace)
-		}
-
+		printList(namespaces)
 	},
 }
 
@@ -49,15 +44,11 @@ var namespaceGetCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("entities in namespace: ", namespace.Name)
-		fmt.Println("packages\t\t")
-		printJSON(namespace.Contents.Packages)
-		fmt.Println("actions\t\t")
-		printJSON(namespace.Contents.Actions)
-		fmt.Println("triggers\t\t")
-		printJSON(namespace.Contents.Triggers)
-		fmt.Println("rules\t\t")
-		printJSON(namespace.Contents.Rules)
+		fmt.Printf("entities in namespace: %s\n", bold(namespace.Name))
+		printList(namespace.Contents.Packages)
+		printList(namespace.Contents.Actions)
+		printList(namespace.Contents.Triggers)
+		printList(namespace.Contents.Rules)
 
 	},
 }

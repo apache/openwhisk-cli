@@ -1,0 +1,51 @@
+{
+	"ImportPath": "github.ibm.com/BlueMix-Fabric/go-whisk-cli",
+	"GoVersion": "go1.5",
+	"Deps": [
+		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v0.1-14-g7a5857d",
+			"Rev": "7a5857db0b2752a436d8461d88c42dea0ee191c0"
+		},
+		{
+			"ImportPath": "github.com/google/go-querystring/query",
+			"Rev": "2a60fc2ba6c19de80291203597d752e9ba58e4c0"
+		},
+		{
+			"ImportPath": "github.com/hokaccha/go-prettyjson",
+			"Rev": "f75235bd99dad4e98ff360db8372d5c0ef1d054a"
+		},
+		{
+			"ImportPath": "github.com/inconshreveable/mousetrap",
+			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "9fdad7c47650b7d2e1da50644c1f4ba7f172f252"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/go-homedir",
+			"Rev": "d682a8f0cf139663a984ff12528da460ca963de9"
+		},
+		{
+			"ImportPath": "github.com/spf13/cobra",
+			"Rev": "65a708cee0a4424f4e353d031ce440643e312f92"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7"
+		},
+		{
+			"ImportPath": "github.ibm.com/BlueMix-Fabric/go-whisk/whisk",
+			"Rev": "f6fd6fbaeb0a99ec76f84f7a867d236a5a0309ad"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "50c6bc5e4292a1d4e65c6e9be5f53be28bcbe28e"
+		}
+	]
+}
