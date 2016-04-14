@@ -26,7 +26,6 @@ var flags struct {
 		full   bool // return full records (docs=true for client request)
 	}
 
-	// TODO :: consider using a sub-struct to namespace these.. like property struct { auth bool } etc.  then &flags.property.auth
 	property struct {
 		auth       bool
 		apihost    bool
@@ -46,6 +45,7 @@ var flags struct {
 		lib      string
 		timeout  int
 		memory   int
+		result   bool
 		xPackage string
 	}
 

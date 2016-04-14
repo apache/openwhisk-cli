@@ -44,9 +44,7 @@ var actionCreateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: created action")
-		printJSON(action)
-
+		fmt.Printf("ok: created action %s", action.Name)
 	},
 }
 
@@ -66,9 +64,7 @@ var actionUpdateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: updated action")
-		printJSON(action)
-
+		fmt.Printf("ok: updated action %s", action.Name)
 	},
 }
 
@@ -110,16 +106,22 @@ var actionInvokeCmd = &cobra.Command{
 			}
 		}
 
-		printJSON(payload)
-
 		activation, _, err := client.Actions.Invoke(actionName, payload, flags.common.blocking)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			return
 		}
 
-		fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
-		printJSON(activation)
+		if flags.common.blocking && flags.action.result {
+			printJSON(activation.Response.Result)
+		} else if flags.common.blocking {
+			fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
+			boldPrintf("response:\n")
+			printJSON(activation.Response)
+		} else {
+			fmt.Printf("ok: invoked %s with id %s\n", actionName, activation.ActivationID)
+		}
+
 	},
 }
 
@@ -320,6 +322,7 @@ func init() {
 
 	actionInvokeCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "parameters")
 	actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, "blocking invoke")
+	actionInvokeCmd.Flags().BoolVarP(&flags.action.result, "result", "r", false, "show only activation result if a blocking activation (unless there is a failure)")
 
 	actionListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
 	actionListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")

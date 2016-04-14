@@ -90,12 +90,12 @@ func printTriggerList(triggers []whisk.Trigger) {
 
 func printPackageList(packages []whisk.Package) {
 	boldPrintf("packages\n")
-	for _, xpackage := range packages {
+	for _, xPackage := range packages {
 		publishState := "private"
-		if xpackage.Publish {
+		if xPackage.Publish {
 			publishState = "public"
 		}
-		fmt.Printf("/%s/%s%30s\n", xpackage.Namespace, xpackage.Name, publishState)
+		fmt.Printf("/%s/%s%30s\n", xPackage.Namespace, xPackage.Name, publishState)
 	}
 }
 
