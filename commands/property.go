@@ -18,7 +18,6 @@ var Properties struct {
 	APIBuild   string
 	CLIVersion string
 	Namespace  string
-	EdgeHost   string
 	PropsFile  string
 }
 
@@ -197,7 +196,6 @@ func setDefaultProperties() {
 	Properties.APIBuild = ""
 	Properties.APIVersion = "v1"
 	Properties.CLIVersion = "2016-01-26T06:45:38-06:00"
-	Properties.EdgeHost = "https://10.81.188.22"
 	Properties.PropsFile = "~/.wskprops"
 }
 
@@ -282,15 +280,6 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 
 	if flags.global.verbose {
 		client.Config.Verbose = flags.global.verbose
-	}
-
-	if flags.global.edge {
-		u, err := url.Parse(Properties.EdgeHost)
-		if err == nil {
-			client.Config.BaseURL = u
-		} else {
-			fmt.Println(err)
-		}
 	}
 }
 

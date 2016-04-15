@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -117,7 +117,7 @@ var packageCreateCmd = &cobra.Command{
 			return
 		}
 
-		printJSON(p)
+		fmt.Printf("%s created package %s\n", color.GreenString("ok:"), boldString(p.Name))
 	},
 }
 
@@ -162,7 +162,8 @@ var packageUpdateCmd = &cobra.Command{
 			return
 		}
 
-		printJSON(p)
+		fmt.Printf("%s updated package %s\n", color.GreenString("ok:"), boldString(p.Name))
+
 	},
 }
 
@@ -180,16 +181,18 @@ var packageGetCmd = &cobra.Command{
 
 		packageName := args[0]
 
-		p, _, err := client.Packages.Get(packageName)
+		xPackage, _, err := client.Packages.Get(packageName)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println("ok: got package ", packageName)
-
-		output, _ := json.MarshalIndent(p, "", "    ")
-		fmt.Printf("%s", output)
+		if flags.common.summary {
+			fmt.Printf("%s /%s/%s\n", boldString("package"), xPackage.Namespace, xPackage.Name)
+		} else {
+			fmt.Printf("%s got package %s\n", color.GreenString("ok:"), boldString(packageName))
+			printJSON(xPackage)
+		}
 	},
 }
 
@@ -213,7 +216,7 @@ var packageDeleteCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: deleted package ", packageName)
+		fmt.Printf("%s deleted package %s\n", color.GreenString("ok:"), boldString(packageName))
 	},
 }
 
@@ -237,9 +240,7 @@ var packageListCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("packages")
-
-		printJSON(packages)
+		printList(packages)
 	},
 }
 
@@ -312,6 +313,8 @@ func init() {
 	packageUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")
 	packageUpdateCmd.Flags().StringVarP(&flags.xPackage.serviceGUID, "service_guid", "s", "", "a unique identifier of the service")
 	packageUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
+
+	packageGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, "summarize entity details")
 
 	packageBindCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, "annotations")
 	packageBindCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "default parameters")

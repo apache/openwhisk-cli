@@ -73,7 +73,7 @@ func printActionList(actions []whisk.Action) {
 	for _, action := range actions {
 		publishState := "private"
 		if action.Publish {
-			publishState = "public"
+			publishState = "shared"
 		}
 		fmt.Printf("/%s/%s%30s\n", action.Namespace, action.Name, publishState)
 	}
@@ -84,7 +84,7 @@ func printTriggerList(triggers []whisk.Trigger) {
 	for _, trigger := range triggers {
 		publishState := "private"
 		if trigger.Publish {
-			publishState = "public"
+			publishState = "shared"
 		}
 		fmt.Printf("/%s/%s%30s\n", trigger.Namespace, trigger.Name, publishState)
 	}
@@ -95,7 +95,7 @@ func printPackageList(packages []whisk.Package) {
 	for _, xPackage := range packages {
 		publishState := "private"
 		if xPackage.Publish {
-			publishState = "public"
+			publishState = "shared"
 		}
 		fmt.Printf("/%s/%s%30s\n", xPackage.Namespace, xPackage.Name, publishState)
 	}
@@ -106,7 +106,7 @@ func printRuleList(rules []whisk.Rule) {
 	for _, rule := range rules {
 		publishState := "private"
 		if rule.Publish {
-			publishState = "public"
+			publishState = "shared"
 		}
 		fmt.Printf("/%s/%s%30s\n", rule.Namespace, rule.Name, publishState)
 	}

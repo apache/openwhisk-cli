@@ -7,7 +7,6 @@ package commands
 var flags struct {
 	global struct {
 		verbose    bool
-		edge       bool
 		auth       string
 		namespace  string
 		apihost    string
