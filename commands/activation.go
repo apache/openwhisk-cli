@@ -10,6 +10,7 @@ import (
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -42,8 +43,7 @@ var activationListCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("activations")
-		printJSON(activations)
+		printList(activations)
 	},
 }
 
@@ -64,8 +64,13 @@ var activationGetCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: got activation ", id)
-		printJSON(activation)
+		if flags.common.summary {
+			fmt.Printf("activation result for /%s/%s (%s at %s)", activation.Namespace, activation.Name, activation.Response.Status, time.Unix(activation.End/1000, 0))
+			printJSON(activation.Response.Result)
+		} else {
+			fmt.Printf("%s got activation %s\n", color.GreenString("ok:"), boldString(id))
+			printJSON(activation)
+		}
 
 	},
 }
@@ -88,8 +93,9 @@ var activationLogsCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: got activation logs")
-		printJSON(activation)
+		fmt.Printf("%s got activation %s logs\n", color.GreenString("ok:"), boldString(id))
+
+		printJSON(activation.Logs)
 	},
 }
 
@@ -111,7 +117,7 @@ var activationResultCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("ok: got activation result")
+		fmt.Printf("%s got activation %s result\n", color.GreenString("ok:"), boldString(id))
 		printJSON(result)
 	},
 }
@@ -216,6 +222,8 @@ func init() {
 	activationListCmd.Flags().Int64Var(&flags.activation.upto, "upto", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
 	activationListCmd.Flags().Int64Var(&flags.activation.since, "since", 0, "return activations with timestamps earlier than UPTO; measured in miliseconds since Th, 01, Jan 1970")
 
+	activationGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, "summarize entity details")
+
 	activationPollCmd.Flags().IntVarP(&flags.activation.exit, "exit", "e", 0, "exit after this many seconds")
 	activationPollCmd.Flags().IntVar(&flags.activation.sinceSeconds, "since-seconds", 0, "start polling for activations this many seconds ago")
 	activationPollCmd.Flags().IntVar(&flags.activation.sinceMinutes, "since-minutes", 0, "start polling for activations this many minutes ago")
@@ -229,15 +237,4 @@ func init() {
 		activationResultCmd,
 		activationPollCmd,
 	)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// activationCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// activationCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }

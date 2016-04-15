@@ -65,7 +65,8 @@ var actionUpdateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("ok: updated action %s", action.Name)
+		fmt.Printf("%s updated action %s", color.GreenString("ok:"), boldString(action.Name))
+
 	},
 }
 
@@ -146,8 +147,14 @@ var actionGetCmd = &cobra.Command{
 			return
 		}
 		// print out response
-		fmt.Printf("%s got action %s\n", color.GreenString("ok:"), boldString(actionName))
-		printJSON(action)
+
+		if flags.common.summary {
+			fmt.Printf("%s /%s/%s\n", boldString("action"), action.Namespace, action.Name)
+		} else {
+			fmt.Printf("%s got action %s\n", color.GreenString("ok:"), boldString(actionName))
+			printJSON(action)
+		}
+
 	},
 }
 
@@ -324,6 +331,8 @@ func init() {
 	actionInvokeCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, "parameters")
 	actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, "blocking invoke")
 	actionInvokeCmd.Flags().BoolVarP(&flags.action.result, "result", "r", false, "show only activation result if a blocking activation (unless there is a failure)")
+
+	actionGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, "summarize entity details")
 
 	actionListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entitites from the head of the collection")
 	actionListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")

@@ -63,6 +63,8 @@ func printList(collection interface{}) {
 		printRuleList(collection)
 	case []whisk.Namespace:
 		printNamespaceList(collection)
+	case []whisk.Activation:
+		printActivationList(collection)
 	}
 }
 
@@ -114,6 +116,13 @@ func printNamespaceList(namespaces []whisk.Namespace) {
 	boldPrintf("namespaces\n")
 	for _, namespace := range namespaces {
 		fmt.Printf("%s\n", namespace.Name)
+	}
+}
+
+func printActivationList(activations []whisk.Activation) {
+	boldPrintf("activations\n")
+	for _, activation := range activations {
+		fmt.Printf("%s%20s\n", activation.ActivationID, activation.Name)
 	}
 }
 

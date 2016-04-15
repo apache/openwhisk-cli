@@ -19,11 +19,12 @@ var flags struct {
 		// annotation string
 		annotation []string
 		// param      string
-		param  []string
-		shared bool // AKA "public" or "publish"
-		skip   int  // skip first N records
-		limit  int  // return max N records
-		full   bool // return full records (docs=true for client request)
+		param   []string
+		shared  bool // AKA "public" or "publish"
+		skip    int  // skip first N records
+		limit   int  // return max N records
+		full    bool // return full records (docs=true for client request)
+		summary bool
 	}
 
 	property struct {
