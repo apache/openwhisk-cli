@@ -6,6 +6,7 @@ import (
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -35,10 +36,10 @@ var ruleEnableCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: enabled rule ", ruleName)
-
+		fmt.Printf("%s enabled rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 	},
 }
+
 var ruleDisableCmd = &cobra.Command{
 	Use:   "disable <name string>",
 	Short: "disable rule",
@@ -59,8 +60,7 @@ var ruleDisableCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: disabled rule ", ruleName)
-
+		fmt.Printf("%s disabled rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 	},
 }
 
@@ -102,8 +102,16 @@ var ruleCreateCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: created rule ", ruleName)
-		printJSON(rule)
+
+		if flags.rule.enable {
+			rule, _, err = client.Rules.SetState(ruleName, "enabled")
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
+		fmt.Printf("%s created rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 	},
 }
 
@@ -135,8 +143,7 @@ var ruleUpdateCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: updated rule ", ruleName)
-		printJSON(rule)
+		fmt.Printf("%s updated rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 	},
 }
 
@@ -159,7 +166,7 @@ var ruleGetCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: got rule ", ruleName)
+		fmt.Printf("%s got rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 		printJSON(rule)
 	},
 }
@@ -178,12 +185,20 @@ var ruleDeleteCmd = &cobra.Command{
 
 		ruleName := args[0]
 
+		if flags.rule.disable {
+			_, _, err := client.Rules.SetState(ruleName, "disabled")
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
 		_, err = client.Rules.Delete(ruleName)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ok: deleted rule ", ruleName)
+		fmt.Printf("%s deleted rule %s\n", color.GreenString("ok:"), boldString(ruleName))
 	},
 }
 
@@ -203,19 +218,18 @@ var ruleListCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("rules")
-		printJSON(rules)
+		printList(rules)
 	},
 }
 
 func init() {
 
 	ruleCreateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
-	ruleCreateCmd.Flags().BoolVar(&flags.rule.auto, "auto", false, "autmatically enable rule after creating it")
+	ruleCreateCmd.Flags().BoolVar(&flags.rule.enable, "enable", false, "autmatically enable rule after creating it")
 
 	ruleUpdateCmd.Flags().BoolVar(&flags.common.shared, "shared", false, "shared action (default: private)")
 
-	ruleDeleteCmd.Flags().BoolVar(&flags.rule.auto, "auto", false, "autmatically disable rule before deleting it")
+	ruleDeleteCmd.Flags().BoolVar(&flags.rule.disable, "disable", false, "autmatically disable rule before deleting it")
 
 	ruleListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, "skip this many entities from the head of the collection")
 	ruleListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, "only return this many entities from the collection")

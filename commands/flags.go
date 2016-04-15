@@ -67,6 +67,7 @@ var flags struct {
 
 	// rule
 	rule struct {
-		auto bool
+		enable  bool
+		disable bool
 	}
 }
