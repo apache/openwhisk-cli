@@ -195,7 +195,7 @@ func setDefaultProperties() {
 	Properties.APIHost = "https://openwhisk.ng.bluemix.net/api/"
 	Properties.APIBuild = ""
 	Properties.APIVersion = "v1"
-	Properties.CLIVersion = "2016-01-26T06:45:38-06:00"
+	Properties.CLIVersion = ""
 	Properties.PropsFile = "~/.wskprops"
 }
 
