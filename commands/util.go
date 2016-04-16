@@ -3,12 +3,66 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.ibm.com/BlueMix-Fabric/go-whisk/whisk"
 
 	"github.com/fatih/color"
 	prettyjson "github.com/hokaccha/go-prettyjson"
 )
+
+type qualifiedName struct {
+	namespace   string
+	packageName string
+	entityName  string
+}
+
+func (qName qualifiedName) String() string {
+	output := []string{}
+	if len(qName.namespace) > 0 {
+		output = append(output, "/", qName.namespace, "/")
+	}
+	if len(qName.packageName) > 0 {
+		output = append(output, qName.packageName, "/")
+	}
+	output = append(output, qName.entityName)
+
+	return strings.Join(output, "")
+}
+
+func parseQualifiedName(name string) (qName qualifiedName, err error) {
+	if len(name) == 0 {
+		err = errors.New("Invalid name format")
+		return
+	}
+	if name[:1] == "/" {
+		name = name[1:]
+		i := strings.Index(name, "/")
+		if i == -1 {
+			qName.namespace = name
+			return
+		}
+		if i == 0 {
+			err = errors.New("Invalid name format")
+			return
+		}
+
+		qName.namespace = name[:i]
+		name = name[i+1:]
+	}
+
+	i := strings.Index(name, "/")
+
+	if i > 0 {
+		qName.packageName = name[:i]
+		name = name[i+1:]
+	}
+
+	qName.entityName = name
+
+	return
+
+}
 
 func parseKeyValueArray(args []string) ([]whisk.KeyValue, error) {
 	parsed := []whisk.KeyValue{}
