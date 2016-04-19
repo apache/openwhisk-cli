@@ -26,7 +26,6 @@ func init() {
 
 	WskCmd.PersistentFlags().BoolVarP(&flags.global.verbose, "verbose", "v", false, "verbose output")
 	WskCmd.PersistentFlags().StringVarP(&flags.global.auth, "auth", "u", "", "authorization key")
-	WskCmd.PersistentFlags().StringVarP(&flags.global.namespace, "namespace", "n", "", "namespace")
 	WskCmd.PersistentFlags().StringVar(&flags.global.apihost, "apihost", "", "whisk API host")
 	WskCmd.PersistentFlags().StringVar(&flags.global.apiversion, "apiversion", "", "whisk API version")
 }

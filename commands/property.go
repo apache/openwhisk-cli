@@ -54,7 +54,7 @@ var propertySetCmd = &cobra.Command{
 			fmt.Println("ok: whisk API version set to ", apiVersion)
 		}
 
-		if namespace := flags.global.namespace; len(namespace) > 0 {
+		if namespace := flags.property.namespaceSet; len(namespace) > 0 {
 
 			namespaces, _, err := client.Namespaces.List()
 			if err != nil {
@@ -178,9 +178,9 @@ func init() {
 	propertyGetCmd.Flags().BoolVar(&flags.property.all, "all", false, "all properties")
 
 	propertySetCmd.Flags().StringVarP(&flags.global.auth, "auth", "u", "", "authorization key")
-	propertySetCmd.Flags().StringVar(&flags.global.apihost, "apihost", "", "whisk API host")
-	propertySetCmd.Flags().StringVar(&flags.global.apiversion, "apiversion", "", "whisk API version")
-	propertySetCmd.Flags().StringVar(&flags.global.namespace, "namespace", "", "whisk namespace")
+	propertySetCmd.Flags().StringVar(&flags.property.apihostSet, "apihost", "", "whisk API host")
+	propertySetCmd.Flags().StringVar(&flags.property.apiversionSet, "apiversion", "", "whisk API version")
+	propertySetCmd.Flags().StringVar(&flags.property.namespaceSet, "namespace", "", "whisk namespace")
 
 	propertyUnsetCmd.Flags().BoolVarP(&flags.property.auth, "auth", "u", false, "authorization key")
 	propertyUnsetCmd.Flags().BoolVar(&flags.property.apihost, "apihost", false, "whisk API host")
@@ -256,7 +256,7 @@ func parseConfigFlags(cmd *cobra.Command, args []string) {
 		client.Config.AuthToken = auth
 	}
 
-	if namespace := flags.global.namespace; len(namespace) > 0 {
+	if namespace := flags.property.namespaceSet; len(namespace) > 0 {
 		Properties.Namespace = namespace
 		client.Config.Namespace = namespace
 	}
