@@ -21,6 +21,8 @@ var packageBindCmd = &cobra.Command{
 	Short: "bind parameters to the package",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO :: this command has been commented out because it is out of date")
+
 		// var err error
 		// if len(args) != 2 {
 		// 	err = errors.New("Invalid argument list")
@@ -220,11 +222,27 @@ var packageDeleteCmd = &cobra.Command{
 }
 
 var packageListCmd = &cobra.Command{
-	Use:   "list",
+	Use:   "list <namespace string>",
 	Short: "list all packages",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
+		qName := qualifiedName{}
+		if len(args) == 1 {
+			qName, err = parseQualifiedName(args[0])
+			if err != nil {
+				fmt.Printf("error: %s", err)
+				return
+			}
+			ns := qName.namespace
+			if len(ns) == 0 {
+				err = errors.New("No valid namespace detected.  Make sure that namespace argument is preceded by a \"/\"")
+				fmt.Printf("error: %s\n", err)
+				return
+			}
+
+			client.Namespace = ns
+		}
 
 		options := &whisk.PackageListOptions{
 			Skip:   flags.common.skip,

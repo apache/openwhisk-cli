@@ -26,10 +26,32 @@ var activationCmd = &cobra.Command{
 }
 
 var activationListCmd = &cobra.Command{
-	Use:   "list",
+	Use:   "list <namespace string>",
 	Short: "list activations",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var err error
+		qName := qualifiedName{}
+		if len(args) == 1 {
+			qName, err = parseQualifiedName(args[0])
+			if err != nil {
+				fmt.Printf("error: %s", err)
+				return
+			}
+			ns := qName.namespace
+			if len(ns) == 0 {
+				err = errors.New("No valid namespace detected.  Make sure that namespace argument is preceded by a \"/\"")
+				fmt.Printf("error: %s\n", err)
+				return
+			}
+
+			client.Namespace = ns
+
+			if pkg := qName.packageName; len(pkg) > 0 {
+				// todo :: scope call to package
+			}
+		}
+
 		options := &whisk.ActivationListOptions{
 			Name:  flags.activation.action,
 			Limit: flags.common.limit,
