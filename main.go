@@ -23,9 +23,9 @@ import (
     goi18n "github.com/nicksnyder/go-i18n/i18n"
     "github.com/fatih/color"
 
-    "../go-whisk/whisk"
-    "./commands"
-    "./wski18n"
+    "github.com/openwhisk/openwhisk-client-go/whisk"
+    "github.com/openwhisk/openwhisk-cli/commands"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
     "github.com/mattn/go-colorable"
 )
 

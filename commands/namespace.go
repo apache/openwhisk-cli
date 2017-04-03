@@ -23,8 +23,8 @@ import (
     "github.com/spf13/cobra"
     "github.com/fatih/color"
 
-    "../../go-whisk/whisk"
-    "../wski18n"
+    "github.com/openwhisk/openwhisk-client-go/whisk"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
 )
 
 // namespaceCmd represents the namespace command

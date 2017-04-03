@@ -75,6 +75,10 @@
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
 			"Rev": "e4d366fc3c7938e2958e662b4258c7a89e1f0e3e"
+		},
+		{
+			"ImportPath": "github.com/openwhisk/openwhisk-client-go/whisk",
+			"Rev": "c91a7494986d5f45b62003a2ab19bb0fd8ddeb7f"
 		}
 	]
 }
