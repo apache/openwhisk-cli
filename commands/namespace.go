@@ -24,7 +24,7 @@ import (
     "github.com/fatih/color"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "github.com/openwhisk/openwhisk-cli/wski18n"
+    "../wski18n"
 )
 
 // namespaceCmd represents the namespace command

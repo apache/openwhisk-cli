@@ -29,7 +29,7 @@ build_cli () {
 
   export GOARCH=$arch
 
-  cd /src/github.com/go-whisk-cli
+  cd /src/github.com
   go build -ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`" -v -o build/$os/$arch/$bin main.go;
 };
 

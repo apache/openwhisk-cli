@@ -21,7 +21,7 @@ import (
     "fmt"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "github.com/openwhisk/openwhisk-cli/wski18n"
+    "../wski18n"
 
     "github.com/spf13/cobra"
     "github.com/fatih/color"

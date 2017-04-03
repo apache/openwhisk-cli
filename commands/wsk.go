@@ -18,7 +18,7 @@ package commands
 
 import (
     "github.com/spf13/cobra"
-    "github.com/openwhisk/openwhisk-cli/wski18n"
+    "../wski18n"
 )
 
 // WskCmd defines the entry point for the cli.

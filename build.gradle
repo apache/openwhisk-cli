@@ -1,14 +1,14 @@
 ext.dockerImageName = "cli"
 ext.dockerContainerName = "cli"
 ext.dockerBuildArgs = getDockerBuildArgs()
-apply from: '../../gradle/docker.gradle'
+apply from: 'gradle/docker.gradle'
 
 
 task removeBinary(type: Delete) {
-    delete "${projectDir}/../../bin/wsk"
-    delete "${projectDir}/../../bin/mac"
-    delete "${projectDir}/../../bin/linux"
-    delete "${projectDir}/../../bin/windows"
+    delete "${projectDir}/bin/wsk"
+    delete "${projectDir}/bin/mac"
+    delete "${projectDir}/bin/linux"
+    delete "${projectDir}/bin/windows"
 }
 
 task distBinary(dependsOn: [removeBinary, distDocker]) {
@@ -18,7 +18,7 @@ task distBinary(dependsOn: [removeBinary, distDocker]) {
 
         // Copy all Go binaries from Docker into openwhisk/bin folder
         run(dockerBinary + ["cp", dockerContainerName +
-                ":/src/github.com/go-whisk-cli/build/.", "${projectDir}/../../bin"])
+                ":/src/github.com/build/.", "${projectDir}/bin"])
 
         run(dockerBinary + ["rm", "-f", dockerContainerName])
     }
@@ -36,8 +36,8 @@ task dumpOSInfo {
 task copyCLIShortcut(type: Copy, dependsOn: [distBinary, dumpOSInfo]) {
     String go_osname     = mapOsNameToGoName(getOsName())
     String go_osarch     = mapOsArchToGoArch(getOsArch())
-    String from_path_wsk = "${projectDir}/../../bin/${go_osname}/${go_osarch}/wsk"
-    String to_path_dir   = "${projectDir}/../../bin"
+    String from_path_wsk = "${projectDir}/bin/${go_osname}/${go_osarch}/wsk"
+    String to_path_dir   = "${projectDir}/bin"
 
     from from_path_wsk
     into to_path_dir

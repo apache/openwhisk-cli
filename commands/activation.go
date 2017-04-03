@@ -25,7 +25,7 @@ import (
     "time"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "github.com/openwhisk/openwhisk-cli/wski18n"
+    "../wski18n"
 
     "github.com/fatih/color"
     "github.com/spf13/cobra"
