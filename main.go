@@ -24,8 +24,8 @@ import (
     "github.com/fatih/color"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "./commands"
-    "./wski18n"
+    "github.com/openwhisk/openwhisk-cli/commands"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
     "github.com/mattn/go-colorable"
 )
 
