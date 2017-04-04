@@ -26,7 +26,7 @@ import (
     "github.com/spf13/cobra"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "../wski18n"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
 )
 
 // sdkCmd represents the sdk command
