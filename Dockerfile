@@ -15,6 +15,10 @@ RUN go get github.com/jteeuwen/go-bindata/...
 
 ADD . /src/github.com/
 
+RUN git clone http://github.com/openwhisk/openwhisk-cli /src/github.com/openwhisk/openwhisk-cli
+
+RUN cd /src/github.com/openwhisk/openwhisk-cli && git checkout master
+
 # Load all of the dependencies from the previously generated/saved godep generated godeps.json file
 RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com && /bin/godep restore -v
