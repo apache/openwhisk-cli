@@ -24,7 +24,7 @@ import (
     "strings"
 
     "github.com/openwhisk/openwhisk-client-go/whisk"
-    "../wski18n"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
 
     "github.com/fatih/color"
     //prettyjson "github.com/hokaccha/go-prettyjson"  // See prettyjson comment below
