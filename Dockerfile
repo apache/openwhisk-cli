@@ -19,12 +19,7 @@ ADD . /src/github.com/openwhisk/openwhisk-cli
 RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com/openwhisk/openwhisk-cli && /bin/godep restore -v
 
-# Generate a Go package dependency list
-# NOTE: Currently, the 'go list' command will not work against the current Go CLI non-standard file structure
-#RUN cd /src/github.com/go-whisk-cli && go list -f '{{join .Deps "\n"}}' > ../../../wsk.deps.out
-RUN cd /src/github.com/openwhisk/openwhisk-cli && echo "Dependencies list requires restructuring the GO CLI packages" > ../../../wsk.deps.out
-
-# All of the Go CLI binaries will be placed under a build folder
+# wsk binary will be placed under a build folder
 RUN mkdir /src/github.com/openwhisk/openwhisk-cli/build
 
 ARG CLI_OS
