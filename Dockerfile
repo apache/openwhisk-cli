@@ -15,17 +15,9 @@ RUN go get github.com/jteeuwen/go-bindata/...
 
 ADD . /src/github.com/openwhisk/openwhisk-cli
 
-#RUN git clone http://github.com/openwhisk/openwhisk-cli /src/github.com/openwhisk/openwhisk-cli
-
-#RUN cd /src/github.com/openwhisk/openwhisk-cli && git checkout master
-
 # Load all of the dependencies from the previously generated/saved godep generated godeps.json file
 RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com/openwhisk/openwhisk-cli && /bin/godep restore -v
-
-# Collect all translated strings into single .go module
-RUN echo "Generating i18n Go module"
-RUN cd /src/github.com/openwhisk/openwhisk-cli && /bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 
 # Generate a Go package dependency list
 # NOTE: Currently, the 'go list' command will not work against the current Go CLI non-standard file structure
