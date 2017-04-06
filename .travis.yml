@@ -24,7 +24,7 @@ before_deploy:
   - export zip_file_name=OpenWhisk_CLI
   - chmod +x tools/travis/build_tag_releases.sh
   - ./tools/travis/build_tag_releases.sh $build_file_name $zip_file_name
-  - export RELEASE_PKG_FILE=$(ls $build_file_name-*.zip)
+  - export RELEASE_PKG_FILE=$(ls $zip_file_name-*.zip)
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
 
 deploy:
