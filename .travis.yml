@@ -6,3 +6,34 @@ language: go
 
 go:
   - 1.7
+
+install:
+  - go get -u github.com/golang/lint/golint
+
+script:
+  - make lint
+  - make build
+
+after_script:
+  - make clean
+
+before_deploy:
+  - go get github.com/inconshreveable/mousetrap
+  - go get github.com/mattn/go-isatty
+  - export build_file_name=wsk
+  - export zip_file_name=OpenWhisk_CLI
+  - chmod +x tools/travis/build_tag_releases.sh
+  - ./tools/travis/build_tag_releases.sh $build_file_name $zip_file_name
+  - export RELEASE_PKG_FILE=$(ls $build_file_name-*.zip)
+  - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
+
+deploy:
+  provider: releases
+  api_key:
+    secure: N/l/hkcaxFosvJHPhDd8RA60a4SAtMX3nndSmsK9ioMFcn45+8k/rzRlR3dCs02govU+qwIEllxgjZCYx8KNHZMBAEsI2X0q/zDrymFEsVncSe1Zp+ZBIALGs99w3MeZNVeiiyrnDio0HmxHRKELZKRs+WQQu6I2vGDTWwJit+n0UfSvzijbeCkHs60fs6//Dy5ldFuxvGlee6+dLDJR4RbGghK14Qkn52noP3pdi+Z1z43UI/n79jbwp88BpEliDfSX/Bml8YMPAuviRHKv8cJQElzdkY85PM0BXz3Jh8/GKPwtle36Ix5eGQBX7lG/RC5MrAVlxOMKm9jAOEfuzkW1602lfVRjKZLCK1ICqXHcHodjD1nW+VN+HBHVMEZGrHtlzRWsEQjm1fnWASIyBdwElfdiyWQaH75lIcCwpRn8n5o3L8ozxaNWJMoa0CrglNSOt5IfmBlladAxGUTCAW32RA1kMpJH7vgJJCRyihCHCfXCtvE5ZpO/6MeKIfAVKnMXS3UwJ4kayWox0kaZ5OQS5/sBHPEYoV8aBPr6sDfSJoGQzq4gwyE+pDEX6stRopZxYoGHDWiKBc9SsCJvQePLUxfW7pJ8+lhvxwI3JkqD2YFVrGoswn9G4LS1Hp67T2EO47AanMJRmQztKWr43qV+G0UIFpPcU4xXNG2QeKs=
+  file_glob: true
+  file: ${zip_file_name}-*.zip
+  skip_cleanup: true
+  on:
+    repo: openwhisk/openwhisk-cli
+    tags: true

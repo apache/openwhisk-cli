@@ -1,10 +1,7 @@
 {
-	"ImportPath": "go-whisk-cli",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v74",
-	"Packages": [
-		"go-whisk-cli"
-	],
+	"ImportPath": "github.com/openwhisk/openwhisk-cli",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v62",
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry/jibber_jabber",
@@ -29,12 +26,12 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
-			"Comment": "v0.0.5",
-			"Rev": "9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59"
+			"Comment": "v0.0.6-9-gd228849",
+			"Rev": "d228849504861217f796da67fae4f6e347643f15"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-isatty",
-			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+			"Rev": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/go-homedir",
