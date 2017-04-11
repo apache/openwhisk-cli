@@ -17,6 +17,18 @@ script:
 after_script:
   - make clean
 
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    cd $TRAVIS_BUILD_DIR;
+    git config --global user.email "builds@travis-ci.com";
+    git config --global user.name "Travis CI";
+    export GIT_TAG="latest";
+    git tag -d $GIT_TAG;
+    git push --delete origin $GIT_TAG;
+    git tag $GIT_TAG -a -m "Generated tag from TravisCI build $TRAVIS_BUILD_NUMBER"
+    git push origin $GIT_TAG;
+    fi
+
 before_deploy:
   - go get github.com/inconshreveable/mousetrap
   - go get github.com/mattn/go-isatty
