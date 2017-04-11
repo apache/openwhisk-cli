@@ -19,6 +19,10 @@ ADD . /src/github.com/openwhisk/openwhisk-cli
 RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com/openwhisk/openwhisk-cli && /bin/godep restore -v
 
+# Collect all translated strings into single .go module
+RUN echo "Packaging i18n Go module"
+RUN cd /src/github.com/openwhisk/openwhisk-cli && /bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
+
 # wsk binary will be placed under a build folder
 RUN mkdir /src/github.com/openwhisk/openwhisk-cli/build
 
