@@ -20,9 +20,14 @@ script:
 after_script:
   - make clean
 
+os:
+  - linux
+  - osx
+
 after_success:
-  # This tag is automatically generated for the latest commit in master branch.
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  # This tag is automatically generated for the latest merged commit in master branch.
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+      echo "$TRAVIS_EVENT_TYPE";
       git config --global user.email "builds@travis-ci.com";
       git config --global user.name "Travis CI";
       export GIT_TAG="latest";
@@ -51,3 +56,4 @@ deploy:
   on:
     repo: openwhisk/openwhisk-cli
     tags: true
+    condition: "$TRAVIS_OS_NAME = linux"
