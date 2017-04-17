@@ -21,8 +21,9 @@ after_script:
   - make clean
 
 os:
-  - linux
   - osx
+  - linux
+
 
 after_success:
   # This tag is automatically generated for the latest merged commit in master branch.
@@ -56,4 +57,3 @@ deploy:
   on:
     repo: openwhisk/openwhisk-cli
     tags: true
-    condition: "$TRAVIS_OS_NAME = linux"
