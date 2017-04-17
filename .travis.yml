@@ -24,7 +24,6 @@ os:
   - osx
   - linux
 
-
 after_success:
   # This tag is automatically generated for the latest merged commit in master branch.
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
