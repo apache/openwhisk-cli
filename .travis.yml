@@ -10,12 +10,17 @@ go:
 env:
   secure: 0c6mnduuUXScXl4MWyrT1oAk22SqAGzc+7KNuWUtk6berX189UzVvVY919HS/it/gHgMCMWlixoChzh9k2qYeCeDgTwR1rYWuA1Q/ACNL07vCtCwOMTihdVrOz53dy5l82AJC86cfH8Zr0cpNOyRCbCoSozmJ4GQ0lWG5lbSUD1BbNnENjP6IYAxIOfDid75UZU0iA/ebI27xImATYSrIlK1zImtKH/YYeqbsGq8jP0p9A8mg8ey0ECin+Z26AXiy9UTSvj3ujgxaS0nPwEmXu5FcA6Ad0Pr78TGvBcnv92s+MHBQfnPUuQjibrRPAquxsGN9GCWZ58gWPq4+Fg67B63dR1wtSmNEIIbXkLVuZnb2zuhh8KEHuUDVTZLjgzpVcR0J2NtDGsC09HDb88SHrGV+eFejrUVny8g/nPmvmMofX2IAhDuam7rEGVOUdY3lLDC00uZprDjZdXUBto83VmOG5OGPQ7Xe5tz4Ek+s2y3iTq9qW+BrwLO55SFYe+BTDdfSY1HiPVfc+bRbScPiOYXr+080g9zFulCePlZPrWrBCtALiPE69etGrj5FooY9+gQidpfKJ03Qy8vG4l8wl4kHjnGzFwkbnuAHoEzjMaImvjl5nAC/24z9bVUau3AMKmqZ9XrTjSpGgo10MVZwSnA+kWj7wYLKaQcCWceLrU=
 
+git:
+  depth: 3
+
 install:
   - go get -u github.com/golang/lint/golint
+  - go get -u github.com/stretchr/testify
 
 script:
   - make lint
   - make build
+  - make integration_test
 
 after_script:
   - make clean
