@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/openwhisk/openwhisk-cli",
 	"GoVersion": "go1.7",
-	"GodepVersion": "v62",
+	"GodepVersion": "v74",
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry/jibber_jabber",
@@ -76,6 +76,10 @@
 		{
 			"ImportPath": "github.com/openwhisk/openwhisk-client-go/whisk",
 			"Rev": "c91a7494986d5f45b62003a2ab19bb0fd8ddeb7f"
-		}
+		},
+        {
+            "ImportPath": "github.com/openwhisk/openwhisk-client-go/wski18n",
+            "Rev": "c91a7494986d5f45b62003a2ab19bb0fd8ddeb7f"
+        }
 	]
 }
