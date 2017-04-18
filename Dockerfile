@@ -10,9 +10,6 @@ ENV GOPATH=/
 RUN echo "Installing the godep tool"
 RUN go get github.com/tools/godep
 
-RUN echo "Installing the go-bindata tool"
-RUN go get github.com/jteeuwen/go-bindata/...
-
 ADD . /src/github.com/openwhisk/openwhisk-cli
 
 # Load all of the dependencies from the previously generated/saved godep generated godeps.json file
