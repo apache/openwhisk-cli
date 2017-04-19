@@ -24,14 +24,19 @@ script:
   - make lint
   - make build
   - export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
-  - ./tools/travis/install_openwhisk.sh
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+      ./tools/travis/install_openwhisk.sh;
+    fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] ; then
+      ./tools/travis/install_openwhisk_mac.sh;
+    fi
 
 after_script:
   - make clean
 
 os:
   - osx
-  - linux
+#  - linux
 
 after_success:
   - DEPLOY_BUILD_READY=true
