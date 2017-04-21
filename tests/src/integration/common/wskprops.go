@@ -3,7 +3,6 @@ package common
 import (
 	"github.com/spf13/viper"
 	"io/ioutil"
-	"fmt"
 	"os"
 )
 
@@ -21,7 +20,6 @@ func GetWskprops() *Wskprops {
 	viper.AddConfigPath(os.Getenv("OPENWHISK_HOME"))
 
 	err := viper.ReadInConfig()
-	fmt.Println(err)
 	if err == nil {
 		authPath := viper.GetString("testing.auth")
 

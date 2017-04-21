@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"regexp"
 )
 
 func checkError(err error) {
@@ -40,4 +41,11 @@ func WriteFile(filePath string, lines []string) {
 func DeleteFile(filePath string) {
 	var err = os.Remove(filePath)
 	checkError(err)
+}
+
+func RemoveRedundentSpaces(str string) string {
+	re_leadclose_whtsp := regexp.MustCompile(`^[\s\p{Zs}]+|[\s\p{Zs}]+$`)
+	re_inside_whtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
+	final := re_leadclose_whtsp.ReplaceAllString(str, "")
+	return re_inside_whtsp.ReplaceAllString(final, " ")
 }
