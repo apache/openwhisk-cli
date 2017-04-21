@@ -12,6 +12,7 @@ type Wsk struct {
 	Path string
 	Arg []string
 	Dir string
+	Wskprops *Wskprops
 }
 
 func NewWsk() *Wsk {
@@ -23,6 +24,7 @@ func NewWskWithPath(path string) *Wsk {
 	dep.Path = cmd
 	dep.Arg = []string{arg}
 	dep.Dir = path
+	dep.Wskprops = GetWskprops()
 	return &dep
 }
 
@@ -35,5 +37,6 @@ func (wsk *Wsk)RunCommand(s ...string) ([]byte, error) {
 }
 
 func (wsk *Wsk)ListNamespaces() ([]byte, error) {
-	return wsk.RunCommand("namespace", "list")
+	return wsk.RunCommand("namespace", "list", "--apihost", wsk.Wskprops.APIHost,
+		"--auth", wsk.Wskprops.AuthKey)
 }
