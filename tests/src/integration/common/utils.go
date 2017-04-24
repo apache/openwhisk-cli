@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"io"
 )
 
 func checkError(err error) {
@@ -22,6 +23,24 @@ func CreateFile(filePath string) {
 		defer file.Close()
 	}
 	return
+}
+
+func ReadFile(filePath string) string {
+	var file, err = os.OpenFile(filePath, os.O_RDWR, 0644)
+	checkError(err)
+	defer file.Close()
+
+	var text = make([]byte, 1024)
+	for {
+		n, err := file.Read(text)
+		if err != io.EOF {
+			checkError(err)
+		}
+		if n == 0 {
+			break
+		}
+	}
+	return string(text)
 }
 
 func WriteFile(filePath string, lines []string) {
@@ -48,4 +67,13 @@ func RemoveRedundentSpaces(str string) string {
 	re_inside_whtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
 	final := re_leadclose_whtsp.ReplaceAllString(str, "")
 	return re_inside_whtsp.ReplaceAllString(final, " ")
+}
+
+func GetTestActionFilename(fileName string) string {
+	return os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-cli/tests/src/dat/" + fileName
+}
+
+type InvalidArg struct {
+	Cmd []string
+	Err string
 }
