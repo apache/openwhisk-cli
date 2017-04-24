@@ -21,7 +21,6 @@ import (
     "strings"
 
     goi18n "github.com/nicksnyder/go-i18n/i18n"
-    "github.com/openwhisk/openwhisk-client-go/wski18n"
 )
 
 const (
@@ -95,7 +94,7 @@ func InitWithLocale(locale string) {
 func loadFromAsset(locale string) (err error) {
     assetName := locale + ".all.json"
     assetKey := filepath.Join(resourcePath, assetName)
-    bytes, err := wski18n.Asset(assetKey)
+    bytes, err := Asset(assetKey)
     if err != nil {
         return
     }
