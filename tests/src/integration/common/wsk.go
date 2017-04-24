@@ -28,6 +28,15 @@ func NewWskWithPath(path string) *Wsk {
 	return &dep
 }
 
+func (wsk *Wsk)Exists() bool {
+	_, err := os.Stat(wsk.Dir + wsk.Path);
+	if err == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (wsk *Wsk)RunCommand(s ...string) ([]byte, error) {
 	cs := wsk.Arg
 	cs = append(cs, s...)

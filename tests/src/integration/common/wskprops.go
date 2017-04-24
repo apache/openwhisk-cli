@@ -8,13 +8,17 @@ import (
 
 type Wskprops struct {
 	APIHost string
+	APIVersion string
 	AuthKey string
+	ControllerHost string
+	ControllerPort string
 }
 
 func GetWskprops() *Wskprops {
 	var dep Wskprops
 	dep.APIHost = ""
 	dep.AuthKey = ""
+	dep.APIVersion = "v1"
 
 	viper.SetConfigName("whisk")
 	viper.AddConfigPath(os.Getenv("OPENWHISK_HOME"))
@@ -28,6 +32,8 @@ func GetWskprops() *Wskprops {
 			dep.AuthKey = string(b)
 		}
 		dep.APIHost = viper.GetString("router.host")
+		dep.ControllerHost = viper.GetString("router.host")
+		dep.ControllerPort = viper.GetString("controller.host.port")
 	}
 	return &dep
 }
