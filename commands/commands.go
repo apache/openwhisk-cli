@@ -22,8 +22,8 @@ import (
     "net/http"
     "os"
 
-    "../../go-whisk/whisk"
-    "../wski18n"
+    "github.com/openwhisk/openwhisk-client-go/whisk"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
 
     "github.com/spf13/cobra"
 )

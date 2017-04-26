@@ -17,13 +17,14 @@
 package commands
 
 import (
+
     "bufio"
     "errors"
     "fmt"
     "strings"
 
-    "../../go-whisk/whisk"
-    "../wski18n"
+    "github.com/openwhisk/openwhisk-client-go/whisk"
+    "github.com/openwhisk/openwhisk-cli/wski18n"
 
     "github.com/fatih/color"
     //prettyjson "github.com/hokaccha/go-prettyjson"  // See prettyjson comment below
