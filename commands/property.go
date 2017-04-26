@@ -499,4 +499,3 @@ func parseConfigFlags(cmd *cobra.Command, args []string) error {
 
     return nil
 }
-

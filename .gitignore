@@ -1,0 +1,5 @@
+*.js
+javascript/
+wsk
+scripts
+Godeps/_workspace
