@@ -16,7 +16,7 @@ echo "Docker Info:"
 docker info
 
 # Ansible
-pip install --user ansible==2.1.2.0
+pip install --user ansible==2.3.0.0
 
 # Clone the OpenWhisk code
 git clone --depth 3 https://github.com/openwhisk/openwhisk.git
