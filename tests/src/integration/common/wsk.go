@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-const cmd = "wsk"
+const cmd = "./wsk"
 const arg = "-i"
 
 type Wsk struct {

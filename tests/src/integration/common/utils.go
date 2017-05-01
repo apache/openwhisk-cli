@@ -3,8 +3,9 @@ package common
 import (
 	"fmt"
 	"os"
-	"regexp"
+	"unicode"
 	"io"
+	"strings"
 )
 
 func checkError(err error) {
@@ -62,11 +63,21 @@ func DeleteFile(filePath string) {
 	checkError(err)
 }
 
-func RemoveRedundentSpaces(str string) string {
-	re_leadclose_whtsp := regexp.MustCompile(`^[\s\p{Zs}]+|[\s\p{Zs}]+$`)
-	re_inside_whtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
-	final := re_leadclose_whtsp.ReplaceAllString(str, "")
-	return re_inside_whtsp.ReplaceAllString(final, " ")
+func RemoveRedundentSpaces(in string) (out string) {
+	white := false
+	for _, c := range in {
+		if unicode.IsSpace(c) {
+			if !white {
+				out = out + " "
+			}
+			white = true
+		} else {
+			out = out + string(c)
+			white = false
+		}
+	}
+	out = strings.TrimSpace(out)
+	return
 }
 
 func GetTestActionFilename(fileName string) string {

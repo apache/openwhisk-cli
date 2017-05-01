@@ -47,7 +47,10 @@ func TestHelpUsageInfoCommandLanguage(t *testing.T) {
 func TestShowCLIBuildVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--cliversion")
 	assert.Equal(t, nil, err, "The command property get --cliversion failed to run.")
-	assert.Contains(t, string(stdout), "whisk CLI version",
+	output := common.RemoveRedundentSpaces(string(stdout))
+	assert.NotContains(t, output, "whisk CLI version not set",
+		"The output of the command property get --cliversion contains \"whisk CLI version not set\".")
+	assert.Contains(t, output, "whisk CLI version",
 		"The output of the command property get --cliversion does not contain \"whisk CLI version\".")
 }
 
@@ -94,17 +97,17 @@ func TestValidateDefaultProperties(t *testing.T) {
 
 	stdout, err = wsk.RunCommand("property", "get", "--auth")
 	assert.Equal(t, nil, err, "The command property get --auth failed to run.")
-	assert.Equal(t, common.RemoveRedundentSpaces(string(stdout)), "whisk auth",
+	assert.Equal(t, "whisk auth", common.RemoveRedundentSpaces(string(stdout)),
 		"The output of the command does not equal to \"whisk auth\".")
 
 	stdout, err = wsk.RunCommand("property", "get", "--apihost")
 	assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
-	assert.Equal(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API host",
+	assert.Equal(t, "whisk API host", common.RemoveRedundentSpaces(string(stdout)),
 		"The output of the command does not equal to \"whisk API host\".")
 
 	stdout, err = wsk.RunCommand("property", "get", "--namespace")
 	assert.Equal(t, nil, err, "The command property get --namespace failed to run.")
-	assert.Equal(t, common.RemoveRedundentSpaces(string(stdout)), "whisk namespace _",
+	assert.Equal(t, "whisk namespace _", common.RemoveRedundentSpaces(string(stdout)),
 		"The output of the command does not equal to \"whisk namespace _\".")
 
 	common.DeleteFile(tmpProp)
