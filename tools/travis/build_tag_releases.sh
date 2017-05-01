@@ -27,7 +27,7 @@ do
             os_name="mac"
         fi
         cd $TRAVIS_BUILD_DIR
-        GOOS=$os GOARCH=$arc go build -o build/$os/$arc/$wsk
+        GOOS=$os GOARCH=$arc go build -ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`" -o build/$os/$arc/$wsk
         cd build/$os/$arc
         zip -r "$TRAVIS_BUILD_DIR/$zip_file_name-$TRAVIS_TAG-$os_name-$arc.zip" $wsk
     done
