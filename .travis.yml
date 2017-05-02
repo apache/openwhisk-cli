@@ -1,0 +1,73 @@
+# A Travis CI configuration file.
+
+language: go
+
+matrix:
+    include:
+        - os: linux
+          sudo: required
+          go: 1.7
+          env:
+            secure: 0c6mnduuUXScXl4MWyrT1oAk22SqAGzc+7KNuWUtk6berX189UzVvVY919HS/it/gHgMCMWlixoChzh9k2qYeCeDgTwR1rYWuA1Q/ACNL07vCtCwOMTihdVrOz53dy5l82AJC86cfH8Zr0cpNOyRCbCoSozmJ4GQ0lWG5lbSUD1BbNnENjP6IYAxIOfDid75UZU0iA/ebI27xImATYSrIlK1zImtKH/YYeqbsGq8jP0p9A8mg8ey0ECin+Z26AXiy9UTSvj3ujgxaS0nPwEmXu5FcA6Ad0Pr78TGvBcnv92s+MHBQfnPUuQjibrRPAquxsGN9GCWZ58gWPq4+Fg67B63dR1wtSmNEIIbXkLVuZnb2zuhh8KEHuUDVTZLjgzpVcR0J2NtDGsC09HDb88SHrGV+eFejrUVny8g/nPmvmMofX2IAhDuam7rEGVOUdY3lLDC00uZprDjZdXUBto83VmOG5OGPQ7Xe5tz4Ek+s2y3iTq9qW+BrwLO55SFYe+BTDdfSY1HiPVfc+bRbScPiOYXr+080g9zFulCePlZPrWrBCtALiPE69etGrj5FooY9+gQidpfKJ03Qy8vG4l8wl4kHjnGzFwkbnuAHoEzjMaImvjl5nAC/24z9bVUau3AMKmqZ9XrTjSpGgo10MVZwSnA+kWj7wYLKaQcCWceLrU=
+          services: docker
+        - os: osx
+          go: 1.7
+
+git:
+  depth: 3
+
+install:
+  - export DEPLOY_BUILD_READY=false
+  - go get -u github.com/golang/lint/golint
+  - go get -u github.com/stretchr/testify
+  - go get -u github.com/spf13/viper
+
+script:
+  - make lint
+  - make build
+  - make test
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR;
+  - make native_test;
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+      export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk";
+      ./tools/travis/install_openwhisk.sh;
+      make integration_test;
+    fi
+
+after_script:
+  - make clean
+
+after_success:
+  - DEPLOY_BUILD_READY=true
+  # This tag is automatically generated for the latest merged commit in master branch.
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+      git config --global user.email "builds@travis-ci.com";
+      git config --global user.name "Travis CI";
+      export GIT_TAG="latest";
+      git tag -d $GIT_TAG;
+      git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+      git push -f -q https://$API_TOKEN@github.com/openwhisk/openwhisk-cli $GIT_TAG;
+    fi
+
+before_deploy:
+  - go get github.com/inconshreveable/mousetrap
+  - go get github.com/mattn/go-isatty
+  - export build_file_name=wsk
+  - export zip_file_name=OpenWhisk_CLI
+  - chmod +x tools/travis/build_tag_releases.sh
+  - ./tools/travis/build_tag_releases.sh $build_file_name $zip_file_name
+  - export RELEASE_PKG_FILE=$(ls $zip_file_name-*.zip)
+  - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Yh1aYiM/qIWkPMSVjGUq1g9TjpACjavQ00QAqp4oqghNZc6xBcmdzsfD2VjzVPHleNI1FIZyjJ1x6laRfWBzRkAcJcjUHXA2bO/V0jqePVmgVm75WwTZ/9EaWIJeAg5CQMm5DGS28Yhc60C0ut3ZzKMWGTiKb73UADXPTGd/tjndxjfksX/THXPuInKB9QZesmluBAC2am/x/6J311WA2wqe0p1+9JFwMr8XwIcwzCwgi/d9CFpS1RnVpLE/ORSgmN/dFbZ7A/qVbx377QoxKiEB0jmUwi13f7REFAw18JdgzbQCH3X4HNu9pCJwHEAq3lP2CfmHbAXcViBeji/Xh9PPJVV9TYqO+uT8oPxCPJND1A/3O2xJ8LyZ/FP2bWqG/Ds/8SZCvxfOR/X77opUeZ4qAp7HJMVCsFi3TsnmzxCe0BOxCppVJLhoSZ2rOAPJi9mKgS/Z/VA5VhNNmnPtkReEWK4vT9h3/iCwv9anvC0RKeLckSHpCm5C5otNXtV4L990fL5L5krMatxynHnCmmhYeLg/Ns+5ncax58Y8hmhnhzTqbPGHpe79bJRfvwRI9lboq7kEj4x5O/M16TKRfQ8ZU5UHvrCPdlTfT7NUXRGZkvWX20X6Ta/DRROTF+xZGiq7da3Oi+xyNDx/LmymfR49thjzgIPXVZolknGYQ9Q=
+  file_glob: true
+  file: ${zip_file_name}-*.zip
+  overwrite: true
+  skip_cleanup: true
+  on:
+    repo: openwhisk/openwhisk-cli
+    tags: true
+    condition: "$DEPLOY_BUILD_READY = true"

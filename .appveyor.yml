@@ -1,0 +1,13 @@
+clone_folder: c:\gopath\src\github.com\openwhisk\openwhisk-cli
+
+environment:
+  GOPATH: c:\gopath
+
+build: false
+
+install:
+  - echo %PATH%
+  - echo %GOPATH%
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go version
+  - go env
