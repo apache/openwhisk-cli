@@ -51,10 +51,10 @@ func init() {
         apiCmd,
     )
 
-    WskCmd.PersistentFlags().BoolVarP(&flags.global.verbose, "verbose", "v", false, wski18n.T("verbose output"))
-    WskCmd.PersistentFlags().BoolVarP(&flags.global.debug, "debug", "d", false, wski18n.T("debug level output"))
-    WskCmd.PersistentFlags().StringVarP(&flags.global.auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
-    WskCmd.PersistentFlags().StringVar(&flags.global.apihost, "apihost", "", wski18n.T("whisk API `HOST`"))
-    WskCmd.PersistentFlags().StringVar(&flags.global.apiversion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
-    WskCmd.PersistentFlags().BoolVarP(&flags.global.insecure, "insecure", "i", false, wski18n.T("bypass certificate checking"))
+    WskCmd.PersistentFlags().BoolVarP(&Flags.Global.Verbose, "verbose", "v", false, wski18n.T("verbose output"))
+    WskCmd.PersistentFlags().BoolVarP(&Flags.Global.Debug, "debug", "d", false, wski18n.T("debug level output"))
+    WskCmd.PersistentFlags().StringVarP(&Flags.Global.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
+    WskCmd.PersistentFlags().StringVar(&Flags.Global.Apihost, "apihost", "", wski18n.T("whisk API `HOST`"))
+    WskCmd.PersistentFlags().StringVar(&Flags.Global.Apiversion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
+    WskCmd.PersistentFlags().BoolVarP(&Flags.Global.Insecure, "insecure", "i", false, wski18n.T("bypass certificate checking"))
 }

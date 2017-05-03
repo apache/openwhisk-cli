@@ -56,13 +56,13 @@ var apiCreateCmd = &cobra.Command{
         var api *whisk.Api
         var err error
 
-        if (len(args) == 0 && flags.api.configfile == "") {
+        if (len(args) == 0 && Flags.api.configfile == "") {
             whisk.Debug(whisk.DbgError, "No swagger file and no arguments\n")
             errMsg := wski18n.T("Invalid argument(s). Specify a swagger file or specify an API base path with an API path, an API verb, and an action name.")
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return whiskErr
-        } else if (len(args) == 0 && flags.api.configfile != "") {
+        } else if (len(args) == 0 && Flags.api.configfile != "") {
             api, err = parseSwaggerApi()
             if err != nil {
                 whisk.Debug(whisk.DbgError, "parseSwaggerApi() error: %s\n", err)
@@ -211,7 +211,7 @@ var apiGetCmd = &cobra.Command{
         whisk.Debug(whisk.DbgInfo, "client.Apis.Get returned: %#v\n", retApi)
 
         var displayResult interface{} = nil
-        if (flags.common.detail) {
+        if (Flags.common.detail) {
             if (retApi.Apis != nil && len(retApi.Apis) > 0 &&
                 retApi.Apis[0].ApiValue != nil) {
                 displayResult = retApi.Apis[0].ApiValue
@@ -350,8 +350,8 @@ var apiListCmd = &cobra.Command{
 
         // List API request query parameters
         apiListReqOptions := new(whisk.ApiListRequestOptions)
-        apiListReqOptions.Limit = flags.common.limit
-        apiListReqOptions.Skip = flags.common.skip
+        apiListReqOptions.Limit = Flags.common.limit
+        apiListReqOptions.Skip = Flags.common.skip
 
         if (len(args) == 0) {
             retApiList, _, err = client.Apis.List(apiListReqOptions)
@@ -397,7 +397,7 @@ var apiListCmd = &cobra.Command{
         }
 
         // Display the APIs - applying any specified filtering
-        if (flags.common.full) {
+        if (Flags.common.full) {
             fmt.Fprintf(color.Output,
                 wski18n.T("{{.ok}} APIs\n",
                     map[string]interface{}{
@@ -616,16 +616,16 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, error) {
         }
     }
 
-    if ( len(flags.api.apiname) > 0 ) {
+    if ( len(Flags.api.apiname) > 0 ) {
         if (basepathArgIsApiName) {
             // Specifying API name as argument AND as a --apiname option value is invalid
-            whisk.Debug(whisk.DbgError, "API is specified as an argument '%s' and as a flag '%s'\n", basepath, flags.api.apiname)
+            whisk.Debug(whisk.DbgError, "API is specified as an argument '%s' and as a flag '%s'\n", basepath, Flags.api.apiname)
             errMsg := wski18n.T("An API name can only be specified once.")
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return nil, whiskErr
         }
-        apiname = flags.api.apiname
+        apiname = Flags.api.apiname
     }
 
     api.Namespace = client.Config.Namespace
@@ -645,7 +645,7 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, error) {
 
 func parseSwaggerApi() (*whisk.Api, error) {
     // Test is for completeness, but this situation should only arise due to an internal error
-    if ( len(flags.api.configfile) == 0 ) {
+    if ( len(Flags.api.configfile) == 0 ) {
         whisk.Debug(whisk.DbgError, "No swagger file is specified\n")
         errMsg := wski18n.T("A configuration file was not specified.")
         whiskErr := whisk.MakeWskError(errors.New(errMsg),whisk.EXITCODE_ERR_GENERAL,
@@ -653,11 +653,11 @@ func parseSwaggerApi() (*whisk.Api, error) {
         return nil, whiskErr
     }
 
-    swagger, err:= readFile(flags.api.configfile)
+    swagger, err:= readFile(Flags.api.configfile)
     if ( err != nil ) {
-        whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
-                map[string]interface{}{"name": flags.api.configfile, "err": err})
+                map[string]interface{}{"name": Flags.api.configfile, "err": err})
         whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
@@ -667,22 +667,22 @@ func parseSwaggerApi() (*whisk.Api, error) {
     swaggerObj := new(whisk.ApiSwagger)
     err = json.Unmarshal([]byte(swagger), swaggerObj)
     if ( err != nil ) {
-        whisk.Debug(whisk.DbgError, "JSON parse of `%s' error: %s\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "JSON parse of `%s' error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error parsing swagger file '{{.name}}': {{.err}}",
-                map[string]interface{}{"name": flags.api.configfile, "err": err})
+                map[string]interface{}{"name": Flags.api.configfile, "err": err})
         whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
     }
     if (swaggerObj.BasePath == "" || swaggerObj.SwaggerName == "" || swaggerObj.Info == nil || swaggerObj.Paths == nil) {
-        whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Swagger file is invalid (missing basePath, info, paths, or swagger fields)")
         whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
     }
     if _, ok := isValidBasepath(swaggerObj.BasePath); !ok {
-        whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Swagger file basePath must start with a leading slash (/)")
         whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
@@ -777,13 +777,13 @@ var apiCreateCmdV2 = &cobra.Command{
         var err error
         var qname *QualifiedName
 
-        if (len(args) == 0 && flags.api.configfile == "") {
+        if (len(args) == 0 && Flags.api.configfile == "") {
             whisk.Debug(whisk.DbgError, "No swagger file and no arguments\n")
             errMsg := wski18n.T("Invalid argument(s). Specify a swagger file or specify an API base path with an API path, an API verb, and an action name.")
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return whiskErr
-        } else if (len(args) == 0 && flags.api.configfile != "") {
+        } else if (len(args) == 0 && Flags.api.configfile != "") {
             api, err = parseSwaggerApiV2()
             if err != nil {
                 whisk.Debug(whisk.DbgError, "parseSwaggerApi() error: %s\n", err)
@@ -820,13 +820,13 @@ var apiCreateCmdV2 = &cobra.Command{
         apiCreateReq.ApiDoc = api
 
         apiCreateReqOptions := new(whisk.ApiCreateRequestOptions)
-        props, _ := readProps(Properties.PropsFile)
+        props, _ := ReadProps(Properties.PropsFile)
         apiCreateReqOptions.SpaceGuid = strings.Split(props["AUTH"], ":")[0]
         apiCreateReqOptions.AccessToken = "DUMMY_TOKEN"
         if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
             apiCreateReqOptions.AccessToken = props["APIGW_ACCESS_TOKEN"]
         }
-        apiCreateReqOptions.ResponseType = flags.api.resptype
+        apiCreateReqOptions.ResponseType = Flags.api.resptype
         whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponsType: %s",
             apiCreateReqOptions.AccessToken, apiCreateReqOptions.SpaceGuid, apiCreateReqOptions.ResponseType)
 
@@ -901,7 +901,7 @@ var apiGetCmdV2 = &cobra.Command{
         apiGetReq := new(whisk.ApiGetRequest)
         apiGetReqOptions := new(whisk.ApiGetRequestOptions)
         apiGetReqOptions.ApiBasePath = args[0]
-        props, _ := readProps(Properties.PropsFile)
+        props, _ := ReadProps(Properties.PropsFile)
         apiGetReqOptions.SpaceGuid = strings.Split(props["AUTH"], ":")[0]
         apiGetReqOptions.AccessToken = "DUMMY_TOKEN"
         if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
@@ -919,7 +919,7 @@ var apiGetCmdV2 = &cobra.Command{
         whisk.Debug(whisk.DbgInfo, "client.Apis.GetV2 returned: %#v\n", retApi)
 
         var displayResult interface{} = nil
-        if (flags.common.detail) {
+        if (Flags.common.detail) {
             if (retApi.Apis != nil && len(retApi.Apis) > 0 &&
             retApi.Apis[0].ApiValue != nil) {
                 displayResult = retApi.Apis[0].ApiValue
@@ -970,7 +970,7 @@ var apiDeleteCmdV2 = &cobra.Command{
 
         apiDeleteReq := new(whisk.ApiDeleteRequest)
         apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
-        props, _ := readProps(Properties.PropsFile)
+        props, _ := ReadProps(Properties.PropsFile)
         apiDeleteReqOptions.SpaceGuid = strings.Split(props["AUTH"], ":")[0]
         apiDeleteReqOptions.AccessToken = "DUMMY_TOKEN"
         if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
@@ -1056,7 +1056,7 @@ var apiListCmdV2 = &cobra.Command{
             return whiskErr
         }
 
-        props, _ := readProps(Properties.PropsFile)
+        props, _ := ReadProps(Properties.PropsFile)
         spaceguid := strings.Split(props["AUTH"], ":")[0]
         var accesstoken string = "DUMMY_TOKEN"
         if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
@@ -1073,8 +1073,8 @@ var apiListCmdV2 = &cobra.Command{
 
         // List API request query parameters
         apiListReqOptions := new(whisk.ApiListRequestOptions)
-        apiListReqOptions.Limit = flags.common.limit
-        apiListReqOptions.Skip = flags.common.skip
+        apiListReqOptions.Limit = Flags.common.limit
+        apiListReqOptions.Skip = Flags.common.skip
         apiListReqOptions.AccessToken = accesstoken
         apiListReqOptions.SpaceGuid = spaceguid
 
@@ -1122,7 +1122,7 @@ var apiListCmdV2 = &cobra.Command{
         }
 
         // Display the APIs - applying any specified filtering
-        if (flags.common.full) {
+        if (Flags.common.full) {
             fmt.Fprintf(color.Output,
                 wski18n.T("{{.ok}} APIs\n",
                     map[string]interface{}{
@@ -1363,16 +1363,16 @@ func parseApiV2(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, 
         }
     }
 
-    if ( len(flags.api.apiname) > 0 ) {
+    if ( len(Flags.api.apiname) > 0 ) {
         if (basepathArgIsApiName) {
             // Specifying API name as argument AND as a --apiname option value is invalid
-            whisk.Debug(whisk.DbgError, "API is specified as an argument '%s' and as a flag '%s'\n", basepath, flags.api.apiname)
+            whisk.Debug(whisk.DbgError, "API is specified as an argument '%s' and as a flag '%s'\n", basepath, Flags.api.apiname)
             errMsg := wski18n.T("An API name can only be specified once.")
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return nil, nil, whiskErr
         }
-        apiname = flags.api.apiname
+        apiname = Flags.api.apiname
     }
 
     api.Namespace = client.Config.Namespace
@@ -1398,7 +1398,7 @@ func parseApiV2(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, 
 
 func parseSwaggerApiV2() (*whisk.Api, error) {
     // Test is for completeness, but this situation should only arise due to an internal error
-    if ( len(flags.api.configfile) == 0 ) {
+    if ( len(Flags.api.configfile) == 0 ) {
         whisk.Debug(whisk.DbgError, "No swagger file is specified\n")
         errMsg := wski18n.T("A configuration file was not specified.")
         whiskErr := whisk.MakeWskError(errors.New(errMsg),whisk.EXITCODE_ERR_GENERAL,
@@ -1406,11 +1406,11 @@ func parseSwaggerApiV2() (*whisk.Api, error) {
         return nil, whiskErr
     }
 
-    swagger, err:= readFile(flags.api.configfile)
+    swagger, err:= readFile(Flags.api.configfile)
     if ( err != nil ) {
-        whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
-            map[string]interface{}{"name": flags.api.configfile, "err": err})
+            map[string]interface{}{"name": Flags.api.configfile, "err": err})
         whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
@@ -1420,22 +1420,22 @@ func parseSwaggerApiV2() (*whisk.Api, error) {
     swaggerObj := new(whisk.ApiSwaggerV2)
     err = json.Unmarshal([]byte(swagger), swaggerObj)
     if ( err != nil ) {
-        whisk.Debug(whisk.DbgError, "JSON parse of `%s' error: %s\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "JSON parse of `%s' error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error parsing swagger file '{{.name}}': {{.err}}",
-            map[string]interface{}{"name": flags.api.configfile, "err": err})
+            map[string]interface{}{"name": Flags.api.configfile, "err": err})
         whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
     }
     if (swaggerObj.BasePath == "" || swaggerObj.SwaggerName == "" || swaggerObj.Info == nil || swaggerObj.Paths == nil) {
-        whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Swagger file is invalid (missing basePath, info, paths, or swagger fields)")
         whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
     }
     if _, ok := isValidBasepath(swaggerObj.BasePath); !ok {
-        whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Swagger file basePath must start with a leading slash (/)")
         whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
@@ -1454,15 +1454,15 @@ func parseSwaggerApiV2() (*whisk.Api, error) {
 ///////////
 
 func init() {
-    apiCreateCmd.Flags().StringVarP(&flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
-    apiCreateCmd.Flags().StringVarP(&flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
+    apiCreateCmd.Flags().StringVarP(&Flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
+    apiCreateCmd.Flags().StringVarP(&Flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
     //apiUpdateCmd.Flags().StringVarP(&flags.api.action, "action", "a", "", wski18n.T("`ACTION` to invoke when API is called"))
     //apiUpdateCmd.Flags().StringVarP(&flags.api.path, "path", "p", "", wski18n.T("relative `PATH` of API"))
     //apiUpdateCmd.Flags().StringVarP(&flags.api.verb, "method", "m", "", wski18n.T("API `VERB`"))
-    apiGetCmd.Flags().BoolVarP(&flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
-    apiListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
-    apiListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
-    apiListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
+    apiGetCmd.Flags().BoolVarP(&Flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
+    apiListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
+    apiListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
+    apiListCmd.Flags().BoolVarP(&Flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
     apiExperimentalCmd.AddCommand(
         apiCreateCmd,
         //apiUpdateCmd,
@@ -1471,13 +1471,13 @@ func init() {
         apiListCmd,
     )
 
-    apiCreateCmdV2.Flags().StringVarP(&flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
-    apiCreateCmdV2.Flags().StringVarP(&flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
-    apiCreateCmdV2.Flags().StringVar(&flags.api.resptype, "response-type", "json", wski18n.T("Set the web action response `TYPE`. Possible values are html, http, json, text, svg"))
-    apiGetCmdV2.Flags().BoolVarP(&flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
-    apiListCmdV2.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
-    apiListCmdV2.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
-    apiListCmdV2.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
+    apiCreateCmdV2.Flags().StringVarP(&Flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
+    apiCreateCmdV2.Flags().StringVarP(&Flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
+    apiCreateCmdV2.Flags().StringVar(&Flags.api.resptype, "response-type", "json", wski18n.T("Set the web action response `TYPE`. Possible values are html, http, json, text, svg"))
+    apiGetCmdV2.Flags().BoolVarP(&Flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
+    apiListCmdV2.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
+    apiListCmdV2.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
+    apiListCmdV2.Flags().BoolVarP(&Flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
     apiCmd.AddCommand(
         apiCreateCmdV2,
         apiGetCmdV2,

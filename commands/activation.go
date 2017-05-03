@@ -79,11 +79,11 @@ var activationListCmd = &cobra.Command{
 
         options := &whisk.ActivationListOptions{
             Name:  qName.entityName,
-            Limit: flags.common.limit,
-            Skip:  flags.common.skip,
-            Upto:  flags.activation.upto,
-            Since: flags.activation.since,
-            Docs:  flags.common.full,
+            Limit: Flags.common.limit,
+            Skip:  Flags.common.skip,
+            Upto:  Flags.activation.upto,
+            Since: Flags.activation.since,
+            Docs:  Flags.common.full,
         }
         activations, _, err := client.Activations.List(options)
         if err != nil {
@@ -141,7 +141,7 @@ var activationGetCmd = &cobra.Command{
             return werr
         }
 
-        if flags.common.summary {
+        if Flags.common.summary {
             fmt.Printf(
                 wski18n.T("activation result for /{{.namespace}}/{{.name}} ({{.status}} at {{.time}})\n",
                     map[string]interface{}{
@@ -255,10 +255,10 @@ var activationPollCmd = &cobra.Command{
         // Map used to track activation records already displayed to the console
         reported := make(map[string]bool)
 
-        if flags.activation.sinceSeconds+
-        flags.activation.sinceMinutes+
-        flags.activation.sinceHours+
-        flags.activation.sinceDays ==
+        if Flags.activation.sinceSeconds+
+        Flags.activation.sinceMinutes+
+        Flags.activation.sinceHours+
+        Flags.activation.sinceDays ==
         0 {
             options := &whisk.ActivationListOptions{
                 Limit: 1,
@@ -280,9 +280,9 @@ var activationPollCmd = &cobra.Command{
 
             // ParseDuration takes a string like "2h45m15s"; create this duration string from the command arguments
             durationStr := fmt.Sprintf("%dh%dm%ds",
-                flags.activation.sinceHours + flags.activation.sinceDays*24,
-                flags.activation.sinceMinutes,
-                flags.activation.sinceSeconds,
+                Flags.activation.sinceHours + Flags.activation.sinceDays*24,
+                Flags.activation.sinceMinutes,
+                Flags.activation.sinceSeconds,
             )
             duration, err := time.ParseDuration(durationStr)
             if err == nil {
@@ -298,10 +298,10 @@ var activationPollCmd = &cobra.Command{
 
         // Polling loop
         for {
-            if flags.activation.exit > 0 {
+            if Flags.activation.exit > 0 {
                 localDuration := time.Since(localStartTime)
-                if int(localDuration.Seconds()) > flags.activation.exit {
-                    whisk.Debug(whisk.DbgInfo, "Poll time (%d seconds) expired; polling loop stopped\n", flags.activation.exit)
+                if int(localDuration.Seconds()) > Flags.activation.exit {
+                    whisk.Debug(whisk.DbgInfo, "Poll time (%d seconds) expired; polling loop stopped\n", Flags.activation.exit)
                     return nil
                 }
             }
@@ -339,19 +339,19 @@ var activationPollCmd = &cobra.Command{
 }
 
 func init() {
-    activationListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of activations from the result"))
-    activationListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of activations from the collection"))
-    activationListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("include full activation description"))
-    activationListCmd.Flags().Int64Var(&flags.activation.upto, "upto", 0, wski18n.T("return activations with timestamps earlier than `UPTO`; measured in milliseconds since Th, 01, Jan 1970"))
-    activationListCmd.Flags().Int64Var(&flags.activation.since, "since", 0, wski18n.T("return activations with timestamps later than `SINCE`; measured in milliseconds since Th, 01, Jan 1970"))
+    activationListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of activations from the result"))
+    activationListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of activations from the collection"))
+    activationListCmd.Flags().BoolVarP(&Flags.common.full, "full", "f", false, wski18n.T("include full activation description"))
+    activationListCmd.Flags().Int64Var(&Flags.activation.upto, "upto", 0, wski18n.T("return activations with timestamps earlier than `UPTO`; measured in milliseconds since Th, 01, Jan 1970"))
+    activationListCmd.Flags().Int64Var(&Flags.activation.since, "since", 0, wski18n.T("return activations with timestamps later than `SINCE`; measured in milliseconds since Th, 01, Jan 1970"))
 
-    activationGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, wski18n.T("summarize activation details"))
+    activationGetCmd.Flags().BoolVarP(&Flags.common.summary, "summary", "s", false, wski18n.T("summarize activation details"))
 
-    activationPollCmd.Flags().IntVarP(&flags.activation.exit, "exit", "e", 0, wski18n.T("stop polling after `SECONDS` seconds"))
-    activationPollCmd.Flags().IntVar(&flags.activation.sinceSeconds, "since-seconds", 0, wski18n.T("start polling for activations `SECONDS` seconds ago"))
-    activationPollCmd.Flags().IntVar(&flags.activation.sinceMinutes, "since-minutes", 0, wski18n.T("start polling for activations `MINUTES` minutes ago"))
-    activationPollCmd.Flags().IntVar(&flags.activation.sinceHours, "since-hours", 0, wski18n.T("start polling for activations `HOURS` hours ago"))
-    activationPollCmd.Flags().IntVar(&flags.activation.sinceDays, "since-days", 0, wski18n.T("start polling for activations `DAYS` days ago"))
+    activationPollCmd.Flags().IntVarP(&Flags.activation.exit, "exit", "e", 0, wski18n.T("stop polling after `SECONDS` seconds"))
+    activationPollCmd.Flags().IntVar(&Flags.activation.sinceSeconds, "since-seconds", 0, wski18n.T("start polling for activations `SECONDS` seconds ago"))
+    activationPollCmd.Flags().IntVar(&Flags.activation.sinceMinutes, "since-minutes", 0, wski18n.T("start polling for activations `MINUTES` minutes ago"))
+    activationPollCmd.Flags().IntVar(&Flags.activation.sinceHours, "since-hours", 0, wski18n.T("start polling for activations `HOURS` hours ago"))
+    activationPollCmd.Flags().IntVar(&Flags.activation.sinceDays, "since-days", 0, wski18n.T("start polling for activations `DAYS` days ago"))
 
     activationCmd.AddCommand(
         activationListCmd,

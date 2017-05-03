@@ -311,7 +311,7 @@ var ruleGetCmd = &cobra.Command{
             return werr
         }
 
-        if (flags.rule.summary) {
+        if (Flags.rule.summary) {
             printRuleSummary(rule)
         } else {
             if len(field) > 0 {
@@ -356,7 +356,7 @@ var ruleDeleteCmd = &cobra.Command{
         client.Namespace = qName.namespace
         ruleName := qName.entityName
 
-        if flags.rule.disable {
+        if Flags.rule.disable {
             _, _, err := client.Rules.SetState(ruleName, "inactive")
             if err != nil {
                 whisk.Debug(whisk.DbgError, "client.Rules.SetState(%s, inactive) failed: %s\n", ruleName, err)
@@ -416,8 +416,8 @@ var ruleListCmd = &cobra.Command{
         }
 
         ruleListOptions := &whisk.RuleListOptions{
-            Skip:  flags.common.skip,
-            Limit: flags.common.limit,
+            Skip:  Flags.common.skip,
+            Limit: Flags.common.limit,
         }
 
         rules, _, err := client.Rules.List(ruleListOptions)
@@ -434,12 +434,12 @@ var ruleListCmd = &cobra.Command{
 }
 
 func init() {
-    ruleDeleteCmd.Flags().BoolVar(&flags.rule.disable, "disable", false, wski18n.T("automatically disable rule before deleting it"))
+    ruleDeleteCmd.Flags().BoolVar(&Flags.rule.disable, "disable", false, wski18n.T("automatically disable rule before deleting it"))
 
-    ruleGetCmd.Flags().BoolVarP(&flags.rule.summary, "summary", "s", false, wski18n.T("summarize rule details"))
+    ruleGetCmd.Flags().BoolVarP(&Flags.rule.summary, "summary", "s", false, wski18n.T("summarize rule details"))
 
-    ruleListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of rules from the result"))
-    ruleListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of rules from the collection"))
+    ruleListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of rules from the result"))
+    ruleListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of rules from the collection"))
 
     ruleCmd.AddCommand(
         ruleCreateCmd,

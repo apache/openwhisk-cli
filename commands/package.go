@@ -75,13 +75,13 @@ var packageBindCmd = &cobra.Command{
     // The 1 or more --param arguments have all been combined into a single []string
     // e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
 
-    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", flags.common.param)
-    parameters, err := getJSONFromStrings(flags.common.param, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+    parameters, err := getJSONFromStrings(Flags.common.param, true)
 
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.param, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
       errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-          map[string]interface{}{"param": fmt.Sprintf("%#v",flags.common.param), "err": err})
+          map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
@@ -89,13 +89,13 @@ var packageBindCmd = &cobra.Command{
     // Convert the binding's list of default annotations from a string into []KeyValue
     // The 1 or more --annotation arguments have all been combined into a single []string
     // e.g.   --a arg1,arg2 --a arg3,arg4   ->  [arg1, arg2, arg3, arg4]
-    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", flags.common.annotation)
-    annotations, err := getJSONFromStrings(flags.common.annotation, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+    annotations, err := getJSONFromStrings(Flags.common.annotation, true)
 
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.annotation, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
       errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-          map[string]interface{}{"annotation": fmt.Sprintf("%#v",flags.common.annotation), "err": err})
+          map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
@@ -151,29 +151,29 @@ var packageCreateCmd = &cobra.Command{
     }
     client.Namespace = qName.namespace
 
-    if shared, sharedSet, err = parseShared(flags.common.shared); err != nil {
-      whisk.Debug(whisk.DbgError, "parseShared(%s) failed: %s\n", flags.common.shared, err)
+    if shared, sharedSet, err = parseShared(Flags.common.shared); err != nil {
+      whisk.Debug(whisk.DbgError, "parseShared(%s) failed: %s\n", Flags.common.shared, err)
       return err
     }
 
-    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", flags.common.param)
-    parameters, err := getJSONFromStrings(flags.common.param, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+    parameters, err := getJSONFromStrings(Flags.common.param, true)
 
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.param, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
       errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-          map[string]interface{}{"param": fmt.Sprintf("%#v",flags.common.param), "err": err})
+          map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
 
-    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", flags.common.annotation)
-    annotations, err := getJSONFromStrings(flags.common.annotation, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+    annotations, err := getJSONFromStrings(Flags.common.annotation, true)
 
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.annotation, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
       errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-          map[string]interface{}{"annotation": fmt.Sprintf("%#v",flags.common.annotation), "err": err})
+          map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
@@ -233,28 +233,28 @@ var packageUpdateCmd = &cobra.Command{
     }
     client.Namespace = qName.namespace
 
-    if shared, sharedSet, err = parseShared(flags.common.shared); err != nil {
-      whisk.Debug(whisk.DbgError, "parseShared(%s) failed: %s\n", flags.common.shared, err)
+    if shared, sharedSet, err = parseShared(Flags.common.shared); err != nil {
+      whisk.Debug(whisk.DbgError, "parseShared(%s) failed: %s\n", Flags.common.shared, err)
       return err
     }
 
-    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", flags.common.param)
-    parameters, err := getJSONFromStrings(flags.common.param, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+    parameters, err := getJSONFromStrings(Flags.common.param, true)
 
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.param, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
       errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-          map[string]interface{}{"param": fmt.Sprintf("%#v",flags.common.param), "err": err})
+          map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
 
-    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", flags.common.annotation)
-    annotations, err := getJSONFromStrings(flags.common.annotation, true)
+    whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+    annotations, err := getJSONFromStrings(Flags.common.annotation, true)
     if err != nil {
-      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.annotation, err)
+      whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
       errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-          map[string]interface{}{"annotation": fmt.Sprintf("%#v",flags.common.annotation), "err": err})
+          map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
       werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
       return werr
     }
@@ -333,7 +333,7 @@ var packageGetCmd = &cobra.Command{
       return werr
     }
 
-    if flags.common.summary {
+    if Flags.common.summary {
       printSummary(xPackage)
     } else {
 
@@ -432,15 +432,15 @@ var packageListCmd = &cobra.Command{
       return whiskErr
     }
 
-    if flags.common.shared == "yes" {
+    if Flags.common.shared == "yes" {
       shared = true
     } else {
       shared = false
     }
 
     options := &whisk.PackageListOptions{
-      Skip:   flags.common.skip,
-      Limit:  flags.common.limit,
+      Skip:   Flags.common.skip,
+      Limit:  Flags.common.limit,
       Public: shared,
     }
 
@@ -546,28 +546,28 @@ var packageRefreshCmd = &cobra.Command{
 }
 
 func init() {
-  packageCreateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
-  packageCreateCmd.Flags().StringVarP(&flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
-  packageCreateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
-  packageCreateCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-  packageCreateCmd.Flags().StringVar(&flags.common.shared, "shared", "", wski18n.T("package visibility `SCOPE`; yes = shared, no = private"))
+  packageCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
+  packageCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
+  packageCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+  packageCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+  packageCreateCmd.Flags().StringVar(&Flags.common.shared, "shared", "", wski18n.T("package visibility `SCOPE`; yes = shared, no = private"))
 
-  packageUpdateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
-  packageUpdateCmd.Flags().StringVarP(&flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
-  packageUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
-  packageUpdateCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-  packageUpdateCmd.Flags().StringVar(&flags.common.shared, "shared", "", wski18n.T("package visibility `SCOPE`; yes = shared, no = private"))
+  packageUpdateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
+  packageUpdateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
+  packageUpdateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+  packageUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+  packageUpdateCmd.Flags().StringVar(&Flags.common.shared, "shared", "", wski18n.T("package visibility `SCOPE`; yes = shared, no = private"))
 
-  packageGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, wski18n.T("summarize package details"))
+  packageGetCmd.Flags().BoolVarP(&Flags.common.summary, "summary", "s", false, wski18n.T("summarize package details"))
 
-  packageBindCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
-  packageBindCmd.Flags().StringVarP(&flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
-  packageBindCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
-  packageBindCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+  packageBindCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
+  packageBindCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
+  packageBindCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+  packageBindCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 
-  packageListCmd.Flags().StringVar(&flags.common.shared, "shared", "", wski18n.T("include publicly shared entities in the result"))
-  packageListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of packages from the result"))
-  packageListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of packages from the collection"))
+  packageListCmd.Flags().StringVar(&Flags.common.shared, "shared", "", wski18n.T("include publicly shared entities in the result"))
+  packageListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of packages from the result"))
+  packageListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of packages from the collection"))
 
   packageCmd.AddCommand(
     packageBindCmd,

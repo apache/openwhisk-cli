@@ -137,20 +137,21 @@ var actionInvokeCmd = &cobra.Command{
         }
 
         client.Namespace = qualifiedName.namespace
-        paramArgs = flags.common.param
+        paramArgs = Flags.common.param
 
         if len(paramArgs) > 0 {
             if parameters, err = getJSONFromStrings(paramArgs, false); err != nil {
                 return getJSONFromStringsParamError(paramArgs, false, err)
             }
         }
-        if flags.action.result {flags.common.blocking = true}
+        if Flags.action.result {
+            Flags.common.blocking = true}
 
         res, _, err := client.Actions.Invoke(
             qualifiedName.entityName,
             parameters,
-            flags.common.blocking,
-            flags.action.result)
+            Flags.common.blocking,
+            Flags.action.result)
 
         return handleInvocationResponse(qualifiedName, parameters, res, err)
     },
@@ -169,7 +170,7 @@ func handleInvocationResponse(
                 result,
                 color.Output)
         } else {
-            if !flags.common.blocking {
+            if !Flags.common.blocking {
                 return handleInvocationError(err, qualifiedName.entityName, parameters)
             } else {
                 if isBlockingTimeout(err) {
@@ -227,7 +228,7 @@ var actionGetCmd = &cobra.Command{
             return actionGetError(qualifiedName.entityName, err)
         }
 
-        if flags.common.summary {
+        if Flags.common.summary {
             printSummary(action)
         } else {
             if len(field) > 0 {
@@ -303,8 +304,8 @@ var actionListCmd = &cobra.Command{
         }
 
         options := &whisk.ActionListOptions{
-            Skip:  flags.common.skip,
-            Limit: flags.common.limit,
+            Skip:  Flags.common.skip,
+            Limit: Flags.common.limit,
         }
 
         if actions, _, err = client.Actions.List(qualifiedName.entityName, options); err != nil {
@@ -344,12 +345,12 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
         cmd.LocalFlags().Changed(MEMORY_FLAG),
         cmd.LocalFlags().Changed(LOG_SIZE_FLAG),
         cmd.LocalFlags().Changed(TIMEOUT_FLAG),
-        flags.action.memory,
-        flags.action.logsize,
-        flags.action.timeout)
+        Flags.action.memory,
+        Flags.action.logsize,
+        Flags.action.timeout)
 
-    paramArgs = flags.common.param
-    annotArgs = flags.common.annotation
+    paramArgs = Flags.common.param
+    annotArgs = Flags.common.annotation
 
     if len(paramArgs) > 0 {
         if parameters, err = getJSONFromStrings(paramArgs, true); err != nil {
@@ -367,7 +368,7 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
         action.Annotations = annotations.(whisk.KeyValueArr)
     }
 
-    if flags.action.copy {
+    if Flags.action.copy {
         copiedQualifiedName := QualifiedName{}
 
         if copiedQualifiedName, err = parseQualifiedName(args[1]); err != nil {
@@ -384,16 +385,16 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
         action.Exec = existingAction.Exec
         action.Parameters = append(action.Parameters, existingAction.Parameters...)
         action.Annotations = append(action.Annotations, existingAction.Annotations...)
-    } else if flags.action.sequence {
+    } else if Flags.action.sequence {
         action.Exec = new(whisk.Exec)
         action.Exec.Kind = "sequence"
         action.Exec.Components = csvToQualifiedActions(artifact)
     } else if len(artifact) > 0 {
-        action.Exec, err = getExec(args[1], flags.action.kind, flags.action.docker, flags.action.main)
+        action.Exec, err = getExec(args[1], Flags.action.kind, Flags.action.docker, Flags.action.main)
     }
 
     if cmd.LocalFlags().Changed(WEB_FLAG) {
-        action.Annotations, err = webAction(flags.action.web, action.Annotations, qualifiedName.entityName, update)
+        action.Annotations, err = webAction(Flags.action.web, action.Annotations, qualifiedName.entityName, update)
     }
 
     whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
@@ -682,7 +683,7 @@ func handleInvocationError(err error, entityName string, parameters interface{})
         whisk.DbgError,
         "client.Actions.Invoke(%s, %s, %t) error: %s\n",
         entityName, parameters,
-        flags.common.blocking,
+        Flags.common.blocking,
         err)
 
     errMsg := wski18n.T(
@@ -781,7 +782,7 @@ func printInvocationMsg(
     activationID interface{},
     response map[string]interface{},
     outputStream io.Writer) {
-        if !flags.action.result {
+        if !Flags.action.result {
             fmt.Fprintf(
                 outputStream,
                 wski18n.T(
@@ -794,7 +795,7 @@ func printInvocationMsg(
                     }))
         }
 
-        if flags.common.blocking {
+        if Flags.common.blocking {
             printJSON(response, outputStream)
         }
 }
@@ -873,43 +874,43 @@ func isWebAction(client *whisk.Client, qname QualifiedName) error {
 }
 
 func init() {
-    actionCreateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, wski18n.T("treat ACTION as docker image path on dockerhub"))
-    actionCreateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, wski18n.T("treat ACTION as the name of an existing action"))
-    actionCreateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, wski18n.T("treat ACTION as comma separated sequence of actions to invoke"))
-    actionCreateCmd.Flags().StringVar(&flags.action.kind, "kind", "", wski18n.T("the `KIND` of the action runtime (example: swift:default, nodejs:default)"))
-    actionCreateCmd.Flags().StringVar(&flags.action.main, "main", "", wski18n.T("the name of the action entry point (function or fully-qualified method name when applicable)"))
-    actionCreateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
-    actionCreateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
-    actionCreateCmd.Flags().IntVarP(&flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
-    actionCreateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", nil, wski18n.T("annotation values in `KEY VALUE` format"))
-    actionCreateCmd.Flags().StringVarP(&flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
-    actionCreateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", nil, wski18n.T("parameter values in `KEY VALUE` format"))
-    actionCreateCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-    actionCreateCmd.Flags().StringVar(&flags.action.web, "web", "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
+    actionCreateCmd.Flags().BoolVar(&Flags.action.docker, "docker", false, wski18n.T("treat ACTION as docker image path on dockerhub"))
+    actionCreateCmd.Flags().BoolVar(&Flags.action.copy, "copy", false, wski18n.T("treat ACTION as the name of an existing action"))
+    actionCreateCmd.Flags().BoolVar(&Flags.action.sequence, "sequence", false, wski18n.T("treat ACTION as comma separated sequence of actions to invoke"))
+    actionCreateCmd.Flags().StringVar(&Flags.action.kind, "kind", "", wski18n.T("the `KIND` of the action runtime (example: swift:default, nodejs:default)"))
+    actionCreateCmd.Flags().StringVar(&Flags.action.main, "main", "", wski18n.T("the name of the action entry point (function or fully-qualified method name when applicable)"))
+    actionCreateCmd.Flags().IntVarP(&Flags.action.timeout, "timeout", "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
+    actionCreateCmd.Flags().IntVarP(&Flags.action.memory, "memory", "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
+    actionCreateCmd.Flags().IntVarP(&Flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
+    actionCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", nil, wski18n.T("annotation values in `KEY VALUE` format"))
+    actionCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
+    actionCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", nil, wski18n.T("parameter values in `KEY VALUE` format"))
+    actionCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+    actionCreateCmd.Flags().StringVar(&Flags.action.web, "web", "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 
-    actionUpdateCmd.Flags().BoolVar(&flags.action.docker, "docker", false, wski18n.T("treat ACTION as docker image path on dockerhub"))
-    actionUpdateCmd.Flags().BoolVar(&flags.action.copy, "copy", false, wski18n.T("treat ACTION as the name of an existing action"))
-    actionUpdateCmd.Flags().BoolVar(&flags.action.sequence, "sequence", false, wski18n.T("treat ACTION as comma separated sequence of actions to invoke"))
-    actionUpdateCmd.Flags().StringVar(&flags.action.kind, "kind", "", wski18n.T("the `KIND` of the action runtime (example: swift:default, nodejs:default)"))
-    actionUpdateCmd.Flags().StringVar(&flags.action.main, "main", "", wski18n.T("the name of the action entry point (function or fully-qualified method name when applicable)"))
-    actionUpdateCmd.Flags().IntVarP(&flags.action.timeout, "timeout", "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
-    actionUpdateCmd.Flags().IntVarP(&flags.action.memory, "memory", "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
-    actionUpdateCmd.Flags().IntVarP(&flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
-    actionUpdateCmd.Flags().StringSliceVarP(&flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
-    actionUpdateCmd.Flags().StringVarP(&flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
-    actionUpdateCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
-    actionUpdateCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-    actionUpdateCmd.Flags().StringVar(&flags.action.web, "web", "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
+    actionUpdateCmd.Flags().BoolVar(&Flags.action.docker, "docker", false, wski18n.T("treat ACTION as docker image path on dockerhub"))
+    actionUpdateCmd.Flags().BoolVar(&Flags.action.copy, "copy", false, wski18n.T("treat ACTION as the name of an existing action"))
+    actionUpdateCmd.Flags().BoolVar(&Flags.action.sequence, "sequence", false, wski18n.T("treat ACTION as comma separated sequence of actions to invoke"))
+    actionUpdateCmd.Flags().StringVar(&Flags.action.kind, "kind", "", wski18n.T("the `KIND` of the action runtime (example: swift:default, nodejs:default)"))
+    actionUpdateCmd.Flags().StringVar(&Flags.action.main, "main", "", wski18n.T("the name of the action entry point (function or fully-qualified method name when applicable)"))
+    actionUpdateCmd.Flags().IntVarP(&Flags.action.timeout, "timeout", "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
+    actionUpdateCmd.Flags().IntVarP(&Flags.action.memory, "memory", "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
+    actionUpdateCmd.Flags().IntVarP(&Flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
+    actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
+    actionUpdateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
+    actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+    actionUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+    actionUpdateCmd.Flags().StringVar(&Flags.action.web, "web", "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 
-    actionInvokeCmd.Flags().StringSliceVarP(&flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
-    actionInvokeCmd.Flags().StringVarP(&flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-    actionInvokeCmd.Flags().BoolVarP(&flags.common.blocking, "blocking", "b", false, wski18n.T("blocking invoke"))
-    actionInvokeCmd.Flags().BoolVarP(&flags.action.result, "result", "r", false, wski18n.T("blocking invoke; show only activation result (unless there is a failure)"))
+    actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+    actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+    actionInvokeCmd.Flags().BoolVarP(&Flags.common.blocking, "blocking", "b", false, wski18n.T("blocking invoke"))
+    actionInvokeCmd.Flags().BoolVarP(&Flags.action.result, "result", "r", false, wski18n.T("blocking invoke; show only activation result (unless there is a failure)"))
 
-    actionGetCmd.Flags().BoolVarP(&flags.common.summary, "summary", "s", false, wski18n.T("summarize action details"))
+    actionGetCmd.Flags().BoolVarP(&Flags.common.summary, "summary", "s", false, wski18n.T("summarize action details"))
 
-    actionListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
-    actionListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
+    actionListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
+    actionListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
 
     actionCmd.AddCommand(
         actionCreateCmd,

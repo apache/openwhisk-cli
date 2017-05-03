@@ -31,15 +31,15 @@ const WEB_FLAG      = "web"
 
 var cliDebug = os.Getenv("WSK_CLI_DEBUG")  // Useful for tracing init() code
 
-var flags struct {
+var Flags struct {
 
-    global struct {
-        verbose     bool
-        debug       bool
-        auth        string
-        apihost     string
-        apiversion  string
-        insecure    bool
+    Global struct {
+        Verbose    bool
+        Debug      bool
+        Auth       string
+        Apihost    string
+        Apiversion string
+        Insecure   bool
     }
 
     common struct {
@@ -99,18 +99,18 @@ var flags struct {
     }
 
     // rule
-    rule struct {
+    rule       struct {
         disable bool
         summary bool
     }
 
     // trigger
-    trigger struct {
+    trigger    struct {
         summary bool
     }
 
     // api
-    api struct {
+    api        struct {
         action     string
         path       string
         verb       string
@@ -122,9 +122,9 @@ var flags struct {
 }
 
 func IsVerbose() bool {
-    return flags.global.verbose || IsDebug()
+    return Flags.Global.Verbose || IsDebug()
 }
 
 func IsDebug() bool {
-    return len(cliDebug) > 0 || flags.global.debug
+    return len(cliDebug) > 0 || Flags.Global.Debug
 }
