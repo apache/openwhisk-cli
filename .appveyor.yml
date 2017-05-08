@@ -2,7 +2,6 @@ clone_folder: c:\gopath\src\github.com\openwhisk\openwhisk-cli
 
 environment:
   GOPATH: c:\gopath
-  PATH: %GOPATH%\bin;c:\go\bin;%PATH%
 
 build: off
 
@@ -13,8 +12,11 @@ before_install:
 install:
   - echo %PATH%
   - echo %GOPATH%
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
   - go version
+  - echo %PATH%
   - go env
 
 test_script
+  - echo %PATH%
   - go build -o build/windows/wsk.exe
