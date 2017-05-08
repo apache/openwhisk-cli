@@ -1,4 +1,5 @@
 # OpenWhisk Command Line Interface `wsk`
+[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
 
 The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that provides a consistent interface to
 interact with OpenWhisk services. With this tool to download and configure, you are able to manage OpenWhisk services
