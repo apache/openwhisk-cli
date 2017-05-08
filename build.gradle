@@ -18,7 +18,7 @@ task distBinary(dependsOn: [removeBinary, distDocker]) {
 
         // Copy all Go binaries from Docker into openwhisk/bin folder
         run(dockerBinary + ["cp", dockerContainerName +
-                ":/src/github.com/openwhisk/openwhisk-cli/build/.", "${projectDir}/bin"])
+                ":/src/github.com/apache/incubator-openwhisk-cli/build/.", "${projectDir}/bin"])
 
         run(dockerBinary + ["rm", "-f", dockerContainerName])
     }

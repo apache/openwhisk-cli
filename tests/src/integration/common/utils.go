@@ -81,7 +81,11 @@ func RemoveRedundentSpaces(in string) (out string) {
 }
 
 func GetTestActionFilename(fileName string) string {
-	return os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-cli/tests/src/dat/" + fileName
+	return GetRepoPath() + "/tests/src/dat/" + fileName
+}
+
+func GetRepoPath() string {
+    return os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-cli"
 }
 
 type InvalidArg struct {

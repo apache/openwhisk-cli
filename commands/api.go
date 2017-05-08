@@ -23,8 +23,8 @@ import (
     "strconv"
     "strings"
 
-    "github.com/openwhisk/openwhisk-client-go/whisk"
-    "github.com/openwhisk/openwhisk-cli/wski18n"
+    "github.com/apache/incubator-openwhisk-client-go/whisk"
+    "github.com/apache/incubator-openwhisk-cli/wski18n"
 
     "github.com/fatih/color"
     "github.com/spf13/cobra"

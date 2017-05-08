@@ -46,7 +46,7 @@ after_success:
       export GIT_TAG="latest";
       git tag -d $GIT_TAG;
       git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
-      git push -f -q https://$API_TOKEN@github.com/openwhisk/openwhisk-cli $GIT_TAG;
+      git push -f -q https://$API_TOKEN@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
     fi
 
 before_deploy:
@@ -68,6 +68,6 @@ deploy:
   overwrite: true
   skip_cleanup: true
   on:
-    repo: openwhisk/openwhisk-cli
+    repo: apache/incubator-openwhisk-cli
     tags: true
     condition: "$DEPLOY_BUILD_READY = true"
