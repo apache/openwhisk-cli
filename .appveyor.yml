@@ -17,5 +17,5 @@ install:
   - echo %PATH%
   - go env
 
-test_script
+test_script:
   - echo %PATH%
