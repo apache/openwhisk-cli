@@ -5,7 +5,7 @@ package tests
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/openwhisk/openwhisk-cli/tests/src/integration/common"
+	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
 	"os"
 	"strings"
 )
@@ -339,7 +339,7 @@ func initInvalidArgs() {
 }
 
 var wsk *common.Wsk = common.NewWsk()
-var tmpProp = os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-cli/wskprops.tmp"
+var tmpProp = common.GetRepoPath() + "/wskprops.tmp"
 
 // Test case to set apihost, auth, and namespace.
 func TestSetAPIHostAuthNamespace(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-const cmd = "./wsk"
+const cmd = "wsk"
 const arg = "-i"
 
 type Wsk struct {
@@ -16,7 +16,7 @@ type Wsk struct {
 }
 
 func NewWsk() *Wsk {
-	return NewWskWithPath(os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-cli/")
+	return NewWskWithPath(GetRepoPath())
 }
 
 func NewWskWithPath(path string) *Wsk {
@@ -29,7 +29,7 @@ func NewWskWithPath(path string) *Wsk {
 }
 
 func (wsk *Wsk)Exists() bool {
-	_, err := os.Stat(wsk.Dir + wsk.Path);
+	_, err := os.Stat(wsk.Dir + "/" + wsk.Path);
 	if err == nil {
 		return true
 	} else {

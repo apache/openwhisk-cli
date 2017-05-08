@@ -7,7 +7,7 @@ from the command line and automate them through scripts.
 
 # Where to download the binary of OpenWhisk CLI
 
-The OpenWhisk CLI is available on the release page: [click here to download](https://github.com/openwhisk/openwhisk-cli/releases).
+The OpenWhisk CLI is available on the release page: [click here to download](https://github.com/apache/incubator-openwhisk-cli/releases).
 We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can download the
 binary, which fits your local environment.
 
@@ -20,7 +20,7 @@ download and build OpenWhisk CLI: [installing Git](https://git-scm.com/book/en/v
 Then, download the source code via the Git command:
 
 ```
-$ git clone https://github.com/openwhisk/openwhisk-cli.git
+$ git clone https://github.com/apache/incubator-openwhisk-cli.git
 ```
 
 OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process which is copied from the

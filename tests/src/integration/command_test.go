@@ -6,11 +6,11 @@ import (
 	"testing"
 	"os"
 	"github.com/stretchr/testify/assert"
-	"github.com/openwhisk/openwhisk-cli/tests/src/integration/common"
+	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
 )
 
 var wsk *common.Wsk = common.NewWsk()
-var tmpProp = os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-cli/wskprops.tmp"
+var tmpProp = common.GetRepoPath() + "/wskprops.tmp"
 var invalidArgs []common.InvalidArg
 var invalidParamMsg = "Arguments for '-p' must be a key/value pair"
 var invalidAnnotMsg = "Arguments for '-a' must be a key/value pair"
