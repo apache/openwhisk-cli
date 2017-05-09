@@ -3,11 +3,19 @@ clone_folder: c:\gopath\src\github.com\openwhisk\openwhisk-cli
 environment:
   GOPATH: c:\gopath
 
-build: false
+build: off
+
+before_test:
+  - go get -u github.com/golang/lint/golint
+  - go get -d -t ./...
 
 install:
   - echo %PATH%
   - echo %GOPATH%
   - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
   - go version
+  - echo %PATH%
   - go env
+
+test_script:
+  - echo %PATH%
