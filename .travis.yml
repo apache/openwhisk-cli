@@ -8,7 +8,7 @@ matrix:
           sudo: required
           go: 1.7
           env:
-            secure: 0c6mnduuUXScXl4MWyrT1oAk22SqAGzc+7KNuWUtk6berX189UzVvVY919HS/it/gHgMCMWlixoChzh9k2qYeCeDgTwR1rYWuA1Q/ACNL07vCtCwOMTihdVrOz53dy5l82AJC86cfH8Zr0cpNOyRCbCoSozmJ4GQ0lWG5lbSUD1BbNnENjP6IYAxIOfDid75UZU0iA/ebI27xImATYSrIlK1zImtKH/YYeqbsGq8jP0p9A8mg8ey0ECin+Z26AXiy9UTSvj3ujgxaS0nPwEmXu5FcA6Ad0Pr78TGvBcnv92s+MHBQfnPUuQjibrRPAquxsGN9GCWZ58gWPq4+Fg67B63dR1wtSmNEIIbXkLVuZnb2zuhh8KEHuUDVTZLjgzpVcR0J2NtDGsC09HDb88SHrGV+eFejrUVny8g/nPmvmMofX2IAhDuam7rEGVOUdY3lLDC00uZprDjZdXUBto83VmOG5OGPQ7Xe5tz4Ek+s2y3iTq9qW+BrwLO55SFYe+BTDdfSY1HiPVfc+bRbScPiOYXr+080g9zFulCePlZPrWrBCtALiPE69etGrj5FooY9+gQidpfKJ03Qy8vG4l8wl4kHjnGzFwkbnuAHoEzjMaImvjl5nAC/24z9bVUau3AMKmqZ9XrTjSpGgo10MVZwSnA+kWj7wYLKaQcCWceLrU=
+            secure: "Br0fD9CAKm8gqyEuwmltNJd4dGJCxPpj6feugHlO+CFFwfE/+kJKkpTlsDuRfrUzUDlWiETNPf0XGSjvPFqZExnLCE9XQh2+XF6u+S3YBWfM+rbbyRVAK6BlTwmt0u3jRJ2JP7spedTGZA+qfIWI+UkwoOexo7NcqtMPLahiZzheaaad8y3J+crHQCrB/kPrhLqKVMEOkIbveFdfV2QLfCOWgqP8e1LGZhPZ2N4QcNo0iB5uI4ZyYszTZDniXFKxz7kBs4tl4ZQDqRHqL02qKPsjbvjrZp83ql+PbC2dpgXi9YpaDuBEqKKX1rTQP5ppcwbobot5U3ItHWzpXbLCdsWxvbde/0enjMmOF1wwl71hPYIf7PkQmNAWXRtL2Z1TguO/dKCeXBLDER4YDQ79GYpikAMqnrRLou4rsyZrNUzg8aHbELzAHppDSpqEJN8ymGgWgmWBT8yPaWVwN5CjPFOxLPrVEObcwcNSGOcOvtmUGCnXKSZminNZUjz5QfWqpA+LYCUIbeOI2X2D+iQWklWONaU2A+PcNLaaegwwj4K+9ZlU08Ed8Ud5ZGhjN9s72OtoFPdSHAyBgf/qxIdnTzmmE+SQ90mDtG3VqjHy28Ix7cIGqaIEC8shFb0kKHqQ7AVkLPm0bsh2fbbYu/5YVpXHfxlKWfOLBV14bHUq3v0="
           services: docker
         - os: osx
           go: 1.7
@@ -46,7 +46,7 @@ after_success:
       export GIT_TAG="latest";
       git tag -d $GIT_TAG;
       git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
-      git push -f -q https://$API_TOKEN@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
+      git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
     fi
 
 before_deploy:
