@@ -653,9 +653,9 @@ func parseSwaggerApi() (*whisk.Api, error) {
         return nil, whiskErr
     }
 
-    swagger, err:= readFile(Flags.api.configfile)
+    swagger, err:= ReadFile(Flags.api.configfile)
     if ( err != nil ) {
-        whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", Flags.api.configfile, err)
+        whisk.Debug(whisk.DbgError, "ReadFile(%s) error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
                 map[string]interface{}{"name": Flags.api.configfile, "err": err})
         whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
@@ -1411,7 +1411,7 @@ func parseSwaggerApiV2() (*whisk.Api, error) {
         return nil, whiskErr
     }
 
-    swagger, err:= readFile(Flags.api.configfile)
+    swagger, err:= ReadFile(Flags.api.configfile)
     if ( err != nil ) {
         whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", Flags.api.configfile, err)
         errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
