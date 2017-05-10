@@ -55,6 +55,7 @@ var Flags struct {
         summary     bool
         feed        string  // name of feed
         detail      bool
+        format      string
     }
 
     property struct {
