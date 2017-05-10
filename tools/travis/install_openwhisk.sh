@@ -26,3 +26,7 @@ cd $WHISKDIR
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml
+
+# Run the test cases under openwhisk to ensure the quality of the binary.
+cd $WHISKDIR
+./gradlew tests:test
