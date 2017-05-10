@@ -879,7 +879,7 @@ func getClientNamespace() (string) {
     return normalizeNamespace(client.Config.Namespace)
 }
 
-func readFile(filename string) (string, error) {
+func ReadFile(filename string) (string, error) {
     _, err := os.Stat(filename)
     if err != nil {
         whisk.Debug(whisk.DbgError, "os.Stat(%s) error: %s\n", filename, err)

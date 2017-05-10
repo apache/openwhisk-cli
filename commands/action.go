@@ -411,7 +411,7 @@ func getExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
     exec = new(whisk.Exec)
 
     if !isDocker || ext == ".zip" {
-        code, err = readFile(artifact)
+        code, err = ReadFile(artifact)
 
         if ext == ".zip" || ext == ".jar" {
             // Base64 encode the file

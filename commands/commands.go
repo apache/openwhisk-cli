@@ -142,7 +142,7 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
             }
 
             filename := paramArgs[len(paramArgs) - 1]
-            paramArgs[len(paramArgs) - 1], whiskErr = readFile(filename)
+            paramArgs[len(paramArgs) - 1], whiskErr = ReadFile(filename)
             if whiskErr != nil {
                 whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", filename, whiskErr)
                 return nil, nil, nil, whiskErr
@@ -159,7 +159,7 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
             }
 
             filename := annotArgs[len(annotArgs) - 1]
-            annotArgs[len(annotArgs) - 1], whiskErr = readFile(filename)
+            annotArgs[len(annotArgs) - 1], whiskErr = ReadFile(filename)
             if whiskErr != nil {
                 whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", filename, whiskErr)
                 return nil, nil, nil, whiskErr
