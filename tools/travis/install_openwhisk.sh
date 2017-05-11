@@ -29,8 +29,9 @@ $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml
 
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
+mkdir -p $WHISKDIR/bin
 cp $TRAVIS_BUILD_DIR/wsk $WHISKDIR/bin
 
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $WHISKDIR
-./gradlew :tests:testLean
+./gradlew :tests:test -Dtest.single=Wsk*Tests*
