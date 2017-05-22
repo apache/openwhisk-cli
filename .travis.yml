@@ -16,7 +16,11 @@ matrix:
 git:
   depth: 3
 
+before_install:
+  - ./tools/travis/setupscan.sh
+
 install:
+  - ./tools/travis/scancode.sh
   - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
   - go get -u github.com/stretchr/testify

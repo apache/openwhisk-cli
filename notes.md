@@ -570,39 +570,39 @@ from `commands/hugo.go`
 
 // Execute adds all child commands to the root command HugoCmd and sets flags appropriately.
 func Execute() {
-	HugoCmd.SetGlobalNormalizationFunc(helpers.NormalizeHugoFlags)
+    HugoCmd.SetGlobalNormalizationFunc(helpers.NormalizeHugoFlags)
 
-	HugoCmd.SilenceUsage = true
+    HugoCmd.SilenceUsage = true
 
-	AddCommands()
+    AddCommands()
 
-	if c, err := HugoCmd.ExecuteC(); err != nil {
-		if isUserError(err) {
-			c.Println("")
-			c.Println(c.UsageString())
-		}
+    if c, err := HugoCmd.ExecuteC(); err != nil {
+        if isUserError(err) {
+            c.Println("")
+            c.Println(c.UsageString())
+        }
 
-		return
-	}
+        return
+    }
 }
 
 // AddCommands adds child commands to the root command HugoCmd.
 func AddCommands() {
-	HugoCmd.AddCommand(serverCmd)
-	HugoCmd.AddCommand(versionCmd)
-	HugoCmd.AddCommand(configCmd)
-	HugoCmd.AddCommand(checkCmd)
-	HugoCmd.AddCommand(benchmarkCmd)
-	HugoCmd.AddCommand(convertCmd)
-	HugoCmd.AddCommand(newCmd)
-	HugoCmd.AddCommand(listCmd)
-	HugoCmd.AddCommand(undraftCmd)
-	HugoCmd.AddCommand(importCmd)
+    HugoCmd.AddCommand(serverCmd)
+    HugoCmd.AddCommand(versionCmd)
+    HugoCmd.AddCommand(configCmd)
+    HugoCmd.AddCommand(checkCmd)
+    HugoCmd.AddCommand(benchmarkCmd)
+    HugoCmd.AddCommand(convertCmd)
+    HugoCmd.AddCommand(newCmd)
+    HugoCmd.AddCommand(listCmd)
+    HugoCmd.AddCommand(undraftCmd)
+    HugoCmd.AddCommand(importCmd)
 
-	HugoCmd.AddCommand(genCmd)
-	genCmd.AddCommand(genautocompleteCmd)
-	genCmd.AddCommand(gendocCmd)
-	genCmd.AddCommand(genmanCmd)
+    HugoCmd.AddCommand(genCmd)
+    genCmd.AddCommand(genautocompleteCmd)
+    genCmd.AddCommand(gendocCmd)
+    genCmd.AddCommand(genmanCmd)
 }
 
 ```
@@ -620,32 +620,32 @@ var BuildWatch, IgnoreCache, Draft, Future, UglyURLs, CanonifyURLs, Verbose, Log
 var Source, CacheDir, Destination, Theme, BaseURL, CfgFile, LogFile, Editor string
 
 func initCoreCommonFlags(cmd *cobra.Command) {
-	cmd.Flags().BoolVarP(&Draft, "buildDrafts", "D", false, "include content marked as draft")
-	cmd.Flags().BoolVarP(&Future, "buildFuture", "F", false, "include content with publishdate in the future")
-	cmd.Flags().BoolVar(&DisableRSS, "disableRSS", false, "Do not build RSS files")
-	cmd.Flags().BoolVar(&DisableSitemap, "disableSitemap", false, "Do not build Sitemap file")
-	cmd.Flags().BoolVar(&DisableRobotsTXT, "disableRobotsTXT", false, "Do not build Robots TXT file")
-	cmd.Flags().StringVarP(&Source, "source", "s", "", "filesystem path to read files relative from")
-	cmd.Flags().StringVarP(&CacheDir, "cacheDir", "", "", "filesystem path to cache directory. Defaults: $TMPDIR/hugo_cache/")
-	cmd.Flags().BoolVarP(&IgnoreCache, "ignoreCache", "", false, "Ignores the cache directory for reading but still writes to it")
-	cmd.Flags().StringVarP(&Destination, "destination", "d", "", "filesystem path to write files to")
-	cmd.Flags().StringVarP(&Theme, "theme", "t", "", "theme to use (located in /themes/THEMENAME/)")
-	cmd.Flags().BoolVar(&UglyURLs, "uglyURLs", false, "if true, use /filename.html instead of /filename/")
-	cmd.Flags().BoolVar(&CanonifyURLs, "canonifyURLs", false, "if true, all relative URLs will be canonicalized using baseURL")
-	cmd.Flags().StringVarP(&BaseURL, "baseURL", "b", "", "hostname (and path) to the root, e.g. http://spf13.com/")
-	cmd.Flags().StringVar(&CfgFile, "config", "", "config file (default is path/config.yaml|json|toml)")
-	cmd.Flags().StringVar(&Editor, "editor", "", "edit new content with this editor, if provided")
-	cmd.Flags().BoolVar(&nitro.AnalysisOn, "stepAnalysis", false, "display memory and timing of different steps of the program")
-	cmd.Flags().BoolVar(&PluralizeListTitles, "pluralizeListTitles", true, "Pluralize titles in lists using inflect")
-	cmd.Flags().BoolVar(&PreserveTaxonomyNames, "preserveTaxonomyNames", false, `Preserve taxonomy names as written ("Gérard Depardieu" vs "gerard-depardieu")`)
-	cmd.Flags().BoolVarP(&ForceSync, "forceSyncStatic", "", false, "Copy all files when static is changed.")
-	// For bash-completion
-	validConfigFilenames := []string{"json", "js", "yaml", "yml", "toml", "tml"}
-	cmd.Flags().SetAnnotation("config", cobra.BashCompFilenameExt, validConfigFilenames)
-	cmd.Flags().SetAnnotation("source", cobra.BashCompSubdirsInDir, []string{})
-	cmd.Flags().SetAnnotation("cacheDir", cobra.BashCompSubdirsInDir, []string{})
-	cmd.Flags().SetAnnotation("destination", cobra.BashCompSubdirsInDir, []string{})
-	cmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
+    cmd.Flags().BoolVarP(&Draft, "buildDrafts", "D", false, "include content marked as draft")
+    cmd.Flags().BoolVarP(&Future, "buildFuture", "F", false, "include content with publishdate in the future")
+    cmd.Flags().BoolVar(&DisableRSS, "disableRSS", false, "Do not build RSS files")
+    cmd.Flags().BoolVar(&DisableSitemap, "disableSitemap", false, "Do not build Sitemap file")
+    cmd.Flags().BoolVar(&DisableRobotsTXT, "disableRobotsTXT", false, "Do not build Robots TXT file")
+    cmd.Flags().StringVarP(&Source, "source", "s", "", "filesystem path to read files relative from")
+    cmd.Flags().StringVarP(&CacheDir, "cacheDir", "", "", "filesystem path to cache directory. Defaults: $TMPDIR/hugo_cache/")
+    cmd.Flags().BoolVarP(&IgnoreCache, "ignoreCache", "", false, "Ignores the cache directory for reading but still writes to it")
+    cmd.Flags().StringVarP(&Destination, "destination", "d", "", "filesystem path to write files to")
+    cmd.Flags().StringVarP(&Theme, "theme", "t", "", "theme to use (located in /themes/THEMENAME/)")
+    cmd.Flags().BoolVar(&UglyURLs, "uglyURLs", false, "if true, use /filename.html instead of /filename/")
+    cmd.Flags().BoolVar(&CanonifyURLs, "canonifyURLs", false, "if true, all relative URLs will be canonicalized using baseURL")
+    cmd.Flags().StringVarP(&BaseURL, "baseURL", "b", "", "hostname (and path) to the root, e.g. http://spf13.com/")
+    cmd.Flags().StringVar(&CfgFile, "config", "", "config file (default is path/config.yaml|json|toml)")
+    cmd.Flags().StringVar(&Editor, "editor", "", "edit new content with this editor, if provided")
+    cmd.Flags().BoolVar(&nitro.AnalysisOn, "stepAnalysis", false, "display memory and timing of different steps of the program")
+    cmd.Flags().BoolVar(&PluralizeListTitles, "pluralizeListTitles", true, "Pluralize titles in lists using inflect")
+    cmd.Flags().BoolVar(&PreserveTaxonomyNames, "preserveTaxonomyNames", false, `Preserve taxonomy names as written ("Gérard Depardieu" vs "gerard-depardieu")`)
+    cmd.Flags().BoolVarP(&ForceSync, "forceSyncStatic", "", false, "Copy all files when static is changed.")
+    // For bash-completion
+    validConfigFilenames := []string{"json", "js", "yaml", "yml", "toml", "tml"}
+    cmd.Flags().SetAnnotation("config", cobra.BashCompFilenameExt, validConfigFilenames)
+    cmd.Flags().SetAnnotation("source", cobra.BashCompSubdirsInDir, []string{})
+    cmd.Flags().SetAnnotation("cacheDir", cobra.BashCompSubdirsInDir, []string{})
+    cmd.Flags().SetAnnotation("destination", cobra.BashCompSubdirsInDir, []string{})
+    cmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
 }
 ```
 
@@ -705,23 +705,23 @@ possible solution: use pointers.  if pointer is nil, then ignore.
 
 ```go
 func addRouteOptions(route string, options interface{}) (string, error) {
-	v := reflect.ValueOf(options)
-	if v.Kind() == reflect.Ptr && v.IsNil() {
-		return route, nil
-	}
+    v := reflect.ValueOf(options)
+    if v.Kind() == reflect.Ptr && v.IsNil() {
+        return route, nil
+    }
 
-	u, err := url.Parse(route)
-	if err != nil {
-		return route, err
-	}
+    u, err := url.Parse(route)
+    if err != nil {
+        return route, err
+    }
 
-	qs, err := query.Values(options)
-	if err != nil {
-		return route, err
-	}
+    qs, err := query.Values(options)
+    if err != nil {
+        return route, err
+    }
 
-	u.RawQuery = qs.Encode()
-	return u.String(), nil
+    u.RawQuery = qs.Encode()
+    return u.String(), nil
 }
 ```
 - How does go-querystring/query.Values() work ?? has options ??
