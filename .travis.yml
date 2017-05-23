@@ -18,7 +18,8 @@ git:
 
 before_install:
   - pip install --upgrade pip setuptools
-  - pip3 install --upgrade pip setuptools
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+      pip3 install --upgrade pip setuptools
 
 install:
   - ./tools/travis/setupscan.sh
