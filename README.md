@@ -67,7 +67,7 @@ $ ./gradlew.bat distDocker
 ```
 
 Finally, you can find the binary `wsk` or `wsk.exe` in the bin folder under the OpenWhisk CLI home directory. In
-addition, it is also available under the folder bin/<os>/<cpu arc>/. For example, if your local operating system is Mac,
+addition, it is also available under the folder bin/\<os\>/\<cpu arc\>/. For example, if your local operating system is Mac,
 and the CPU architecture is amd64, the binary and its compressed package can also be found under bin/mac/amd64/.
 
 OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process which is copied from the
@@ -81,7 +81,7 @@ command:
 $ ./gradlew distDocker -PcrossCompileCLI=true
 ```
 
-Then, you will find the binaries and their compressed packages generated under the folder bin/<os>/<cpu arc>/ for each
+Then, you will find the binaries and their compressed packages generated under the folder bin/\<os\>/\<cpu arc\>/ for each
 operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
 
 
