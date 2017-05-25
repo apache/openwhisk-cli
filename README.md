@@ -16,25 +16,21 @@ binary, which fits your local environment.
 
 # How to build the binary locally
 
-You can also choose to build the binary locally based on the source code. First, install the prerequisites to 
-download and build OpenWhisk CLI: [installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+You can also choose to build the binaries locally from the source code with Go tool.
 
-Then, download the source code via the Git command:
+Make sure that you have Go installed [installing Go](https://golang.org/doc/install), and `$GOPATH` is defined [Go development environment](https://golang.org/doc/code.html).
+
+Then download the source code of the OpenWhisk CLI and the dependencies by typing:
 
 ```
-$ git clone https://github.com/apache/incubator-openwhisk-cli.git
+$ cd $GOPATH
+$ go get github.com/apache/incubator-openwhisk-cli
 ```
 
-OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process which is copied from the
-Docker container to the local file system in the following directory: bin. This binary will be platform
-specific, it will only run on the operating system, and CPU architecture that matches the build machine.
 
 ## Build the binary with Go
 
-The binary can be built by Go build command. Make sure that you have Go installed: [installing Go](https://golang.org/doc/install).
-
-After that, open an terminal, go to the directory of OpenWhisk CLI home directory, and build the binary via
-the following command:
+Open an terminal, go to the directory of OpenWhisk CLI home directory, and build the binary via the following command:
 
 ```
 $ go build -o wsk
@@ -70,7 +66,23 @@ or run the following command for Windows:
 $ ./gradlew.bat distDocker
 ```
 
-Finally, you can find the binary `wsk` or `wsk.exe` in the bin folder under the OpenWhisk CLI home directory.
+Finally, you can find the binary `wsk` or `wsk.exe` in the bin folder under the OpenWhisk CLI home directory. In
+addition, it is also available under the folder bin/<os>/<cpu arc>/. For example, if your local operating system is Mac,
+and the CPU architecture is amd64, the binary and its compressed package can also be found under bin/mac/amd64/.
+
+OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process which is copied from the
+Docker container to the local file system in the following directory: bin. This binary will be platform
+specific, it will only run on the operating system, and CPU architecture that matches the build machine.
+
+If you would like to build the binaries available for all the operating systems and architectures, run the following
+command:
+
+```
+$ ./gradlew distDocker -PcrossCompileCLI=true
+```
+
+Then, you will find the binaries and their compressed packages generated under the folder bin/<os>/<cpu arc>/ for each
+operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
 
 
 # How to use the binary
