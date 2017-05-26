@@ -109,7 +109,7 @@ func wski18nResourcesDe_deAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/de_DE.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/de_DE.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -129,7 +129,7 @@ func wski18nResourcesEn_usAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 47607, mode: os.FileMode(420), modTime: time.Unix(1494965329, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 47607, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -149,7 +149,7 @@ func wski18nResourcesEs_esAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/es_ES.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/es_ES.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -169,7 +169,7 @@ func wski18nResourcesFr_frAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/fr_FR.all.json", size: 101, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/fr_FR.all.json", size: 101, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -189,7 +189,7 @@ func wski18nResourcesIt_itAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/it_IT.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/it_IT.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -209,7 +209,7 @@ func wski18nResourcesJa_jaAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/ja_JA.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/ja_JA.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -229,7 +229,7 @@ func wski18nResourcesKo_krAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/ko_KR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/ko_KR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -249,7 +249,7 @@ func wski18nResourcesPt_brAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/pt_BR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/pt_BR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -269,7 +269,7 @@ func wski18nResourcesZh_hansAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/zh_Hans.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/zh_Hans.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -289,7 +289,7 @@ func wski18nResourcesZh_hantAllJson() (*asset, error) {
         return nil, err
     }
 
-    info := bindataFileInfo{name: "wski18n/resources/zh_Hant.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1494965038, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/zh_Hant.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1495934612, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
