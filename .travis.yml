@@ -16,13 +16,18 @@ matrix:
 git:
   depth: 3
 
+before_install:
+  - pip install --upgrade pip setuptools
+
 install:
+  - ./tools/travis/setupscan.sh
   - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
   - go get -u github.com/stretchr/testify
   - go get -u github.com/spf13/viper
 
 script:
+  - ./tools/travis/scancode.sh
   - make lint
   - make build
   - make test
