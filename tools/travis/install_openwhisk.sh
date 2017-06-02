@@ -35,4 +35,9 @@ cp $TRAVIS_BUILD_DIR/wsk $WHISKDIR/bin
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $WHISKDIR
 ./gradlew :tests:test -Dtest.single=Wsk*Tests*
-./gradlew :tests:test -Dtest.single=ApiGw*Tests*
+sleep 30
+./gradlew tests:test -Dtest.single=*ApiGwRoutemgmtActionTests*
+sleep 30
+./gradlew tests:test -Dtest.single=*ApiGwTests*
+sleep 30
+./gradlew tests:test -Dtest.single=*ApiGwEndToEndTests*
