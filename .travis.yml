@@ -35,7 +35,7 @@ script:
   - make native_test;
   - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then
       export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk";
-      ./tools/travis/install_openwhisk.sh;
+      ./tools/travis/test_openwhisk.sh;
       make integration_test;
     fi
 
