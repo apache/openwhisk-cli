@@ -80,11 +80,11 @@
 		},
         {
             "ImportPath": "github.com/apache/incubator-openwhisk-client-go/whisk",
-            "Rev": "HEAD"
+            "Rev": "f26793c94fd6883867eaa98ed8249024128cbcc6"
         },
         {
             "ImportPath": "github.com/apache/incubator-openwhisk-client-go/wski18n",
-            "Rev": "HEAD"
+            "Rev": "f26793c94fd6883867eaa98ed8249024128cbcc6"
         }
 	]
 }
