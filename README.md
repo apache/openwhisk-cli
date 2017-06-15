@@ -57,13 +57,13 @@ After that, open an terminal, go to the directory of OpenWhisk CLI home director
 build the binary via the following command under Linux or Mac:
 
 ```
-$ ./gradlew distDocker
+$ ./gradlew buildBinaries
 ```
 
 or run the following command for Windows:
 
 ```
-$ ./gradlew.bat distDocker
+$ ./gradlew.bat buildBinaries
 ```
 
 Finally, you can find the binary `wsk` or `wsk.exe` in the bin folder under the OpenWhisk CLI home directory. In
@@ -78,7 +78,7 @@ If you would like to build the binaries available for all the operating systems 
 command:
 
 ```
-$ ./gradlew distDocker -PcrossCompileCLI=true
+$ ./gradlew buildBinaries -PcrossCompileCLI=true
 ```
 
 Then, you will find the binaries and their compressed packages generated under the folder bin/\<os\>/\<cpu arc\>/ for each

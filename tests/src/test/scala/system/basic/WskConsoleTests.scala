@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.TestHelpers
-import common.TestUtils
+import common.TestCLIUtils
 import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
@@ -61,7 +61,7 @@ class WskConsoleTests
             }
 
             assetHelper.withCleaner(wsk.action, fullActionName) {
-                (action, _) => action.create(fullActionName, Some(TestUtils.getTestActionFilename("hello.js")))
+                (action, _) => action.create(fullActionName, Some(TestCLIUtils.getTestActionFilename("hello.js")))
             }
 
             val duration = Some(30 seconds)
@@ -79,7 +79,7 @@ class WskConsoleTests
         (wp, assetHelper) =>
             val name = "countdown"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("countdown.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("countdown.js")))
             }
 
             val start = Instant.now(Clock.systemUTC())

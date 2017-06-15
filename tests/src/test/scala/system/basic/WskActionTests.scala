@@ -22,6 +22,7 @@ import org.scalatest.junit.JUnitRunner
 
 import common.JsHelpers
 import common.TestHelpers
+import common.TestCLIUtils
 import common.TestUtils
 import common.Wsk
 import common.WskProps
@@ -50,7 +51,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "hello promise"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("helloPromise.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("helloPromise.js")))
             }
 
             val run = wsk.action.invoke(name)
@@ -66,7 +67,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "hello Async"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("helloAsync.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("helloAsync.js")))
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -89,7 +90,7 @@ class WskActionTests
                 (action, _) =>
                     action.create(
                         name,
-                        Some(TestUtils.getTestActionFilename("printParams.js")),
+                        Some(TestCLIUtils.getTestActionFilename("printParams.js")),
                         parameters = params.mapValues(_.toJson))
             }
 
@@ -118,7 +119,7 @@ class WskActionTests
             }
 
             assetHelper.withCleaner(wsk.action, fullQualifiedName) {
-                val file = Some(TestUtils.getTestActionFilename("wc.js"))
+                val file = Some(TestCLIUtils.getTestActionFilename("wc.js"))
                 (action, _) => action.create(fullQualifiedName, file)
             }
 
@@ -143,7 +144,7 @@ class WskActionTests
             val annots = Map("b" -> "B".toJson)
 
             assetHelper.withCleaner(wsk.action, origActionName) {
-                val file = Some(TestUtils.getTestActionFilename("wc.js"))
+                val file = Some(TestCLIUtils.getTestActionFilename("wc.js"))
                 (action, _) => action.create(origActionName, file, parameters = params, annotations = annots)
             }
 
@@ -210,7 +211,7 @@ class WskActionTests
             )
 
             assetHelper.withCleaner(wsk.action, origName) {
-                val file = Some(TestUtils.getTestActionFilename("echo.js"))
+                val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
                 (action, _) => action.create(origName, file, parameters = origParams, annotations = origAnnots)
             }
 
@@ -229,7 +230,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "recreatedAction"
             assetHelper.withCleaner(wsk.action, name, false) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("wc.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("wc.js")))
             }
 
             val run1 = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -241,7 +242,7 @@ class WskActionTests
 
             wsk.action.delete(name)
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
             }
 
             val run2 = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -256,7 +257,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "empty"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("empty.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
             }
             val run = wsk.action.invoke(name)
             withActivation(wsk.activation, run) {
@@ -270,7 +271,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "empty"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("empty.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
             }
             val rr = wsk.action.get(name)
             wsk.parseJsonString(rr.stdout).getFieldPath("exec", "code") shouldBe Some(JsString(""))
@@ -282,10 +283,10 @@ class WskActionTests
             val child = "wc"
 
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("wcbin.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("wcbin.js")))
             }
             assetHelper.withCleaner(wsk.action, child) {
-                (action, _) => action.create(child, Some(TestUtils.getTestActionFilename("wc.js")))
+                (action, _) => action.create(child, Some(TestCLIUtils.getTestActionFilename("wc.js")))
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
@@ -301,7 +302,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "helloAsync"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("helloAsync.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("helloAsync.js")))
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
@@ -328,7 +329,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "ping"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("ping.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("ping.js")))
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> "google.com".toJson))
@@ -344,7 +345,7 @@ class WskActionTests
         (wp, assetHelper) =>
             val name = "utf8Test"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
             }
 
             val utf8 = "«ταБЬℓσö»: 1<2 & 4+1>³, now 20%€§$ off!"
