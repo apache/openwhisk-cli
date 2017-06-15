@@ -11,7 +11,7 @@ task removeBinary(type: Delete) {
     delete "${projectDir}/bin/windows"
 }
 
-task distBinary(dependsOn: [removeBinary, distDocker]) {
+task distBinary(dependsOn: [removeBinary, buildBinaries]) {
     doLast {
         run(dockerBinary + ["rm", "-f", dockerContainerName], true)
         run(dockerBinary + ["run", "--name", dockerContainerName, dockerTaggedImageName])
