@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.TestHelpers
-import common.TestUtils
+import common.TestCLIUtils
 import common.TestUtils._
 import common.Wsk
 import common.WskProps
@@ -43,7 +43,7 @@ class WskBasicTests
 
     implicit val wskprops = WskProps()
     val wsk = new Wsk
-    val defaultAction = Some(TestUtils.getTestActionFilename("hello.js"))
+    val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.js"))
 
     behavior of "Wsk CLI"
 
@@ -221,7 +221,7 @@ class WskBasicTests
     it should "create, update, get and list an action" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "createAndUpdate"
-            val file = Some(TestUtils.getTestActionFilename("hello.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
             val params = Map("a" -> "A".toJson)
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
@@ -240,7 +240,7 @@ class WskBasicTests
 
     it should "reject create of an action that already exists" in withAssetCleaner(wskprops) {
         val name = "dupeAction"
-        val file = Some(TestUtils.getTestActionFilename("echo.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
 
         (wp, assetHelper) =>
             assetHelper.withCleaner(wsk.action, name) {
@@ -292,7 +292,7 @@ class WskBasicTests
         (wp, assetHelper) =>
             assetHelper.withCleaner(wsk.action, name) {
                 // this docker image will be need to be pulled from dockerhub and hence has to be published there first
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("blackbox.zip")), kind = Some("native"))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("blackbox.zip")), kind = Some("native"))
             }
 
             val run = wsk.action.invoke(name, Map())
@@ -309,8 +309,8 @@ class WskBasicTests
 
     it should "create, and invoke an action using a parameter file" in withAssetCleaner(wskprops) {
         val name = "paramFileAction"
-        val file = Some(TestUtils.getTestActionFilename("argCheck.js"))
-        val argInput = Some(TestUtils.getTestActionFilename("validInput2.json"))
+        val file = Some(TestCLIUtils.getTestActionFilename("argCheck.js"))
+        val argInput = Some(TestCLIUtils.getTestActionFilename("validInput2.json"))
 
         (wp, assetHelper) =>
             assetHelper.withCleaner(wsk.action, name) {
@@ -363,7 +363,7 @@ class WskBasicTests
         (wp, assetHelper) =>
             val name = "MALFORMED"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("malformed.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("malformed.js")))
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> "whatever".toJson))
@@ -383,7 +383,7 @@ class WskBasicTests
             val boolErrInput = Map("error" -> true.toJson)
 
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("echo.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("echo.js")))
             }
 
             Seq(strErrInput, numErrInput, boolErrInput) foreach { input =>
@@ -399,7 +399,7 @@ class WskBasicTests
         (wp, assetHelper) =>
             val name = "errorResponseObject"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("asyncError.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("asyncError.js")))
             }
 
             val stderr = wsk.action.invoke(name, blocking = true, expectedExitCode = 246).stderr
@@ -412,7 +412,7 @@ class WskBasicTests
         (wp, assetHelper) =>
             val name = "basicInvoke"
             assetHelper.withCleaner(wsk.action, name) {
-                (action, _) => action.create(name, Some(TestUtils.getTestActionFilename("wc.js")))
+                (action, _) => action.create(name, Some(TestCLIUtils.getTestActionFilename("wc.js")))
             }
             wsk.action.invoke(name, Map("payload" -> "one two three".toJson), result = true)
                 .stdout should include regex (""""count": 3""")
@@ -460,7 +460,7 @@ class WskBasicTests
 
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
-                    action.create(name, Some(TestUtils.getTestActionFilename("emptyJSONResult.js")))
+                    action.create(name, Some(TestCLIUtils.getTestActionFilename("emptyJSONResult.js")))
             }
 
             val stdout = wsk.action.invoke(name, result = true).stdout
@@ -474,7 +474,7 @@ class WskBasicTests
             val allowedActionDuration = 120 seconds
             val res = assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
-                    action.create(name, Some(TestUtils.getTestActionFilename("timeout.js")),
+                    action.create(name, Some(TestCLIUtils.getTestActionFilename("timeout.js")),
                         timeout = Some(allowedActionDuration))
                     action.invoke(name, parameters = params, result = true, expectedExitCode = ACCEPTED)
             }
@@ -567,8 +567,8 @@ class WskBasicTests
 
     it should "create, and fire a trigger using a parameter file" in withAssetCleaner(wskprops) {
         val name = "paramFileTrigger"
-        val file = Some(TestUtils.getTestActionFilename("argCheck.js"))
-        val argInput = Some(TestUtils.getTestActionFilename("validInput2.json"))
+        val file = Some(TestCLIUtils.getTestActionFilename("argCheck.js"))
+        val argInput = Some(TestCLIUtils.getTestActionFilename("validInput2.json"))
 
         (wp, assetHelper) =>
             assetHelper.withCleaner(wsk.trigger, name) {

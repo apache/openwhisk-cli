@@ -21,7 +21,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.TestHelpers
-import common.TestUtils
+import common.TestCLIUtils
 import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
@@ -36,8 +36,8 @@ class WskRuleTests
 
     implicit val wskprops = WskProps()
     val wsk = new Wsk
-    val defaultAction = TestUtils.getTestActionFilename("wc.js")
-    val secondAction = TestUtils.getTestActionFilename("hello.js")
+    val defaultAction = TestCLIUtils.getTestActionFilename("wc.js")
+    val secondAction = TestCLIUtils.getTestActionFilename("hello.js")
     val testString = "this is a test"
     val testResult = JsObject("count" -> testString.split(" ").length.toJson)
 

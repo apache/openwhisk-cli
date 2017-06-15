@@ -29,7 +29,7 @@ import org.scalatest.junit.JUnitRunner
 import com.jayway.restassured.RestAssured
 
 import common.TestHelpers
-import common.TestUtils
+import common.TestCLIUtils
 import common.WhiskProperties
 import common.Wsk
 import common.WskAdmin
@@ -87,7 +87,7 @@ class WskWebActionsTestsV2 extends WskWebActionsTests with BeforeAndAfterAll {
         (wp, assetHelper) =>
             val actionName = "webaction"
 
-            val file = Some(TestUtils.getTestActionFilename("echo.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
             assetHelper.withCleaner(wsk.action, actionName) {
                 (action, _) =>
                     action.create(actionName, file, web = Some(true.toString))(wp)
@@ -145,7 +145,7 @@ trait WskWebActionsTests
     it should "create a web action accessible via HTTPS" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("echo.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
 
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
@@ -184,7 +184,7 @@ trait WskWebActionsTests
     it should "create a web action requiring authentication accessible via HTTPS" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("echo.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
 
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
@@ -214,7 +214,7 @@ trait WskWebActionsTests
     it should "ensure that CORS header is preserved for custom options" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("corsHeaderMod.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("corsHeaderMod.js"))
 
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>
@@ -233,7 +233,7 @@ trait WskWebActionsTests
     it should "invoke web action to ensure the returned body argument is correct" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("echo.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
             val bodyContent = "This is the body"
 
             assetHelper.withCleaner(wsk.action, name) {
@@ -260,7 +260,7 @@ trait WskWebActionsTests
     it should "reject invocation of web action with invalid accept header" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("textBody.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("textBody.js"))
 
             assetHelper.withCleaner(wsk.action, name) {
                 (action, _) =>

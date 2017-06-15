@@ -21,7 +21,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.TestHelpers
-import common.TestUtils
+import common.TestCLIUtils
 import common.Wsk
 import common.WskAdmin
 import common.WskProps
@@ -57,12 +57,12 @@ class WskActionSequenceTests
             }
 
             assetHelper.withCleaner(wsk.action, fullHelloActionName) {
-                val file = Some(TestUtils.getTestActionFilename("hello.js"))
+                val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
                 (action, _) => action.create(fullHelloActionName, file)(wp)
             }
 
             assetHelper.withCleaner(wsk.action, fullCatActionName) {
-                val file = Some(TestUtils.getTestActionFilename("cat.js"))
+                val file = Some(TestCLIUtils.getTestActionFilename("cat.js"))
                 (action, _) => action.create(fullCatActionName, file)(wp)
             }
 
