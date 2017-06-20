@@ -279,8 +279,8 @@ var actionDeleteCmd = &cobra.Command{
 }
 
 var actionListCmd = &cobra.Command{
-    Use:           "list [NAMESPACE]",
-    Short:         wski18n.T("list all actions"),
+    Use:           "list [ NAMESPACE | PACKAGE_NAME ]",
+    Short:         wski18n.T("list all actions in a namespace or actions contained in a package"),
     SilenceUsage:  true,
     SilenceErrors: true,
     PreRunE:       setupClientConfig,
@@ -289,19 +289,21 @@ var actionListCmd = &cobra.Command{
         var actions []whisk.Action
         var err error
 
-        if len(args) == 1 {
-            if qualifiedName, err = parseQualifiedName(args[0]); err != nil {
-                return parseQualifiedNameError(args[0], err)
-            }
-
-            client.Namespace = qualifiedName.namespace
-        } else if whiskErr := checkArgs(
+        if whiskErr := checkArgs(
             args,
             0,
             1,
             "Action list",
             wski18n.T("An optional namespace is the only valid argument.")); whiskErr != nil {
             return whiskErr
+        }
+
+        if len(args) == 1 {
+            if qualifiedName, err = parseQualifiedName(args[0]); err != nil {
+                return parseQualifiedNameError(args[0], err)
+            }
+
+            client.Namespace = qualifiedName.namespace
         }
 
         options := &whisk.ActionListOptions{
@@ -617,19 +619,6 @@ func actionInsertError(action *whisk.Action, err error) (error) {
     return nestedError(errMsg, err)
 }
 
-func parseQualifiedNameError(entityName string, err error) (error) {
-    whisk.Debug(whisk.DbgError, "parseQualifiedName(%s) failed: %s\n", entityName, err)
-
-    errMsg := wski18n.T(
-        "'{{.name}}' is not a valid qualified name: {{.err}}",
-        map[string]interface{}{
-            "name": entityName,
-            "err": err,
-        })
-
-    return nestedError(errMsg, err)
-}
-
 func getJSONFromStringsParamError(params []string, keyValueFormat bool, err error) (error) {
     whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %t) failed: %s\n", params, keyValueFormat, err)
 
@@ -902,7 +891,7 @@ func init() {
     actionCreateCmd.Flags().StringVar(&Flags.action.main, "main", "", wski18n.T("the name of the action entry point (function or fully-qualified method name when applicable)"))
     actionCreateCmd.Flags().IntVarP(&Flags.action.timeout, "timeout", "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
     actionCreateCmd.Flags().IntVarP(&Flags.action.memory, "memory", "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
-    actionCreateCmd.Flags().IntVarP(&flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
+    actionCreateCmd.Flags().IntVarP(&Flags.action.logsize, "logsize", "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
     actionCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", nil, wski18n.T("annotation values in `KEY VALUE` format"))
     actionCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
     actionCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", nil, wski18n.T("parameter values in `KEY VALUE` format"))
