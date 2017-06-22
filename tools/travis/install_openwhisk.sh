@@ -25,7 +25,8 @@ $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 
 cd $WHISKDIR
-./gradlew distDocker -PdockerImagePrefix=testing
+GRADLE_PROJS_SKIP="-x :core:pythonAction:distDocker  -x :core:python2Action:distDocker -x :core:swift3Action:distDocker -x :core:javaAction:distDocker"
+TERM=dumb ./gradlew distDocker -PdockerImagePrefix=testing $GRADLE_PROJS_SKIP
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
@@ -37,11 +38,11 @@ cp $TRAVIS_BUILD_DIR/wsk $WHISKDIR/bin
 
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $WHISKDIR
-./gradlew :tests:test -Dtest.single=Wsk*Tests*
-./gradlew tests:test -Dtest.single=*ApiGwRoutemgmtActionTests*
+TERM=dumb ./gradlew :tests:testLean $GRADLE_PROJS_SKIP -Dtest.single=Wsk*Tests*
+TERM=dumb ./gradlew :tests:testLean $GRADLE_PROJS_SKIP -Dtest.single=*ApiGwRoutemgmtActionTests*
 sleep 30
-./gradlew tests:test -Dtest.single=*ApiGwTests*
+TERM=dumb ./gradlew :tests:testLean $GRADLE_PROJS_SKIP -Dtest.single=*ApiGwTests*
 sleep 30
-./gradlew tests:test -Dtest.single=*ApiGwEndToEndTests*
+TERM=dumb ./gradlew :tests:testLean $GRADLE_PROJS_SKIP -Dtest.single=*ApiGwEndToEndTests*
 sleep 30
 make integration_test;

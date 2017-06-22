@@ -100,6 +100,6 @@ To get CLI command debug information, include the -d, or --debug flag when execu
 # Continuous Integration
 
 In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses Travis CI as the continuous
-delivery service for Linux and Mac, and AppVeyor CI for Windows. OpenWhisk CLI is a Go project. Currently Travis
-CI supports the environments of Linux and Mac, but it is not available for Windows, which is the reason why we
-uses AppVeyor CI to run the test cases and build the binary for Windows.
+delivery service for Linux and Mac. OpenWhisk CLI is a Go project. Currently Travis CI supports the environments
+of Linux and Mac, but it is not available for Windows. We will add support of AppVeyor CI in future to run the
+test cases and build the binary for Windows.
