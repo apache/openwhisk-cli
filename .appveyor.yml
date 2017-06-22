@@ -1,4 +1,4 @@
-clone_folder: c:\gopath\src\github.com\openwhisk\openwhisk-cli
+clone_folder: c:\gopath\src\github.com\apache\incubator-openwhisk-cli
 
 environment:
   GOPATH: c:\gopath
