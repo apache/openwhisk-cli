@@ -31,9 +31,9 @@ var invalidArgs []common.InvalidArg
 var invalidArgsMsg = "error: Invalid argument(s)"
 var tooFewArgsMsg = invalidArgsMsg + "."
 var tooManyArgsMsg = invalidArgsMsg + ": "
-var actionNameActionReqMsg = "An action name and action are required."
+var actionNameActionReqMsg = "An action name and code artifact are required."
 var actionNameReqMsg = "An action name is required."
-var actionOptMsg = "An action is optional."
+var actionOptMsg = "A code artifact is optional."
 var packageNameReqMsg = "A package name is required."
 var packageNameBindingReqMsg = "A package name and binding name are required."
 var ruleNameReqMsg = "A rule name is required."
@@ -469,7 +469,11 @@ func TestRejectCommInvalidArgs(t *testing.T) {
         stdout, err := wsk.RunCommand(cs...)
         outputString := string(stdout)
         assert.NotEqual(t, nil, err, "The command should fail to run.")
-        assert.Equal(t, "exit status 1", err.Error(), "The error should be exit status 1.")
+        if (err.Error() == "exit status 1") {
+            assert.Equal(t, "exit status 1", err.Error(), "The error should be exit status 1 or 2.")
+        } else {
+            assert.Equal(t, "exit status 2", err.Error(), "The error should be exit status 1 or 2.")
+        }
         assert.Contains(t, outputString, invalidArg.Err,
             "The output of the command does not contain " + invalidArg.Err)
         assert.Contains(t, outputString, "Run 'wsk --help' for usage",
