@@ -1,0 +1,55 @@
+---
+# This role starts a nginx component
+
+- name: ensure nginx config directory exists
+  file:
+    path: "{{ nginx.confdir }}"
+    state: directory
+
+- name: copy template from local to remote in nginx config directory
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx.confdir }}/nginx.conf"
+
+- name: copy cert files from local to remote in nginx config directory
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ nginx.confdir }}"
+  with_items:
+        - "{{ nginx.ssl.cert }}"
+        - "{{ nginx.ssl.key }}"
+
+- name: copy password files for cert from local to remote in nginx config directory
+  copy:
+    src: "files/{{ nginx.ssl.password_file }}"
+    dest: "{{ nginx.confdir }}"
+  when: nginx.ssl.password_enabled == true
+
+- name: ensure nginx log directory is created with permissions
+  file:
+    path: "{{ whisk_logs_dir }}/nginx"
+    state: directory
+    mode: 0777
+  become: true
+
+- name: "pull the nginx:{{ nginx.version }} image"
+  shell: "docker pull nginx:{{ nginx.version }}"
+  retries: 3
+
+- name: (re)start nginx
+  docker_container:
+    name: nginx
+    image: nginx:{{ nginx.version }}
+    state: started
+    recreate: true
+    restart_policy: "{{ docker.restart.policy }}"
+    hostname: "nginx"
+    volumes:
+      - "{{ whisk_logs_dir }}/nginx:/logs"
+      - "{{ nginx.confdir }}:/etc/nginx"
+    expose:
+      - 8443
+    ports:
+      - "{{ nginx.port.http }}:80"
+      - "{{ nginx.port.api }}:443"
+      - "{{ nginx.port.adminportal }}:8443"

@@ -1,0 +1,70 @@
+---
+# This role will install Kafka with Zookeeper in group 'kafka' in the environment inventory
+
+- name: "pull the zookeeper:{{ zookeeper.version }} image"
+  shell: "docker pull zookeeper:{{ zookeeper.version }}"
+  retries: 3
+
+- name: (re)start zookeeper
+  docker_container:
+    name: zookeeper
+    image: zookeeper:{{ zookeeper.version }}
+    state: started
+    recreate: true
+    restart_policy: "{{ docker.restart.policy }}"
+    ports:
+      - "{{ zookeeper.port }}:2181"
+
+- name: wait until the Zookeeper in this host is up and running
+  action: shell (echo ruok; sleep 1) | nc {{ inventory_hostname }} {{ zookeeper.port }}
+  register: result
+  until: (result.rc == 0) and (result.stdout == 'imok')
+  retries: 36
+  delay: 5
+
+- name: "pull the ches/kafka:{{ kafka.version }} image"
+  shell: "docker pull ches/kafka:{{ kafka.version }}"
+  retries: 3
+
+- name: (re)start kafka
+  docker_container:
+    name: kafka
+    image: ches/kafka:{{ kafka.version }}
+    state: started
+    recreate: true
+    restart_policy: "{{ docker.restart.policy }}"
+    links:
+      - "zookeeper:zookeeper"
+    env:
+      "KAFKA_ADVERTISED_HOST_NAME": "{{ inventory_hostname }}"
+    ports:
+      - "{{ kafka.port }}:9092"
+
+- name: wait until the kafka server started up
+  shell: docker logs kafka
+  register: result
+  until: ('[Kafka Server 0], started' in result.stdout)
+  retries: 10
+  delay: 5
+
+- name: create the health topic
+  shell: "docker exec kafka bash -c 'unset JMX_PORT; kafka-topics.sh --create --topic {{ item }} --replication-factor 1 --partitions 1 --zookeeper {{ inventory_hostname }}:{{ zookeeper.port }}'"
+  with_items:
+    - health
+  register: command_result
+  failed_when: "not ('Created topic' in command_result.stdout or 'already exists' in command_result.stdout)"
+  changed_when: "'Created topic' in command_result.stdout"
+
+- name: create the active-ack topics
+  shell: "docker exec kafka bash -c 'unset JMX_PORT; kafka-topics.sh --create --topic health{{ item.0 }} --replication-factor 1 --partitions 1 --zookeeper {{ inventory_hostname }}:{{ zookeeper.port }}'"
+  with_indexed_items: "{{ groups['controllers'] }}"
+  register: command_result
+  failed_when: "not ('Created topic' in command_result.stdout or 'already exists' in command_result.stdout)"
+  changed_when: "'Created topic' in command_result.stdout"
+
+- name: create the invoker topics
+  shell: "docker exec kafka bash -c 'unset JMX_PORT; kafka-topics.sh --create --topic invoker{{ item.0 }} --replication-factor 1 --partitions 1 --zookeeper {{ inventory_hostname }}:{{ zookeeper.port }}'"
+  with_indexed_items: "{{ groups['invokers'] }}"
+  register: command_result
+  failed_when: "not ('Created topic' in command_result.stdout or 'already exists' in command_result.stdout)"
+  changed_when: "'Created topic' in command_result.stdout"
