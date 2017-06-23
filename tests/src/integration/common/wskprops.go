@@ -47,9 +47,9 @@ func GetWskprops() *Wskprops {
         if err == nil {
             dep.AuthKey = string(b)
         }
-        dep.APIHost = viper.GetString("router.host")
-        dep.ControllerHost = viper.GetString("router.host")
-        dep.ControllerPort = viper.GetString("controller.host.port")
+        dep.APIHost = viper.GetString("controller.hosts")
+        dep.ControllerHost = viper.GetString("controller.hosts")
+        dep.ControllerPort = viper.GetString("controller.host.basePort")
     }
     return &dep
 }

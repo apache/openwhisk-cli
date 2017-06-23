@@ -57,13 +57,13 @@ After that, open an terminal, go to the directory of OpenWhisk CLI home director
 build the binary via the following command under Linux or Mac:
 
 ```
-$ ./gradlew distDocker
+$ ./gradlew buildBinaries
 ```
 
 or run the following command for Windows:
 
 ```
-$ ./gradlew.bat distDocker
+$ ./gradlew.bat buildBinaries
 ```
 
 Finally, you can find the binary `wsk` or `wsk.exe` in the bin folder under the OpenWhisk CLI home directory. In
@@ -78,7 +78,7 @@ If you would like to build the binaries available for all the operating systems 
 command:
 
 ```
-$ ./gradlew distDocker -PcrossCompileCLI=true
+$ ./gradlew buildBinaries -PcrossCompileCLI=true
 ```
 
 Then, you will find the binaries and their compressed packages generated under the folder bin/\<os\>/\<cpu arc\>/ for each
@@ -100,6 +100,6 @@ To get CLI command debug information, include the -d, or --debug flag when execu
 # Continuous Integration
 
 In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses Travis CI as the continuous
-delivery service for Linux and Mac, and AppVeyor CI for Windows. OpenWhisk CLI is a Go project. Currently Travis
-CI supports the environments of Linux and Mac, but it is not available for Windows, which is the reason why we
-uses AppVeyor CI to run the test cases and build the binary for Windows.
+delivery service for Linux and Mac. OpenWhisk CLI is a Go project. Currently Travis CI supports the environments
+of Linux and Mac, but it is not available for Windows. We will add support of AppVeyor CI in future to run the
+test cases and build the binary for Windows.

@@ -34,9 +34,7 @@ script:
   - export PATH=$PATH:$TRAVIS_BUILD_DIR;
   - make native_test;
   - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then
-      export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk";
       ./tools/travis/test_openwhisk.sh;
-      make integration_test;
     fi
 
 after_script:

@@ -3,7 +3,7 @@ import groovy.time.*
 /**
  * Utility to build docker images based in gradle projects
  *
- * This extends gradle's 'application' plugin logic with a 'distDocker' task which builds
+ * This extends gradle's 'application' plugin logic with a 'buildBinaries' task which builds
  * a docker image from the Dockerfile of the project that applies this file. The image
  * is automatically tagged and pushed if a tag and/or a registry is given.
  *
@@ -42,7 +42,7 @@ if(project.hasProperty('dockerBuildArgs')) {
     }
 }
 
-task distDocker {
+task buildBinaries {
     doLast {
         def start = new Date()
         def cmd = dockerBinary + dockerBuildArg + ['-t', dockerImageName, project.buildscript.sourceFile.getParentFile().getAbsolutePath()]
@@ -74,7 +74,7 @@ task pushImage {
 }
 pushImage.dependsOn tagImage
 pushImage.onlyIf { dockerRegistry != '' }
-distDocker.finalizedBy pushImage
+buildBinaries.finalizedBy pushImage
 
 def retry(cmd, retries, timeout) {
     println("${new Date()}: Executing '${cmd.join(" ")}'")
