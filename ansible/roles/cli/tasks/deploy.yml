@@ -1,0 +1,29 @@
+---
+# Tasks for handling CLI customization and publishing
+
+- name: "ensure nginx directory for cli exists"
+  file:
+    path: "{{ cli.nginxdir  }}"
+    state: directory
+
+- include: docker_login.yml
+
+- name: "pull the {{ docker_image_tag }} image of cli"
+  shell: "docker pull {{ docker_registry }}{{ docker_image_prefix }}/cli:{{ docker_image_tag }}"
+  when: docker_registry != ""
+  retries: 3
+
+- name: "run Docker"
+  shell: "docker run --name cli {{ docker_registry }}{{ docker_image_prefix }}/cli:{{ docker_image_tag }}"
+
+- name: "copy all the cli binaries into nginx"
+  shell: "docker cp cli:/src/github.com/go-whisk-cli/build/. '{{ cli.nginxdir }}'"
+  ignore_errors: yes
+
+- name: "stop Docker"
+  shell: "docker stop cli"
+
+- name: "remove cli container after publishing"
+  shell: "docker rm cli"
+
+- include: download_cli.yml

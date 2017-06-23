@@ -1,0 +1,233 @@
+mode: deploy
+prompt_user: true
+openwhisk_home: "{{ lookup('env', 'OPENWHISK_HOME')|default(playbook_dir + '/..', true) }}"
+exclude_logs_from: []
+
+# This whisk_api_localhost_name_default is used to configure nginx to permit vanity URLs for web actions
+# for local deployment. For a public deployment, the specific environment group vars should define
+# whisk_api_host_name; this is available to actions and hence must resolve from inside an action container
+# specific to the deployment (i.e., it may be an IP address rather than a hostname in some cases).
+# For a local deployment, use whisk_api_localhost_name. For a deployment which requires
+# different name resolution between the whisk_api_host_name and the whisk_api_local_host_name, both should
+# be defined so that the nginx configuration for the server name reflects the public facing naming (of the
+# edge router) even if it is different from the API host available to the actions. The precedence order for
+# configuring nginx and the SSL certificate generation is:
+#   whisk_api_localhost_name (first)
+#   whisk_api_host_name (second)
+#   whisk_api_localhost_name_default (last)
+whisk_api_localhost_name_default: "localhost"
+
+whisk:
+  version:
+    date: "{{ansible_date_time.iso8601}}"
+
+##
+# list of supported runtimes (see whisk.core.entity.ExecManifest for schema).
+# briefly:
+#   defaultImagePrefix: the default image prefix when not given explicitly
+#   defaultImageTag: the default image tag
+#   runtimes: set of language runtime families grouped by language (e.g., nodejs, python)
+#   blackboxes: list of pre-populated docker action images as "name" with optional "prefix" and "tag"
+#
+runtimesManifest:
+  defaultImagePrefix: "openwhisk"
+  defaultImageTag: "latest"
+  runtimes:
+    nodejs:
+    - kind: "nodejs"
+      image:
+        name: "nodejsaction"
+      deprecated: true
+    - kind: "nodejs:6"
+      default: true
+      image:
+        name: "nodejs6action"
+    python:
+    - kind: "python"
+      image:
+        name: "python2action"
+    - kind: "python:2"
+      default: true
+      image:
+        name: "python2action"
+    - kind: "python:3"
+      image:
+        name: "python3action"
+    swift:
+    - kind: "swift"
+      image:
+        name: "swiftaction"
+      deprecated: true
+    - kind: "swift:3"
+      default: true
+      image:
+        name: "swift3action"
+    java:
+    - kind: "java"
+      attached:
+        attachmentName: "jarfile"
+        attachmentType: "application/java-archive"
+      sentinelledLogs: false
+      requireMain: true
+      image:
+        name: "java8action"
+      default: true
+  blackboxes:
+    - name: "dockerskeleton"
+
+defaultLimits:
+  actions:
+    invokes:
+      perMinute: 120
+      concurrent: 100
+      concurrentInSystem: 5000
+    sequence:
+      maxLength: 50
+  triggers:
+    fires:
+      perMinute: 60
+
+# port means outer port
+controller:
+  basePort: 10001
+  heap: "{{ controller_heap | default('2g') }}"
+  arguments: "{{ controller_arguments | default('') }}"
+  blackboxFraction: 0.10
+  instances: "{{ groups['controllers'] | length }}"
+
+consul:
+  confdir: "{{ config_root_dir }}/consul"
+  version: 0.7.0
+  port:
+    server: 8300
+    serf_lan: 8301
+    serf_wan: 8302
+    rpc: 8400
+    http: 8500
+    dns: 8600
+
+registry:
+  confdir: "{{ config_root_dir }}/registry"
+
+kafka:
+  version: 0.10.0.1
+  port: 9092
+  ras:
+    port: 9093
+
+zookeeper:
+  version: 3.4
+  port: 2181
+
+invoker:
+  port: 12001
+  heap: "{{ invoker_heap | default('2g') }}"
+  arguments: "{{ invoker_arguments | default('') }}"
+  numcore: 2
+  coreshare: 2
+  busyThreshold: "{{ invoker_busy_threshold | default(16) }}"
+  serializeDockerOp: true
+  serializeDockerPull: true
+  useRunc: false
+  useReactivePool: "{{ invoker_use_reactive_pool | default(false) }}"
+  instances: "{{ groups['invokers'] | length }}"
+
+nginx:
+  confdir: "{{ config_root_dir }}/nginx"
+  version: 1.11
+  port:
+    http: 80
+    api: 443
+    adminportal: 8443
+  ssl:
+    path: "{{ openwhisk_home }}/ansible/roles/nginx/files"
+    cert: "openwhisk-cert.pem"
+    key: "openwhisk-key.pem"
+    password_enabled: false
+    password_file: "ssl.pass"
+
+# These are the variables to define all database relevant settings.
+# The authKeys are the users, that are initially created to use OpenWhisk.
+# The keys are stored in ansible/files and will be inserted into the authentication databse.
+# The key db.whisk.actions is the name of the database where all artifacts of the user are stored. These artifacts are actions, triggers, rules and packages.
+# The key db.whisk.activation is the name of the database where all activations are stored.
+# The key db.whisk.auth is the name of the authentication database where all keys of all users are stored.
+# The db_prefix is defined for each environment on its own. The CouchDb credentials are also defined for each environment on its own.
+db:
+  authkeys:
+  - guest
+  - whisk.system
+  whisk:
+    actions: "{{ db_prefix }}whisks"
+    activations: "{{ db_prefix }}activations"
+    auth: "{{ db_prefix }}subjects"
+
+apigateway:
+  port:
+    api: 9000
+    api_secure: 443
+    mgmt: 9001
+  version: 0.7.0
+
+redis:
+  version: 3.2
+  port: 6379
+
+linux:
+  version: 4.4.0-31
+
+couchdb:
+  version: 1.6
+
+docker_image_prefix: whisk
+docker_image_tag: latest
+docker:
+  # The user to install docker for. Defaults to the ansible user if not set. This will be the user who is able to run
+  # docker commands on a machine setup with prereq_build.yml
+  #user:
+  version: 1.12.0-0~trusty
+  storagedriver: overlay
+  port: 4243
+  restart:
+    policy: always
+
+cli:
+  path: "{{ openwhisk_home }}/bin/wsk"
+  nginxdir: "{{ nginx.confdir }}/cli/go/download"
+
+# The default name space is /whisk.system. The catalog namespace must begin with a slash "/".
+catalog_namespace: "/whisk.system"
+
+# The catalog_auth_key is used to determine the secret key to authenticate the openwhisk service.
+# The value for this variable can be set to either the secret key itself or the file, which
+# saves the secret key.
+# By default, we take the key from {{ openwhisk_home }}/ansible/files/auth.whisk.system.
+catalog_auth_key: "{{ openwhisk_home }}/ansible/files/auth.whisk.system"
+
+# The catalog_repos is used to specify all the catalog names and repository URLs,
+# so that openwhisk knows where to download the catalog and install them. The key
+# specifies the catalog name and the url saves the URL of the repository. The location
+# specifies the location to save the code of the catalog. The version specifies the hash
+# of the commit to be cloned. If it is omit or set to HEAD, the latest commit will be
+# selected. The repo_update specifies whether to retrieve new revisions from the origin
+# repository and the default value is yes, meaning that it will retrieve the new
+# revisions. The keys url and location are mandatory and the keys version and repo_update
+# are optional. To add a new repository, please follow the template by adding:
+#
+# catalog_repos:
+#   ...
+#   <catalog-name>:
+#     url: <URL of repository>, mandatory.
+#     location: <local location to save the catalog>, mandatory.
+#     version: <hash of the commit>, optional, default to HEAD.
+#     repo_update: <whether to retrieve new revisions from the origin repository>,
+#                  optional, default to no. Yes means to retrieve the new revisions, and
+#                  no means not to retrieve the new revisions.
+#
+catalog_repos:
+  openwhisk-catalog:
+    url: https://github.com/apache/incubator-openwhisk-catalog.git
+    # Set the local location as the same level as openwhisk home, but it can be changed.
+    location: "{{ openwhisk_home }}/../openwhisk-catalog"
+    version: "HEAD"
+    repo_update: "no"

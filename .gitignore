@@ -1,0 +1,61 @@
+# Whisk
+nginx.conf
+whisk.properties
+default.props
+
+.ant-targets-build.xml
+/results/
+/logs/
+/config/custom-config.xml
+results
+*.retry
+
+# Eclipse
+bin/
+**/.project
+.settings/
+.classpath
+.cache-main
+.cache-tests
+
+# Linux
+*~
+
+# Mac
+.DS_Store
+
+# Gradle
+.gradle
+build/
+!/tools/build/
+
+# Python
+.ipynb_checkpoints/
+*.pyc
+
+# NodeJS
+node_modules
+
+# Vagrant
+.vagrant*
+
+# IntelliJ
+.idea
+
+# Ansible
+ansible/environments/mac/hosts
+ansible/db_local.ini*
+ansible/tmp/*
+ansible/roles/nginx/files/*.csr
+ansible/roles/nginx/files/*cert.pem
+
+# .zip files must be explicited whitelisted
+*.zip
+!tests/dat/actions/blackbox.zip
+!tests/dat/actions/helloSwift.zip
+!tests/dat/actions/python.zip
+!tests/dat/actions/python2_virtualenv.zip
+!tests/dat/actions/python3_virtualenv.zip
+!tests/dat/actions/python_virtualenv_dir.zip
+!tests/dat/actions/python_virtualenv_name.zip
+!tests/dat/actions/zippedaction.zip
