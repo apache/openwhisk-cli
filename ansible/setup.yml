@@ -1,0 +1,36 @@
+---
+# This playbook prepares ansible configuration
+
+- hosts: localhost
+  tasks:
+  - name: find the ip of docker-machine
+    local_action: shell "docker-machine" "ip" "{{docker_machine_name | default('whisk')}}"
+    register: result
+    when: "'environments/mac' in inventory_dir"
+
+  - name: get the docker-machine ip
+    set_fact:
+      docker_machine_ip: "{{ result.stdout }}"
+    when: "'environments/mac' in inventory_dir"
+
+  - name: gen hosts for docker-machine 
+    local_action: template src="{{playbook_dir}}/environments/mac/hosts.j2.ini" dest="{{ playbook_dir }}/environments/mac/hosts"
+    when: "'environments/mac' in inventory_dir"
+
+  # this step is needed to generate db_local.ini which is required by later steps
+  - name: add new db host on-the-fly
+    add_host: name={{ docker_machine_ip }} groups=db
+    when: "'environments/mac' in inventory_dir"
+
+  - name: check if db_local.ini exists?
+    stat: path="{{ playbook_dir }}/db_local.ini"
+    register: db
+
+  - name: prepare db_local.ini
+    local_action: template src="db_local.ini.j2" dest="{{ playbook_dir }}/db_local.ini"
+    when: not db.stat.exists
+
+  - name: gen untrusted certificate for host
+    local_action: shell "{{ playbook_dir }}/roles/nginx/files/genssl.sh" "*.{{ whisk_api_localhost_name | default(whisk_api_host_name) | default(whisk_api_localhost_name_default) }}"
+    when: nginx.ssl.cert == "openwhisk-cert.pem"
+    
