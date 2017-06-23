@@ -1,0 +1,10 @@
+---
+# This role will install invoker in group 'invokers' in the environment inventory
+# In deploy mode it will deploy invokers.
+# In clean mode it will remove the invoker containers.
+
+- include: deploy.yml
+  when: mode == "deploy"
+
+- include: clean.yml
+  when: mode == "clean"

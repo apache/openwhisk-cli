@@ -1,0 +1,10 @@
+---
+# This playbook installs additional packages after whisk has been deployed.
+
+- include: properties.yml
+
+- hosts: ansible
+  tasks:
+    - include: tasks/installOpenwhiskCatalog.yml
+      when: (mode == "deploy")
+      with_dict: "{{ catalog_repos }}"
