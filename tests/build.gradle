@@ -1,0 +1,34 @@
+apply plugin: 'scala'
+apply plugin: 'eclipse'
+compileTestScala.options.encoding = 'UTF-8'
+
+evaluationDependsOn(':clitests')
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+    outputs.upToDateWhen { false } // force tests to run every time
+}
+
+task testWithoutCredentials(type: Test) {
+    exclude 'packages/watson/**'
+    exclude 'packages/slack/**'
+    exclude 'packages/weather/**'
+}
+
+dependencies {
+    compile "org.scala-lang:scala-library:${gradle.scala.version}"
+    compile project(':clitests')
+    compile project(':clitests').sourceSets.test.output
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = gradle.scala.compileFlags
+}
