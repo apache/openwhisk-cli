@@ -2,6 +2,14 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
 
+# Disclaimer
+
+This project is currently on an experimental stage. We periodically synchronize the source code and test cases of this
+repository with the [CLI folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli) and the [test folder](https://github.com/apache/incubator-openwhisk/tree/master/tests) in OpenWhisk. The framework of test cases is under construction
+for this repository. Please contribute to the [CLI folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli) in OpenWhisk for any CLI changes, before we officially announce the separation
+of OpenWhisk CLI from OpenWhisk.
+
+
 The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that provides a consistent interface to
 interact with OpenWhisk services. With this tool to download and configure, you are able to manage OpenWhisk services
 from the command line and automate them through scripts.
