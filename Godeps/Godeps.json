@@ -38,22 +38,7 @@
 			"Rev": "1111e456ffea841564ac0fa5f69c26ef44dafec9"
 		},
 		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/bundle",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/language",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/translation",
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/...",
 			"Comment": "v1.4.0",
 			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
 		},
@@ -79,7 +64,7 @@
 			"Rev": "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
 		},
         {
-            "ImportPath": "github.com/apache/incubator-openwhisk-client-go",
+            "ImportPath": "github.com/apache/incubator-openwhisk-client-go/...",
             "Rev": "a75fb9114e60a10b42dcc351ffba280fc989caa6"
         }
 	]
