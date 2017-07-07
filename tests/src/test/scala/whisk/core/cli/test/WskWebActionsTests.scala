@@ -234,7 +234,7 @@ trait WskWebActionsTests
     it should "ensure that default CORS header is preserved" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("corsHeaderMod.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("corsHeaderMod.js"))
             val host = getServiceURL()
             val url = host + s"$testRoutePath/$namespace/default/webaction"
 
