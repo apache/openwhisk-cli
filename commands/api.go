@@ -1567,9 +1567,9 @@ func getUserContextId() (string, error) {
 func init() {
     apiCreateCmd.Flags().StringVarP(&Flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
     apiCreateCmd.Flags().StringVarP(&Flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
-    //apiUpdateCmd.Flags().StringVarP(&flags.api.action, "action", "a", "", wski18n.T("`ACTION` to invoke when API is called"))
-    //apiUpdateCmd.Flags().StringVarP(&flags.api.path, "path", "p", "", wski18n.T("relative `PATH` of API"))
-    //apiUpdateCmd.Flags().StringVarP(&flags.api.verb, "method", "m", "", wski18n.T("API `VERB`"))
+    //apiUpdateCmd.Flags().StringVarP(&Flags.api.action, "action", "a", "", wski18n.T("`ACTION` to invoke when API is called"))
+    //apiUpdateCmd.Flags().StringVarP(&Flags.api.path, "path", "p", "", wski18n.T("relative `PATH` of API"))
+    //apiUpdateCmd.Flags().StringVarP(&Flags.api.verb, "method", "m", "", wski18n.T("API `VERB`"))
     apiGetCmd.Flags().BoolVarP(&Flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
     apiListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
     apiListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
