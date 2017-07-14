@@ -349,7 +349,7 @@ func setDefaultProperties() {
     // Properties.CLIVersion value is set from main's init()
 }
 
-func getPropertiesFilePath() (propsFilePath string, werr error) {
+func GetPropertiesFilePath() (propsFilePath string, werr error) {
     var envExists bool
 
     // Environment variable overrides the default properties file path
@@ -381,10 +381,10 @@ func loadProperties() error {
 
     setDefaultProperties()
 
-    Properties.PropsFile, err = getPropertiesFilePath()
+    Properties.PropsFile, err = GetPropertiesFilePath()
     if err != nil {
         return nil
-        //whisk.Debug(whisk.DbgError, "getPropertiesFilePath() failed: %s\n", err)
+        //whisk.Debug(whisk.DbgError, "GetPropertiesFilePath() failed: %s\n", err)
         //errStr := fmt.Sprintf("Unable to load the properties file: %s", err)
         //werr := whisk.MakeWskError(errors.New(errStr), whisk.EXITCODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
         //return werr
