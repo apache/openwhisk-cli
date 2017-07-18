@@ -338,7 +338,7 @@ func init() {
 
 }
 
-func SetDefaultProperties() {
+func setDefaultProperties() {
     Properties.Auth = DefaultAuth
     Properties.Namespace = DefaultNamespace
     Properties.APIHost = DefaultAPIHost
@@ -379,7 +379,7 @@ func GetPropertiesFilePath() (propsFilePath string, werr error) {
 func loadProperties() error {
     var err error
 
-    SetDefaultProperties()
+    setDefaultProperties()
 
     Properties.PropsFile, err = GetPropertiesFilePath()
     if err != nil {

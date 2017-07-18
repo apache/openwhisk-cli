@@ -378,6 +378,7 @@ var packageListCmd = &cobra.Command{
   PreRunE:       setupClientConfig,
   RunE: func(cmd *cobra.Command, args []string) error {
     var err error
+    var shared bool
     var qualifiedName QualifiedName
 
     if whiskErr := checkArgs(args, 0, 1, "Package list",
@@ -397,9 +398,16 @@ var packageListCmd = &cobra.Command{
       client.Namespace = qualifiedName.namespace
     }
 
+    if Flags.common.shared == "yes" {
+      shared = true
+    } else {
+      shared = false
+    }
+
     options := &whisk.PackageListOptions{
       Skip:   Flags.common.skip,
       Limit:  Flags.common.limit,
+      Public: shared,
     }
 
     packages, _, err := client.Packages.List(options)
@@ -412,7 +420,6 @@ var packageListCmd = &cobra.Command{
     }
 
     printList(packages)
-
     return nil
   },
 }
@@ -521,6 +528,7 @@ func init() {
   packageBindCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
   packageBindCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 
+  packageListCmd.Flags().StringVar(&Flags.common.shared, "shared", "", wski18n.T("include publicly shared entities in the result"))
   packageListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of packages from the result"))
   packageListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of packages from the collection"))
 
