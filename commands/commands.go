@@ -36,7 +36,8 @@ func setupClientConfig(cmd *cobra.Command, args []string) (error){
 
     // Determine if the parent command will require the API host to be set
     apiHostRequired := (cmd.Parent().Name() == "property" && cmd.Name() == "get" && (Flags.property.auth ||
-      Flags.property.apihost || Flags.property.namespace || Flags.property.apiversion || Flags.property.cliversion)) ||
+      Flags.property.cert || Flags.property.key || Flags.property.apihost || Flags.property.namespace ||
+      Flags.property.apiversion || Flags.property.cliversion)) ||
       (cmd.Parent().Name() == "property" && cmd.Name() == "set" && (len(Flags.property.apihostSet) > 0 ||
         len(Flags.property.apiversionSet) > 0 || len(Flags.Global.Auth) > 0)) ||
       (cmd.Parent().Name() == "sdk" && cmd.Name() == "install" && len(args) > 0 && args[0] == "bashauto")
@@ -51,6 +52,8 @@ func setupClientConfig(cmd *cobra.Command, args []string) (error){
     }
 
     clientConfig := &whisk.Config{
+        Cert: Properties.Cert,
+        Key: Properties.Key,
         AuthToken:  Properties.Auth,
         Namespace:  Properties.Namespace,
         BaseURL:    baseURL,
