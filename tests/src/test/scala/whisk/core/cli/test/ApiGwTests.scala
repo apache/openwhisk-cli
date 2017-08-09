@@ -412,11 +412,7 @@ class ApiGwTests
         val testurlop = "get"
         val testapiname = testName+" API Name"
         val actionName = testName+"_action"
-<<<<<<< HEAD
-        val swaggerPath = TestCLIUtils.getTestApiGwFilename("testswaggerdoc1V2")
-=======
-        val swaggerPath = TestUtils.getTestApiGwFilename("testswaggerdoc1")
->>>>>>> a509e00... Remove "experimental" gateway api (#2547)
+        val swaggerPath = TestCLIUtils.getTestApiGwFilename("testswaggerdoc1")
         try {
             var rr = apiCreate(swagger = Some(swaggerPath))
             rr.stdout should include("ok: created API")
@@ -598,11 +594,7 @@ class ApiGwTests
         val testurlop = "get"
         val testapiname = testName + " API Name"
         val actionName = "test1a"
-<<<<<<< HEAD
-        val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"testswaggerdoc2V2")
-=======
-        val swaggerPath = TestUtils.getTestApiGwFilename(s"testswaggerdoc2")
->>>>>>> a509e00... Remove "experimental" gateway api (#2547)
+        val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"testswaggerdoc2")
         try {
             var rr = apiCreate(swagger = Some(swaggerPath))
             println("api create stdout: " + rr.stdout)
