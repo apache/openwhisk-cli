@@ -53,34 +53,6 @@ var invalidShared = "Cannot use value '" + invalidArg + "' for shared"
 func initInvalidArgs() {
     invalidArgs = []common.InvalidArg{
         common.InvalidArg {
-            Cmd: []string{"api-experimental", "create"},
-            Err: tooFewArgsMsg + " " + apiCreateReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "create", "/basepath", "/path", "GET", "action", invalidArg},
-            Err: tooManyArgsMsg + invalidArg + ". " + apiCreateReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "get"},
-            Err: tooFewArgsMsg + " " + apiGetReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "get", "/basepath", invalidArg},
-            Err: tooManyArgsMsg + invalidArg + ". " + apiGetReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "delete"},
-            Err: tooFewArgsMsg + " " + apiDeleteReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "delete", "/basepath", "/path", "GET", invalidArg},
-            Err: tooManyArgsMsg + invalidArg + ". " + apiDeleteReqMsg,
-        },
-        common.InvalidArg {
-            Cmd: []string{"api-experimental", "list", "/basepath", "/path", "GET", invalidArg},
-            Err: tooManyArgsMsg + invalidArg + ". " + apiListReqMsg,
-        },
-        common.InvalidArg {
             Cmd: []string{"action", "create"},
             Err: tooFewArgsMsg + " " + actionNameActionReqMsg,
         },
