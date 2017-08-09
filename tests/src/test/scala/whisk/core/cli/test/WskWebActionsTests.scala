@@ -301,7 +301,7 @@ trait WskWebActionsTests
     it should "support multiple response header values" in withAssetCleaner(wskprops) {
         (wp, assetHelper) =>
             val name = "webaction"
-            val file = Some(TestUtils.getTestActionFilename("multipleHeaders.js"))
+            val file = Some(TestCLIUtils.getTestActionFilename("multipleHeaders.js"))
             val host = getServiceURL()
             val url = host + s"$testRoutePath/$namespace/default/webaction.http"
 
