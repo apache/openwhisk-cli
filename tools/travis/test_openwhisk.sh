@@ -15,7 +15,7 @@ WHISKDIR="$HOMEDIR/incubator-openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
@@ -24,13 +24,12 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 
-cd $WHISKDIR
-GRADLE_PROJS_SKIP="-x :core:pythonAction:distDocker -x :core:python2Action:distDocker -x :core:swift3Action:distDocker -x :core:javaAction:distDocker"
-TERM=dumb ./gradlew distDocker -PdockerImagePrefix=testing $GRADLE_PROJS_SKIP
+#cd $TRAVIS_BUILD_DIR
+#TERM=dumb ./gradlew buildBinaries -PcrossCompileCLI=true
 
-cd $WHISKDIR/ansible
+#cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml
+$ANSIBLE_CMD openwhisk.yml -e '{"openwhisk_cli":{"installation_mode":"remote","remote":{"name":"OpenWhisk_CLI","dest_name":"OpenWhisk_CLI","location":"https://github.com/apache/incubator-openwhisk-cli/releases/download/latest"}}}'
 
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
 mkdir -p $WHISKDIR/bin
