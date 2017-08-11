@@ -321,7 +321,8 @@ var actionListCmd = &cobra.Command{
             return actionListError(qualifiedName.GetEntityName(), options, err)
         }
 
-        printList(actions)
+        sortByName := flags.common.nameSort
+        printList(actions, sortByName)
 
         return nil
     },
@@ -942,6 +943,7 @@ func init() {
 
     actionListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
     actionListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
+    actionListCmd.Flags().BoolVarP(&Flags.common.nameSort, "name-sort", "n", false, wski18n.T("sorts a list alphabetically by entity name; only applicable within the limit/skip returned entity block"))
 
     actionCmd.AddCommand(
         actionCreateCmd,
