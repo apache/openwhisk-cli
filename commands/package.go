@@ -412,7 +412,8 @@ var packageListCmd = &cobra.Command{
       return werr
     }
 
-    printList(packages)
+    sortByName := flags.common.nameSort
+    printList(packages, sortByName)
 
     return nil
   },
@@ -503,6 +504,7 @@ var packageRefreshCmd = &cobra.Command{
 }
 
 func init() {
+<<<<<<< HEAD
   packageCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
   packageCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
   packageCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
@@ -524,6 +526,7 @@ func init() {
 
   packageListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of packages from the result"))
   packageListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of packages from the collection"))
+  packageListCmd.Flags().BoolVarP(&Flags.common.nameSort, "name-sort", "n", false, wski18n.T("sorts a list alphabetically by entity name; only applicable within the limit/skip returned entity block"))
 
   packageCmd.AddCommand(
     packageBindCmd,
