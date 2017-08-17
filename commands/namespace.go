@@ -99,7 +99,7 @@ var namespaceGetCmd = &cobra.Command{
 
         fmt.Fprintf(color.Output, wski18n.T("Entities in namespace: {{.namespace}}\n",
             map[string]interface{}{"namespace": boldString(getClientNamespace())}))
-        sortByName := flags.common.nameSort
+        sortByName := Flags.common.nameSort
         printList(namespace.Contents.Packages, sortByName)
         printList(namespace.Contents.Actions, sortByName)
         printList(namespace.Contents.Triggers, sortByName)
@@ -122,7 +122,7 @@ var namespaceGetCmd = &cobra.Command{
 }
 
 func init() {
-    namespaceGetCmd.Flags().BoolVarP(&flags.common.nameSort, "name-sort", "n", false, wski18n.T("sorts a list alphabetically by entity name; only applicable within the limit/skip returned entity block"))
+    namespaceGetCmd.Flags().BoolVarP(&Flags.common.nameSort, "name-sort", "n", false, wski18n.T("sorts a list alphabetically by entity name; only applicable within the limit/skip returned entity block"))
 
     namespaceCmd.AddCommand(
         namespaceListCmd,

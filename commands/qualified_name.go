@@ -20,8 +20,8 @@ import (
     "errors"
     "fmt"
     "strings"
-    "../../go-whisk/whisk"
-    "../wski18n"
+    "github.com/apache/incubator-openwhisk-client-go/whisk"
+    "github.com/apache/incubator-openwhisk-cli/wski18n"
 )
 
 type QualifiedName struct {

@@ -520,7 +520,7 @@ var apiListCmd = &cobra.Command{
             retApiArray = (*whisk.RetApiArray)(retApi)
         }
         //Checks for any order flags being passed
-        sortByName := flags.common.nameSort
+        sortByName := Flags.common.nameSort
         // Display the APIs - applying any specified filtering
         if (Flags.common.full) {
             fmt.Fprintf(color.Output,

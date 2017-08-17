@@ -235,7 +235,7 @@ var actionGetCmd = &cobra.Command{
                 Properties.APIVersion,
                 qualifiedName.GetPackageName())
             printActionGetWithURL(qualifiedName.GetEntity(), actionURL)
-        } else if flags.common.summary {
+        } else if Flags.common.summary {
             printSummary(action)
         } else {
             if len(field) > 0 {
@@ -321,7 +321,7 @@ var actionListCmd = &cobra.Command{
             return actionListError(qualifiedName.GetEntityName(), options, err)
         }
 
-        sortByName := flags.common.nameSort
+        sortByName := Flags.common.nameSort
         printList(actions, sortByName)
 
         return nil
