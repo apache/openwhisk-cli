@@ -403,7 +403,7 @@ var ruleListCmd = &cobra.Command{
             }
         }
 
-        sortByName := flags.common.nameSort
+        sortByName := Flags.common.nameSort
         printList(rules, sortByName)
         return nil
     },

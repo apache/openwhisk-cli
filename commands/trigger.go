@@ -457,7 +457,7 @@ var triggerListCmd = &cobra.Command{
             werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
             return werr
         }
-        sortByName := flags.common.nameSort
+        sortByName := Flags.common.nameSort
         printList(triggers, sortByName)
         return nil
     },

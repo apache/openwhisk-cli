@@ -412,7 +412,7 @@ var packageListCmd = &cobra.Command{
       return werr
     }
 
-    sortByName := flags.common.nameSort
+    sortByName := Flags.common.nameSort
     printList(packages, sortByName)
 
     return nil
@@ -504,7 +504,6 @@ var packageRefreshCmd = &cobra.Command{
 }
 
 func init() {
-<<<<<<< HEAD
   packageCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
   packageCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
   packageCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
