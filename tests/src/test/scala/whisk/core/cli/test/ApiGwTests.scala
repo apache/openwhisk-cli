@@ -911,7 +911,7 @@ class ApiGwTests
     it should "list api alphabetically by Base/Rel/Verb" in {
         val baseName = "/BaseTestPathApiList"
         val actionName = "actionName"
-        val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
+        val file = TestCLIUtils.getTestActionFilename(s"echo-web-http.js")
         try {
             // Create Action for apis
             var action = wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = SUCCESS_EXIT, web = Some("true"))

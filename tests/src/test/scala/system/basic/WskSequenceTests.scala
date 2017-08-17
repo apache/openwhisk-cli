@@ -41,7 +41,6 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import spray.json._
 import spray.json.DefaultJsonProtocol._
 
-import whisk.core.WhiskConfig
 import whisk.http.Messages.sequenceIsTooLong
 
 /**
