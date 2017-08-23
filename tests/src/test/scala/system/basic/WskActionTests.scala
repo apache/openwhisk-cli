@@ -20,6 +20,7 @@ package system.basic
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
+import common.ActivationResult
 import common.JsHelpers
 import common.TestHelpers
 import common.TestCLIUtils
@@ -290,7 +291,7 @@ class WskActionTests
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
-            val activation = wsk.parseJsonString(run.stdout).convertTo[CliActivation]
+            val activation = wsk.parseJsonString(run.stdout).convertTo[ActivationResult]
 
             withClue(s"check failed for activation: $activation") {
                 val wordCount = testString.split(" ").length
@@ -306,7 +307,7 @@ class WskActionTests
             }
 
             val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
-            val activation = wsk.parseJsonString(run.stdout).convertTo[CliActivation]
+            val activation = wsk.parseJsonString(run.stdout).convertTo[ActivationResult]
 
             withClue(s"check failed for activation: $activation") {
                 activation.response.status shouldBe "success"
