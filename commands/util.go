@@ -781,6 +781,15 @@ func unpackTar(inpath string) error {
     return nil
 }
 
+/*
+Basically just an exported version of the function. Leaving lowercase to reduce the amount of breaks due to this being
+ a widely used function.
+ */
+func CheckArgs(args []string, minimumArgNumber int, maximumArgNumber int, commandName string,
+requiredArgMsg string) (*whisk.WskError) {
+    return checkArgs(args, minimumArgNumber, maximumArgNumber, commandName, requiredArgMsg)
+}
+
 func checkArgs(args []string, minimumArgNumber int, maximumArgNumber int, commandName string,
     requiredArgMsg string) (*whisk.WskError) {
         exactlyOrAtLeast := wski18n.T("exactly")
@@ -1030,4 +1039,87 @@ func isApplicationError(err error) (bool) {
     }
 
     return applicationError
+}
+
+func ParseQualifiedName(name string) (QualifiedName, error) {
+    return parseQualifiedName(name)
+}
+
+/*
+Parse a (possibly fully qualified) resource name into namespace and name components. If the given qualified name isNone,
+then this is a default qualified name and it is resolved from properties. If the namespace is missing from the qualified
+name, the namespace is also resolved from the property file.
+
+Return a qualifiedName struct
+
+Examples:
+      foo => qualifiedName {namespace: "_", entityName: foo}
+      pkg/foo => qualifiedName {namespace: "_", entityName: pkg/foo}
+      /ns/foo => qualifiedName {namespace: ns, entityName: foo}
+      /ns/pkg/foo => qualifiedName {namespace: ns, entityName: pkg/foo}
+*/
+func parseQualifiedName(name string) (QualifiedName, error) {
+    var qualifiedName QualifiedName
+
+    // If name has a preceding delimiter (/), it contains a namespace. Otherwise the name does not specify a namespace,
+    // so default the namespace to the namespace value set in the properties file; if that is not set, use "_"
+    if  strings.HasPrefix(name, "/")  {
+        parts := strings.Split(name, "/")
+        qualifiedName.namespace = parts[1]
+
+        if len(parts) < 2 || len(parts) > 4 {
+            whisk.Debug(whisk.DbgError, "A valid qualified name was not detected\n")
+            errStr := wski18n.T("A valid qualified name must be specified.")
+            err := whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+            return qualifiedName, err
+        }
+
+        for i := 1; i < len(parts); i++ {
+            if len(parts[i]) == 0 || parts[i] == "." {
+                whisk.Debug(whisk.DbgError, "A valid qualified name was not detected\n")
+                errStr := wski18n.T("A valid qualified name must be specified.")
+                err := whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+                return qualifiedName, err
+            }
+        }
+
+        qualifiedName.EntityName = strings.Join(parts[2:], "/")
+        if len(parts) == 4 {
+            qualifiedName.packageName = parts[2]
+        }
+        qualifiedName.entity = parts[len(parts)-1]
+    } else {
+        if len(name) == 0 || name == "." {
+            whisk.Debug(whisk.DbgError, "A valid qualified name was not detected\n")
+            errStr := wski18n.T("A valid qualified name must be specified.")
+            err := whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+            return qualifiedName, err
+        }
+
+        parts := strings.Split(name, "/")
+        qualifiedName.entity = parts[len(parts)-1]
+        if len(parts) == 2 {
+            qualifiedName.packageName = parts[0]
+        }
+        qualifiedName.EntityName = name
+        qualifiedName.namespace = getNamespace()
+    }
+
+    whisk.Debug(whisk.DbgInfo, "Qualified pkg+entity (EntityName): %s\n", qualifiedName.EntityName)
+    whisk.Debug(whisk.DbgInfo, "Qualified namespace: %s\n", qualifiedName.namespace)
+    whisk.Debug(whisk.DbgInfo, "Qualified package: %s\n", qualifiedName.packageName)
+    whisk.Debug(whisk.DbgInfo, "Qualified entity: %s\n", qualifiedName.entity)
+
+    return qualifiedName, nil
+}
+
+
+func getNamespace() (string) {
+    namespace := "_"
+
+    if Properties.Namespace != "" {
+        namespace = Properties.Namespace
+    }
+
+    return namespace
 }

@@ -1522,4 +1522,8 @@
   {
     "id": "sorts a list alphabetically by order of [BASE_PATH | API_NAME], API_PATH, then API_VERB; only applicable within the limit/skip returned entity block",
     "translation": "sorts a list alphabetically by order of [BASE_PATH | API_NAME], API_PATH, then API_VERB; only applicable within the limit/skip returned entity block"
+  },
+  {
+    "id": "A valid qualified name must be specified.",
+    "translation": "A valid qualified name must be specified."
   }]

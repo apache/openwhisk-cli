@@ -31,6 +31,14 @@ import (
 var client *whisk.Client
 const DefaultOpenWhiskApiPath string = "/api"
 
+func GetClient() *whisk.Client {
+    return client
+}
+
+func SetupClientConfig(cmd *cobra.Command, args []string) (error){
+    return setupClientConfig(cmd, args)
+}
+
 func setupClientConfig(cmd *cobra.Command, args []string) (error){
     baseURL, err := GetURLBase(Properties.APIHost, DefaultOpenWhiskApiPath)
 
