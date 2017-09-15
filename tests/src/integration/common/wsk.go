@@ -19,6 +19,7 @@ package common
 import (
     "os"
     "os/exec"
+    "github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 const cmd = "wsk"
@@ -28,7 +29,7 @@ type Wsk struct {
     Path string
     Arg []string
     Dir string
-    Wskprops *Wskprops
+    Wskprops *whisk.Wskprops
 }
 
 func NewWsk() *Wsk {
@@ -40,7 +41,10 @@ func NewWskWithPath(path string) *Wsk {
     dep.Path = cmd
     dep.Arg = []string{arg}
     dep.Dir = path
-    dep.Wskprops = GetWskprops()
+    pi := whisk.PropertiesImp{
+        OsPackage: whisk.OSPackageImp{},
+    }
+    dep.Wskprops, _ = whisk.GetDefaultWskProp(pi)
     return &dep
 }
 

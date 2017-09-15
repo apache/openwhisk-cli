@@ -57,7 +57,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   implicit val wskprops = WskProps()
   val wsk = new Wsk
-  val defaultAction = Some(TestUtils.getTestActionFilename("hello.js"))
+  val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.js"))
   val usrAgentHeaderRegEx = """\bUser-Agent\b": \[\s+"OpenWhisk\-CLI/1.\d+.*"""
 
   behavior of "Wsk CLI usage"
@@ -150,7 +150,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "reject action update when specified file is missing" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     // Create dummy action to update
     val name = "updateMissingFile"
-    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
     assetHelper.withCleaner(wsk.action, name) { (action, name) =>
       action.create(name, file)
     }
@@ -160,7 +160,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "reject action update for sequence with no components" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "updateMissingComponents"
-    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
     assetHelper.withCleaner(wsk.action, name) { (action, name) =>
       action.create(name, file)
     }
@@ -170,7 +170,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create, and get an action to verify parameter and annotation parsing" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "actionAnnotations"
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(name, file, annotations = getValidJSONTestArgInput, parameters = getValidJSONTestArgInput)
@@ -192,8 +192,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create, and get an action to verify file parameter and annotation parsing" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "actionAnnotAndParamParsing"
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
-      val argInput = Some(TestUtils.getTestActionFilename("validInput1.json"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
+      val argInput = Some(TestCLIUtils.getTestActionFilename("validInput1.json"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(name, file, annotationFile = argInput, parameterFile = argInput)
@@ -215,7 +215,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create an action with the proper parameter and annotation escapes" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "actionEscapes"
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(name, file, parameters = getEscapedJSONTestArgInput, annotations = getEscapedJSONTestArgInput)
@@ -238,7 +238,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "abort init"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("initexit.js")))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("initexit.js")))
       }
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
@@ -252,7 +252,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "hang init"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("initforever.js")), timeout = Some(3 seconds))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("initforever.js")), timeout = Some(3 seconds))
       }
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
@@ -266,7 +266,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "abort run"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("runexit.js")))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("runexit.js")))
       }
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
@@ -308,12 +308,28 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       N = 5)
   }
 
+  it should "ensure timestamp and stream are stripped from log lines" in withAssetCleaner(wskprops) {
+    val name = "activationLogStripTest"
+    val auth: Seq[String] = Seq("--auth", wskprops.authKey)
+
+    (wp, assetHelper) =>
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("log.js")))
+      }
+
+      withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
+        val cmd = Seq("activation", "logs", "--strip", activation.activationId)
+        val run = wsk.cli(cmd ++ wskprops.overrides ++ auth, expectedExitCode = SUCCESS_EXIT)
+        run.stdout shouldBe "this is stdout\nthis is stderr\n"
+      }
+  }
+
   it should "ensure keys are not omitted from activation record" in withAssetCleaner(wskprops) {
     val name = "activationRecordTest"
 
     (wp, assetHelper) =>
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("argCheck.js")))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("argCheck.js")))
       }
 
       val run = wsk.action.invoke(name)
@@ -338,7 +354,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(
           name,
-          Some(TestUtils.getTestActionFilename("helloAsync.js")),
+          Some(TestCLIUtils.getTestActionFilename("helloAsync.js")),
           memory = Some(memoryLimit),
           timeout = Some(timeLimit),
           logsize = Some(logLimit))
@@ -353,7 +369,9 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
           "key" -> JsString("limits"),
           "value" -> ActionLimits(TimeLimit(timeLimit), MemoryLimit(memoryLimit), LogLimit(logLimit)).toJson)
 
-        val path = annotations.find { _.fields("key").convertTo[String] == "path" }.get
+        val path = annotations.find {
+          _.fields("key").convertTo[String] == "path"
+        }.get
 
         path.fields("value").convertTo[String] should fullyMatch regex (s""".*/$name""")
         annotations should contain(limitsObj)
@@ -365,7 +383,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       val rr = assetHelper.withCleaner(wsk.action, "invalid kind", confirmDelete = false) { (action, name) =>
         action.create(
           name,
-          Some(TestUtils.getTestActionFilename("echo.js")),
+          Some(TestCLIUtils.getTestActionFilename("echo.js")),
           kind = Some("foobar"),
           expectedExitCode = BAD_REQUEST)
       }
@@ -375,7 +393,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "report error when creating an action with zip but without kind" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "zipWithNoKind"
-      val zippedPythonAction = Some(TestUtils.getTestActionFilename("python.zip"))
+      val zippedPythonAction = Some(TestCLIUtils.getTestActionFilename("python.zip"))
       val createResult = assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
         action.create(name, zippedPythonAction, expectedExitCode = ANY_ERROR_EXIT)
       }
@@ -406,69 +424,13 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
           limits.length should be > 0
           limits(0).fields("value") should not be JsNull
         }
-<<<<<<< HEAD
-    }
-
-    it should "reject commands that are executed with a missing or invalid parameter or annotation file" in {
-        val emptyFile = TestCLIUtils.getTestActionFilename("emtpy.js")
-        val missingFile = "notafile"
-        val emptyFileMsg = s"File '$emptyFile' is not a valid file or it does not exist"
-        val missingFileMsg = s"File '$missingFile' is not a valid file or it does not exist"
-        val invalidArgs = Seq(
-            (Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
-                emptyFileMsg),
-            (Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
-                emptyFileMsg),
-            (Seq("action", "invoke", "actionName", "-P", emptyFile), emptyFileMsg),
-            (Seq("action", "create", "actionName", "-P", emptyFile), emptyFileMsg),
-            (Seq("action", "update", "actionName", "-P", emptyFile), emptyFileMsg),
-            (Seq("action", "invoke", "actionName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "create", "packageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "update", "packageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "bind", "packageName", "boundPackageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "create", "packageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "update", "packageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("package", "bind", "packageName", "boundPackageName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "create", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "update", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "fire", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "create", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "update", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("trigger", "fire", "triggerName", "-P", emptyFile), emptyFileMsg),
-            (Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-A", missingFile),
-                missingFileMsg),
-            (Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-A", missingFile),
-                missingFileMsg),
-            (Seq("action", "invoke", "actionName", "-A", missingFile), missingFileMsg),
-            (Seq("action", "create", "actionName", "-A", missingFile), missingFileMsg),
-            (Seq("action", "update", "actionName", "-A", missingFile), missingFileMsg),
-            (Seq("action", "invoke", "actionName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "create", "packageName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "update", "packageName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "bind", "packageName", "boundPackageName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "create", "packageName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "update", "packageName", "-A", missingFile), missingFileMsg),
-            (Seq("package", "bind", "packageName", "boundPackageName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "create", "triggerName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "update", "triggerName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "fire", "triggerName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "create", "triggerName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "update", "triggerName", "-A", missingFile), missingFileMsg),
-            (Seq("trigger", "fire", "triggerName", "-A", missingFile), missingFileMsg))
-
-        invalidArgs foreach {
-            case (cmd, err) =>
-                val stderr = wsk.cli(cmd, expectedExitCode = MISUSE_EXIT).stderr
-                stderr should include(err)
-                stderr should include("Run 'wsk --help' for usage.")
-=======
       }
   }
 
   it should "invoke an action using npm openwhisk" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "hello npm openwhisk"
     assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("helloOpenwhiskPackage.js")))
     }
 
     val run = wsk.action.invoke(name, Map("ignore_certs" -> true.toJson, "name" -> name.toJson))
@@ -485,7 +447,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     val namespace = wsk.namespace.whois()
     val name = "context"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloContext.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("helloContext.js")))
     }
 
     val start = Instant.now(Clock.systemUTC()).toEpochMilli
@@ -506,7 +468,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "invokeResult"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("echo.js")))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("echo.js")))
       }
       val args = Map("hello" -> "Robert".toJson)
       val run = wsk.action.invoke(name, args, blocking = true, result = true)
@@ -517,7 +479,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "deadline"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("helloDeadline.js")), timeout = Some(3 seconds))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("helloDeadline.js")), timeout = Some(3 seconds))
       }
 
       val run = wsk.action.invoke(name)
@@ -536,7 +498,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val name = "timeout"
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("helloDeadline.js")), timeout = Some(3 seconds))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("helloDeadline.js")), timeout = Some(3 seconds))
       }
 
       val start = Instant.now(Clock.systemUTC()).toEpochMilli
@@ -560,7 +522,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "ensure --web flags set the proper annotations" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "webaction"
-    val file = Some(TestUtils.getTestActionFilename("echo.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
       action.create(name, file)
@@ -585,7 +547,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "ensure action update with --web flag only copies existing annotations when new annotations are not provided" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val name = "webaction"
-    val file = Some(TestUtils.getTestActionFilename("echo.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val createKey = "createKey"
     val createValue = JsString("createValue")
     val updateKey = "updateKey"
@@ -628,7 +590,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "ensure action update creates an action with --web flag" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("echo.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(name, file, web = Some("true"), update = true)
@@ -646,7 +608,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "reject action create and update with invalid web flag input" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("echo.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
       val invalidInput = "bogus"
       val errorMsg =
         s"Invalid argument '$invalidInput' for --web flag. Valid input consist of 'yes', 'true', 'raw', 'false', or 'no'."
@@ -659,7 +621,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "invoke action while not encoding &, <, > characters" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "nonescape"
-    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
     val nonescape = "&<>"
     val input = Map("payload" -> nonescape.toJson)
     val output = JsObject("payload" -> JsString(s"hello, $nonescape!"))
@@ -740,7 +702,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       val params = Seq("-p", "bigValue", "a" * 1000)
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("echo.js")))
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("echo.js")))
       }
 
       val truncated = wsk
@@ -851,8 +813,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create, and get a package to verify file parameter and annotation parsing" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "packageAnnotAndParamFileParsing"
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
-      val argInput = Some(TestUtils.getTestActionFilename("validInput1.json"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
+      val argInput = Some(TestCLIUtils.getTestActionFilename("validInput1.json"))
 
       assetHelper.withCleaner(wsk.pkg, name) { (pkg, _) =>
         pkg.create(name, annotationFile = argInput, parameterFile = argInput)
@@ -894,7 +856,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "report conformance error accessing action as package" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "aAsP"
-    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
       action.create(name, file)
     }
@@ -991,8 +953,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create, and get a trigger to verify file parameter and annotation parsing" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "triggerAnnotAndParamFileParsing"
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
-      val argInput = Some(TestUtils.getTestActionFilename("validInput1.json"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
+      val argInput = Some(TestCLIUtils.getTestActionFilename("validInput1.json"))
 
       assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
         trigger.create(name, annotationFile = argInput, parameterFile = argInput)
@@ -1127,7 +1089,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "create, and list an action with a long name" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "x" * 70
-    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
       action.create(name, file)
     }
@@ -1200,7 +1162,6 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
         val name = s"${packageName}/${actionName}$i"
         assetHelper.withCleaner(wsk.action, name) { (action, name) =>
           action.create(name, defaultAction)
->>>>>>> c10e681... Apply standard scala formatting. (#2650)
         }
       }
       retry(
@@ -1301,14 +1262,14 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "reject commands that are executed with invalid JSON for annotations and parameters" in {
     val invalidJSONInputs = getInvalidJSONInput
     val invalidJSONFiles = Seq(
-      TestUtils.getTestActionFilename("malformed.js"),
-      TestUtils.getTestActionFilename("invalidInput1.json"),
-      TestUtils.getTestActionFilename("invalidInput2.json"),
-      TestUtils.getTestActionFilename("invalidInput3.json"),
-      TestUtils.getTestActionFilename("invalidInput4.json"))
+      TestCLIUtils.getTestActionFilename("malformed.js"),
+      TestCLIUtils.getTestActionFilename("invalidInput1.json"),
+      TestCLIUtils.getTestActionFilename("invalidInput2.json"),
+      TestCLIUtils.getTestActionFilename("invalidInput3.json"),
+      TestCLIUtils.getTestActionFilename("invalidInput4.json"))
     val paramCmds = Seq(
-      Seq("action", "create", "actionName", TestUtils.getTestActionFilename("hello.js")),
-      Seq("action", "update", "actionName", TestUtils.getTestActionFilename("hello.js")),
+      Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js")),
+      Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js")),
       Seq("action", "invoke", "actionName"),
       Seq("package", "create", "packageName"),
       Seq("package", "update", "packageName"),
@@ -1317,8 +1278,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       Seq("trigger", "update", "triggerName"),
       Seq("trigger", "fire", "triggerName"))
     val annotCmds = Seq(
-      Seq("action", "create", "actionName", TestUtils.getTestActionFilename("hello.js")),
-      Seq("action", "update", "actionName", TestUtils.getTestActionFilename("hello.js")),
+      Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js")),
+      Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js")),
       Seq("package", "create", "packageName"),
       Seq("package", "update", "packageName"),
       Seq("package", "bind", "packageName", "boundPackageName"),
@@ -1354,16 +1315,16 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "reject commands that are executed with a missing or invalid parameter or annotation file" in {
-    val emptyFile = TestUtils.getTestActionFilename("emtpy.js")
+    val emptyFile = TestCLIUtils.getTestActionFilename("emtpy.js")
     val missingFile = "notafile"
     val emptyFileMsg = s"File '$emptyFile' is not a valid file or it does not exist"
     val missingFileMsg = s"File '$missingFile' is not a valid file or it does not exist"
     val invalidArgs = Seq(
       (
-        Seq("action", "create", "actionName", TestUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
+        Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
         emptyFileMsg),
       (
-        Seq("action", "update", "actionName", TestUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
+        Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-P", emptyFile),
         emptyFileMsg),
       (Seq("action", "invoke", "actionName", "-P", emptyFile), emptyFileMsg),
       (Seq("action", "create", "actionName", "-P", emptyFile), emptyFileMsg),
@@ -1382,10 +1343,10 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       (Seq("trigger", "update", "triggerName", "-P", emptyFile), emptyFileMsg),
       (Seq("trigger", "fire", "triggerName", "-P", emptyFile), emptyFileMsg),
       (
-        Seq("action", "create", "actionName", TestUtils.getTestActionFilename("hello.js"), "-A", missingFile),
+        Seq("action", "create", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-A", missingFile),
         missingFileMsg),
       (
-        Seq("action", "update", "actionName", TestUtils.getTestActionFilename("hello.js"), "-A", missingFile),
+        Seq("action", "update", "actionName", TestCLIUtils.getTestActionFilename("hello.js"), "-A", missingFile),
         missingFileMsg),
       (Seq("action", "invoke", "actionName", "-A", missingFile), missingFileMsg),
       (Seq("action", "create", "actionName", "-A", missingFile), missingFileMsg),
@@ -1614,7 +1575,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "create an action with different permutations of limits" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
 
       def testLimit(timeout: Option[Duration] = None,
                     memory: Option[ByteSize] = None,

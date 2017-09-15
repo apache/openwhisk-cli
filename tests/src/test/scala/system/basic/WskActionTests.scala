@@ -48,7 +48,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "invoke an action returning a promise" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "hello promise"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloPromise.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("helloPromise.js")))
     }
 
     val run = wsk.action.invoke(name)
@@ -62,7 +62,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "invoke an action with a space in the name" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "hello Async"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloAsync.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("helloAsync.js")))
     }
 
     val run = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -80,7 +80,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
       action.create(
         name,
-        Some(TestUtils.getTestActionFilename("printParams.js")),
+        Some(TestCLIUtils.getTestActionFilename("printParams.js")),
         parameters = params.mapValues(_.toJson))
     }
 
@@ -107,7 +107,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
     }
 
     assetHelper.withCleaner(wsk.action, fullQualifiedName) {
-      val file = Some(TestUtils.getTestActionFilename("wc.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("wc.js"))
       (action, _) =>
         action.create(fullQualifiedName, file)
     }
@@ -132,7 +132,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
       val annots = Map("b" -> "B".toJson)
 
       assetHelper.withCleaner(wsk.action, origActionName) {
-        val file = Some(TestUtils.getTestActionFilename("wc.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("wc.js"))
         (action, _) =>
           action.create(origActionName, file, parameters = params, annotations = annots)
       }
@@ -171,7 +171,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
         JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
 
       assetHelper.withCleaner(wsk.action, origName) {
-        val file = Some(TestUtils.getTestActionFilename("echo.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
         (action, _) =>
           action.create(origName, file, parameters = origParams, annotations = origAnnots)
       }
@@ -190,7 +190,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "recreate and invoke a new action with different code" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "recreatedAction"
     assetHelper.withCleaner(wsk.action, name, false) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("wc.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("wc.js")))
     }
 
     val run1 = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -201,7 +201,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
 
     wsk.action.delete(name)
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
     }
 
     val run2 = wsk.action.invoke(name, Map("payload" -> testString.toJson))
@@ -214,7 +214,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "fail to invoke an action with an empty file" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "empty"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("empty.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
     }
     val run = wsk.action.invoke(name)
     withActivation(wsk.activation, run) { activation =>
@@ -226,7 +226,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "create an action with an empty file" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "empty"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("empty.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
     }
     val rr = wsk.action.get(name)
     wsk.parseJsonString(rr.stdout).getFieldPath("exec", "code") shouldBe Some(JsString(""))
@@ -237,10 +237,10 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
     val child = "wc"
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("wcbin.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("wcbin.js")))
     }
     assetHelper.withCleaner(wsk.action, child) { (action, _) =>
-      action.create(child, Some(TestUtils.getTestActionFilename("wc.js")))
+      action.create(child, Some(TestCLIUtils.getTestActionFilename("wc.js")))
     }
 
     val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
@@ -255,7 +255,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "blocking invoke an asynchronous action" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "helloAsync"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloAsync.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("helloAsync.js")))
     }
 
     val run = wsk.action.invoke(name, Map("payload" -> testString.toJson), blocking = true)
@@ -281,7 +281,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   it should "not be able to use 'ping' in an action" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "ping"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("ping.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("ping.js")))
     }
 
     val run = wsk.action.invoke(name, Map("payload" -> "google.com".toJson))
@@ -294,7 +294,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
   ignore should "support UTF-8 as input and output format" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "utf8Test"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
     }
 
     val utf8 = "«ταБЬℓσö»: 1<2 & 4+1>³, now 20%€§$ off!"

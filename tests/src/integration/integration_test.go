@@ -25,6 +25,7 @@ import (
     "github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
     "os"
     "strings"
+    "fmt"
 )
 
 var invalidArgs []common.InvalidArg
@@ -341,6 +342,7 @@ func TestSetAPIHostAuthNamespace(t *testing.T) {
     namespace, _ := wsk.ListNamespaces()
     namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
     expectedNamespace := string(namespaces[len(namespaces) - 1])
+    fmt.Println(wsk.Wskprops.APIHost)
     if (wsk.Wskprops.APIHost != "" && wsk.Wskprops.APIHost != "") {
         stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
             "--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace)
@@ -364,7 +366,7 @@ func TestShowAPIBuildVersion(t *testing.T) {
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
     stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
-        "--apiversion", wsk.Wskprops.APIVersion)
+        "--apiversion", wsk.Wskprops.Apiversion)
     assert.Equal(t, nil, err, "The command property set --apihost --apiversion failed to run.")
     stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
     assert.Equal(t, nil, err, "The command property get -i --apibuild failed to run.")
@@ -402,7 +404,7 @@ func TestShowAPIBuildVersionHTTP(t *testing.T) {
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
-    apihost := "http://" + wsk.Wskprops.ControllerHost + ":" + wsk.Wskprops.ControllerPort
+    apihost := wsk.Wskprops.APIHost
     stdout, err := wsk.RunCommand("property", "set", "--apihost", apihost)
     assert.Equal(t, nil, err, "The command property set --apihost failed to run.")
     stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
@@ -425,7 +427,7 @@ func TestRejectAuthCommNoKey(t *testing.T) {
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
     stdout, err := wsk.RunCommand("list", "--apihost", wsk.Wskprops.APIHost,
-        "--apiversion", wsk.Wskprops.APIVersion)
+        "--apiversion", wsk.Wskprops.Apiversion)
     assert.NotEqual(t, nil, err, "The command list should fail to run.")
     assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "usage.",
         "The output of the command does not contain \"usage.\".")

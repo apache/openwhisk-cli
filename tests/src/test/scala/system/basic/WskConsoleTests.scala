@@ -58,7 +58,7 @@ class WskConsoleTests extends TestHelpers with WskTestHelpers {
     }
 
     assetHelper.withCleaner(wsk.action, fullActionName) { (action, _) =>
-      action.create(fullActionName, Some(TestUtils.getTestActionFilename("hello.js")))
+      action.create(fullActionName, Some(TestCLIUtils.getTestActionFilename("hello.js")))
     }
 
     val duration = Some(30 seconds)
@@ -73,7 +73,7 @@ class WskConsoleTests extends TestHelpers with WskTestHelpers {
   it should "show repeated activations" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "countdown"
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("countdown.js")))
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("countdown.js")))
     }
 
     val start = Instant.now(Clock.systemUTC())

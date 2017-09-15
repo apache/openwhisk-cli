@@ -32,8 +32,8 @@ import common.StreamLogging
 import common.TestHelpers
 import common.TestCLIUtils
 import common.TestUtils._
-import common.Wsk
 import common.WhiskProperties
+import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
 
@@ -56,9 +56,6 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
   val allowedActionDuration = 120 seconds
   val shortDuration = 10 seconds
 
-  val whiskConfig = new WhiskConfig(Map(WhiskConfig.actionSequenceMaxLimit -> null))
-  assert(whiskConfig.isValid)
-
   behavior of "Wsk Sequence"
 
   it should "invoke a sequence with normal payload and payload with error field" in withAssetCleaner(wskprops) {
@@ -66,7 +63,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       val name = "sequence"
       val actions = Seq("split", "sort", "head", "cat")
       for (actionName <- actions) {
-        val file = TestUtils.getTestActionFilename(s"$actionName.js")
+        val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
         assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
           action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
         }
@@ -126,7 +123,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
     val actions = Seq("split") ++ inner_actions ++ Seq("cat")
     // create atomic actions
     for (actionName <- actions) {
-      val file = TestUtils.getTestActionFilename(s"$actionName.js")
+      val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
       assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
         action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
       }
@@ -176,7 +173,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
     val echo = "echo"
 
     // create echo action
-    val file = TestUtils.getTestActionFilename(s"$echo.js")
+    val file = TestCLIUtils.getTestActionFilename(s"$echo.js")
     assetHelper.withCleaner(wsk.action, echo) { (action, actionName) =>
       action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
     }
@@ -201,7 +198,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       result.fields.get("payload") shouldBe Some(argsJson)
     }
     // update x with limit echo
-    val limit = whiskConfig.actionSequenceLimit.toInt
+    val limit = WhiskProperties.getProperty("limits.actions.sequence.maxLength").toInt
     val manyEcho = for (i <- 1 to limit) yield echo
 
     wsk.action.create(xName, Some(manyEcho.mkString(",")), kind = Some("sequence"), update = true)
@@ -236,7 +233,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       val helloWithPkg = s"$pkgName/$helloName"
 
       // create hello action in package
-      val file = TestUtils.getTestActionFilename(s"$helloName.js")
+      val file = TestCLIUtils.getTestActionFilename(s"$helloName.js")
       val actionStr = "AtomicAction"
       assetHelper.withCleaner(wsk.action, helloWithPkg) { (action, actionName) =>
         action.create(
@@ -282,7 +279,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       val packageParams = Map("key1a" -> "value1a".toJson, "key1b" -> "value1b".toJson)
       val bindParams = Map("key2a" -> "value2a".toJson, "key1b" -> "value2b".toJson)
       val actionParams = Map("key0" -> "value0".toJson)
-      val file = TestUtils.getTestActionFilename("printParams.js")
+      val file = TestCLIUtils.getTestActionFilename("printParams.js")
       assetHelper.withCleaner(wsk.pkg, packageName) { (pkg, _) =>
         pkg.create(packageName, packageParams)
       }
@@ -320,7 +317,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       // create actions
       val actions = Seq(apperror, echo)
       for (actionName <- actions) {
-        val file = TestUtils.getTestActionFilename(s"$actionName.js")
+        val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
         assetHelper.withCleaner(wsk.action, actionName) { (action, actionName) =>
           action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
         }
@@ -357,7 +354,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       // timeouts for the action; make the one for initforever short
       val timeout = Map(echo -> allowedActionDuration, initforever -> shortDuration)
       for (actionName <- actions) {
-        val file = TestUtils.getTestActionFilename(s"$actionName.js")
+        val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
         assetHelper.withCleaner(wsk.action, actionName) { (action, actionName) =>
           action.create(name = actionName, artifact = Some(file), timeout = Some(timeout(actionName)))
         }
@@ -394,7 +391,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
     // create actions
     val actions = Seq(echo, sleep)
     for (actionName <- actions) {
-      val file = TestUtils.getTestActionFilename(s"$actionName.js")
+      val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
       assetHelper.withCleaner(wsk.action, actionName) { (action, actionName) =>
         action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
       }
@@ -442,7 +439,7 @@ class WskSequenceTests extends TestHelpers with ScalatestRouteTest with WskTestH
       trigger.create(name, parameters = triggerPayload)
     }
     // action
-    val file = TestUtils.getTestActionFilename(s"$actionName.js")
+    val file = TestCLIUtils.getTestActionFilename(s"$actionName.js")
     assetHelper.withCleaner(wsk.action, actionName) { (action, actionName) =>
       action.create(name = actionName, artifact = Some(file), timeout = Some(allowedActionDuration))
     }

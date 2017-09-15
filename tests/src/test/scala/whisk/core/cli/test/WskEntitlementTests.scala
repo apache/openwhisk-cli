@@ -57,7 +57,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
       val privateAction = "privateAction"
 
       assetHelper.withCleaner(wsk.action, privateAction) { (action, name) =>
-        action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))(wp)
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))(wp)
       }
 
       val fullyQualifiedActionName = s"/$guestNamespace/$privateAction"
@@ -96,7 +96,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
       }
 
       assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-        val file = Some(TestUtils.getTestActionFilename("empty.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("empty.js"))
         (action, _) =>
           action.create(fullSampleActionName, file)(wp)
       }
@@ -113,7 +113,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
       }
 
       val fullyQualifiedActionName = s"/$guestNamespace/notallowed"
-      val file = Some(TestUtils.getTestActionFilename("empty.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("empty.js"))
 
       withAssetCleaner(defaultWskProps) { (wp, assetHelper) =>
         assetHelper.withCleaner(wsk.action, fullyQualifiedActionName, confirmDelete = false) { (action, name) =>
@@ -129,7 +129,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
       }
 
       assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-        val file = Some(TestUtils.getTestActionFilename("empty.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("empty.js"))
         (action, _) =>
           action.create(fullSampleActionName, file)(wp)
       }
@@ -166,7 +166,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
     }
 
     assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-      val file = Some(TestUtils.getTestActionFilename("empty.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("empty.js"))
       (action, _) =>
         action.create(fullSampleActionName, file, kind = Some("nodejs:default"))(wp)
     }
@@ -224,7 +224,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
     }
 
     assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
       (action, _) =>
         action.create(fullSampleActionName, file)(wp)
     }
@@ -250,7 +250,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
     }
 
     assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
       (action, _) =>
         action.create(fullSampleActionName, file)(wp)
     }
@@ -277,7 +277,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
     }
 
     assetHelper.withCleaner(wsk.action, fullSampleActionName) {
-      val file = Some(TestUtils.getTestActionFilename("hello.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("hello.js"))
       (action, _) =>
         action.create(fullSampleActionName, file)(guestwp)
         action.create(s"$privateSamplePackage/$sampleAction", file)(guestwp)
@@ -307,7 +307,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
     }
 
     assetHelper.withCleaner(wsk.action, packagedActionName) {
-      val file = Some(TestUtils.getTestActionFilename("helloContext.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("helloContext.js"))
       (action, _) =>
         action.create(packagedActionName, file)(guestWskProps)
     }
@@ -332,7 +332,7 @@ class WskEntitlementTests extends TestHelpers with WskTestHelpers with BeforeAnd
 
       val sampleFeed = s"$samplePackage/sampleFeed"
       assetHelper.withCleaner(wsk.action, sampleFeed) {
-        val file = Some(TestUtils.getTestActionFilename("empty.js"))
+        val file = Some(TestCLIUtils.getTestActionFilename("empty.js"))
         (action, _) =>
           action.create(sampleFeed, file, kind = Some("nodejs:default"))(wp)
       }
