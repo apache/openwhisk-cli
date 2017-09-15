@@ -94,6 +94,7 @@ type FlagsStruct struct {
         sinceDays       int
         exit            int
         last            bool
+        strip           bool
     }
 
     // rule
