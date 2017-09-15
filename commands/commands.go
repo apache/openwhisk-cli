@@ -64,6 +64,14 @@ func setupClientConfig(cmd *cobra.Command, args []string) (error){
         UserAgent:  UserAgent + "/1.0 (" + Properties.CLIVersion + ")",
     }
 
+    if len(clientConfig.Host) == 0 {
+        config, _ := whisk.GetDefaultConfig()
+        clientConfig.Host = config.Host
+        if len(clientConfig.Host) == 0 {
+            clientConfig.Host = "openwhisk.ng.bluemix.net"
+        }
+    }
+
     // Setup client
     client, err = whisk.NewClient(http.DefaultClient, clientConfig)
 

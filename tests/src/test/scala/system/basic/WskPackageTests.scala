@@ -87,7 +87,7 @@ class WskPackageTests extends TestHelpers with WskTestHelpers {
     val packageParams = Map("key1a" -> "value1a".toJson, "key1b" -> "value1b".toJson)
     val bindParams = Map("key2a" -> "value2a".toJson, "key1b" -> "value2b".toJson)
     val actionParams = Map("key0" -> "value0".toJson)
-    val file = TestUtils.getTestActionFilename("printParams.js")
+    val file = TestCLIUtils.getTestActionFilename("printParams.js")
     assetHelper.withCleaner(wsk.pkg, packageName) { (pkg, _) =>
       pkg.create(packageName, packageParams)
     }

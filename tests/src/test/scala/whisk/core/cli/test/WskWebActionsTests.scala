@@ -45,8 +45,8 @@ import whisk.common.TransactionId
 import whisk.core.entity.Subject
 
 /**
- * Tests web actions.
- */
+  * Tests web actions.
+  */
 @RunWith(classOf[JUnitRunner])
 class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil with BeforeAndAfterAll {
   val MAX_URL_LENGTH = 8192 // 8K matching nginx default
@@ -60,11 +60,11 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   behavior of "Wsk Web Actions"
 
   /**
-   * Tests web actions, plus max url limit.
-   */
+    * Tests web actions, plus max url limit.
+    */
   it should "create a web action accessible via HTTPS" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "webaction"
-    val file = Some(TestUtils.getTestActionFilename("echo.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val host = getServiceURL()
     val requestPath = host + s"$testRoutePath/$namespace/default/$name.text/a?a="
     val padAmount = MAX_URL_LENGTH - requestPath.length
@@ -98,12 +98,12 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   }
 
   /**
-   * Tests web action requiring authentication.
-   */
+    * Tests web action requiring authentication.
+    */
   it should "create a web action requiring authentication accessible via HTTPS" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("echo.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
       val host = getServiceURL()
       val url = s"$host$testRoutePath/$namespace/default/$name.text/__ow_user"
 
@@ -129,7 +129,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   it should "ensure that CORS header is preserved for custom options" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("corsHeaderMod.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("corsHeaderMod.js"))
       val host = getServiceURL()
       val url = host + s"$testRoutePath/$namespace/default/$name.http"
 
@@ -149,7 +149,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
 
   it should "ensure that default CORS header is preserved" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "webaction"
-    val file = Some(TestUtils.getTestActionFilename("corsHeaderMod.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("corsHeaderMod.js"))
     val host = getServiceURL()
     val url = host + s"$testRoutePath/$namespace/default/$name"
 
@@ -174,7 +174,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   it should "invoke web action to ensure the returned body argument is correct" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("echo.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
       val bodyContent = "This is the body"
       val host = getServiceURL()
       val url = s"$host$testRoutePath/$namespace/default/webaction.text/__ow_body"
@@ -195,7 +195,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   it should "reject invocation of web action with invalid accept header" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
-      val file = Some(TestUtils.getTestActionFilename("textBody.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("textBody.js"))
       val host = getServiceURL()
       val url = host + s"$testRoutePath/$namespace/default/$name.http"
 
@@ -210,7 +210,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
 
   it should "support multiple response header values" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "webaction"
-    val file = Some(TestUtils.getTestActionFilename("multipleHeaders.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("multipleHeaders.js"))
     val host = getServiceURL()
     val url = host + s"$testRoutePath/$namespace/default/$name.http"
 
@@ -230,7 +230,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
 
   it should "handle http web action with base64 encoded response" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "base64Web"
-    val file = Some(TestUtils.getTestActionFilename("base64Web.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("base64Web.js"))
     val host = getServiceURL
     val url = host + s"$testRoutePath/$namespace/default/$name.http"
 
@@ -248,7 +248,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
   it should "handle http web action with base64 encoded binary response" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "binaryWeb"
-      val file = Some(TestUtils.getTestActionFilename("pngWeb.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("pngWeb.js"))
       val host = getServiceURL
       val url = host + s"$testRoutePath/$namespace/default/$name.http"
       val png = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAA/klEQVQYGWNgAAEHBxaG//+ZQMyyn581Pfas+cRQnf1LfF" +
@@ -300,7 +300,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
     (wp, assetHelper) =>
       val actionName = "webaction"
 
-      val file = Some(TestUtils.getTestActionFilename("echo.js"))
+      val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
       assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
         action.create(actionName, file, web = Some(true.toString))(wp)
       }
