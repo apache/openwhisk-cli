@@ -26,6 +26,7 @@ import (
     "github.com/apache/incubator-openwhisk-cli/wski18n"
 
     "github.com/spf13/cobra"
+    "fmt"
 )
 
 var client *whisk.Client
@@ -63,6 +64,17 @@ func setupClientConfig(cmd *cobra.Command, args []string) (error){
     }
 
     // Setup client
+    if baseURL == nil {
+        fmt.Println("clientConfig baseURL is nil")
+    } else {
+        fmt.Println("clientConfig baseURL is " + clientConfig.BaseURL.String())
+    }
+
+    fmt.Println("clientConfig host is " + clientConfig.Host)
+    fmt.Println("clientConfig auth is " + clientConfig.AuthToken)
+    fmt.Println("clientConfig Namespace is " + clientConfig.Namespace)
+    fmt.Println("clientConfig Version is " + clientConfig.Version)
+    fmt.Println("Properties.PropsFile is " + Properties.PropsFile)
     client, err = whisk.NewClient(http.DefaultClient, clientConfig)
 
     if err != nil {
