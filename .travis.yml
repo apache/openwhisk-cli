@@ -6,6 +6,7 @@ matrix:
     include:
         - os: linux
           sudo: required
+          group: deprecated-2017Q3
           go: 1.8
           env:
             secure: "Br0fD9CAKm8gqyEuwmltNJd4dGJCxPpj6feugHlO+CFFwfE/+kJKkpTlsDuRfrUzUDlWiETNPf0XGSjvPFqZExnLCE9XQh2+XF6u+S3YBWfM+rbbyRVAK6BlTwmt0u3jRJ2JP7spedTGZA+qfIWI+UkwoOexo7NcqtMPLahiZzheaaad8y3J+crHQCrB/kPrhLqKVMEOkIbveFdfV2QLfCOWgqP8e1LGZhPZ2N4QcNo0iB5uI4ZyYszTZDniXFKxz7kBs4tl4ZQDqRHqL02qKPsjbvjrZp83ql+PbC2dpgXi9YpaDuBEqKKX1rTQP5ppcwbobot5U3ItHWzpXbLCdsWxvbde/0enjMmOF1wwl71hPYIf7PkQmNAWXRtL2Z1TguO/dKCeXBLDER4YDQ79GYpikAMqnrRLou4rsyZrNUzg8aHbELzAHppDSpqEJN8ymGgWgmWBT8yPaWVwN5CjPFOxLPrVEObcwcNSGOcOvtmUGCnXKSZminNZUjz5QfWqpA+LYCUIbeOI2X2D+iQWklWONaU2A+PcNLaaegwwj4K+9ZlU08Ed8Ud5ZGhjN9s72OtoFPdSHAyBgf/qxIdnTzmmE+SQ90mDtG3VqjHy28Ix7cIGqaIEC8shFb0kKHqQ7AVkLPm0bsh2fbbYu/5YVpXHfxlKWfOLBV14bHUq3v0="
