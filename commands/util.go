@@ -274,7 +274,12 @@ func printFullActivationList(activations []whisk.Activation) {
 
 func printActivationLogs(logs []string) {
     for _, log := range logs {
-        fmt.Printf("%s\n", log)
+        if (Flags.activation.strip){
+            fmt.Printf("%s\n", log[39:])
+        } else {
+            fmt.Printf("%s\n", log)
+        }
+
     }
 }
 
@@ -817,6 +822,10 @@ func GetURLBase(host string, path string) (*url.URL, error)  {
         whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
             whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
         return nil, whiskErr
+    }
+
+    if !strings.HasPrefix(host, "http") {
+        host = "https://" + host
     }
 
     urlBase := fmt.Sprintf("%s%s", host, path)

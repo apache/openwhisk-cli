@@ -401,7 +401,7 @@ func init() {
     activationGetCmd.Flags().BoolVarP(&Flags.activation.last, "last", "l", false, wski18n.T("retrieves the last activation"))
 
     activationLogsCmd.Flags().BoolVarP(&Flags.activation.last, "last", "l", false, wski18n.T("retrieves the last activation"))
-
+    activationLogsCmd.Flags().BoolVarP(&Flags.activation.strip, "strip", "r", false, wski18n.T("strip timestamp and stream information"))
     activationResultCmd.Flags().BoolVarP(&Flags.activation.last, "last", "l", false, wski18n.T("retrieves the last activation"))
 
     activationPollCmd.Flags().IntVarP(&Flags.activation.exit, "exit", "e", 0, wski18n.T("stop polling after `SECONDS` seconds"))

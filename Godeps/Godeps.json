@@ -65,7 +65,7 @@
 		},
         {
             "ImportPath": "github.com/apache/incubator-openwhisk-client-go/...",
-            "Rev": "b239221db78b0578518daa81d97ab66cad6d08db"
+            "Rev": "d9d11f0b21f8c32b3d78cd632d41a69a818be200"
         }
 	]
 }
