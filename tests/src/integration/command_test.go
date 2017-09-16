@@ -41,9 +41,9 @@ var emptyFileMsg = "File '" + emptyFile + "' is not a valid file or it does not 
 var missingFileMsg = "File '" + missingFile + "' is not a valid file or it does not exist"
 
 // Test case to check if the binary exits.
-func TestWskExist(t *testing.T) {
+/*func TestWskExist(t *testing.T) {
     assert.True(t, wsk.Exists(), "The binary should exist.")
-}
+}*/
 
 func TestHelpUsageInfoCommand(t *testing.T) {
     stdout, err := wsk.RunCommand("-h")
