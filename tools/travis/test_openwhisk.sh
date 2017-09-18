@@ -2,6 +2,14 @@
 
 set -e
 
+cd $TRAVIS_BUILD_DIR
+./tools/travis/scancode.sh
+make lint
+make build
+make test
+export PATH=$PATH:$TRAVIS_BUILD_DIR;
+make native_test;
+
 export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/incubator-openwhisk";
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
