@@ -61,7 +61,7 @@ class WskWebActionsTests extends TestHelpers with WskTestHelpers with RestUtil w
 
   it should "ensure __ow_headers contains the proper content-type" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "webContenttype"
-    val file = Some(TestUtils.getTestActionFilename("echo.js"))
+    val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val bodyContent = JsObject("key" -> "value".toJson)
     val host = getServiceURL()
     val url = s"$host$testRoutePath/$namespace/default/$name.json"
