@@ -785,7 +785,7 @@ func unpackTar(inpath string) error {
     return nil
 }
 
-func CheckArgs(args []string, minimumArgNumber int, maximumArgNumber int, commandName string,
+func checkArgs(args []string, minimumArgNumber int, maximumArgNumber int, commandName string,
     requiredArgMsg string) (*whisk.WskError) {
         exactlyOrAtLeast := wski18n.T("exactly")
         exactlyOrNoMoreThan := wski18n.T("exactly")
@@ -824,7 +824,7 @@ func normalizeNamespace(namespace string) (string) {
 }
 
 func getClientNamespace() (string) {
-    return normalizeNamespace(Client.Config.Namespace)
+    return normalizeNamespace(client.Config.Namespace)
 }
 
 func ReadFile(filename string) (string, error) {

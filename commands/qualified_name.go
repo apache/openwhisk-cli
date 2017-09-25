@@ -28,7 +28,7 @@ type QualifiedName struct {
     namespace   string  // namespace. does not include leading '/'.  may be "" (i.e. default namespace)
     packageName string  // package.  may be "".  does not include leading/trailing '/'
     entity      string  // entity.  should not be ""
-    EntityName  string  // pkg+entity
+    entityName  string  // pkg+entity
 }
 
 ///////////////////////////
@@ -61,7 +61,7 @@ func (qualifiedName *QualifiedName) GetPackageName() string {
 //  GetEntityName() returns the entity name ([package/]entity) of qualifiedName
 //      without a leading '/'
 func (qualifiedName *QualifiedName) GetEntityName() string {
-    return qualifiedName.EntityName
+    return qualifiedName.entityName
 }
 
 //  GetEntity() returns the name of entity in qualifiedName without a leading '/'
@@ -110,7 +110,7 @@ func NewQualifiedName(name string) (*QualifiedName, error) {
             }
         }
 
-        qualifiedName.EntityName = strings.Join(parts[2:], "/")
+        qualifiedName.entityName = strings.Join(parts[2:], "/")
         if len(parts) == 4 {
             qualifiedName.packageName = parts[2]
         }
@@ -124,7 +124,7 @@ func NewQualifiedName(name string) (*QualifiedName, error) {
         if len(parts) == 2 {
             qualifiedName.packageName = parts[0]
         }
-        qualifiedName.EntityName = name
+        qualifiedName.entityName = name
         qualifiedName.namespace = getNamespaceFromProp()
     }
 
