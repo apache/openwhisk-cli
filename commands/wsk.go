@@ -36,7 +36,7 @@ var listCmd = &cobra.Command{
     Short: wski18n.T("list entities in the current namespace"),
     SilenceUsage:   true,
     SilenceErrors:  true,
-    PreRunE: SetupClientConfig,
+    PreRunE: setupClientConfig,
     RunE:   namespaceGetCmd.RunE,
 }
 
