@@ -261,7 +261,7 @@ var actionGetCmd = &cobra.Command{
         } else if Flags.common.summary {
             printSummary(action)
         } else if cmd.LocalFlags().Changed(SAVE_AS_FLAG) || cmd.LocalFlags().Changed(SAVE_FLAG) {
-            return saveCode(*action, flags.action.saveAs)
+            return saveCode(*action, Flags.action.saveAs)
         } else {
             if len(field) > 0 {
                 printActionGetWithField(qualifiedName.GetEntityName(), field, action)
