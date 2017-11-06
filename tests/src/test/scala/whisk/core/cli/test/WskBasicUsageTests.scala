@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import common.TestHelpers
 import common.TestCLIUtils
-import common.TestUtils
 import common.TestUtils._
 import common.WhiskProperties
 import common.Wsk
@@ -1130,7 +1129,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
     val triggerName = "feedTest"
 
     assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
-      action.create(actionName, Some(TestUtils.getTestActionFilename("echo.js")))
+      action.create(actionName, Some(TestCLIUtils.getTestActionFilename("echo.js")))
     }
 
     try {
