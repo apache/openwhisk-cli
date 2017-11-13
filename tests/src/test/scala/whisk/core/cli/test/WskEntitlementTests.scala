@@ -23,9 +23,6 @@ import org.scalatest.junit.JUnitRunner
 
 import common.TestHelpers
 import common.TestCLIUtils
-import common.TestUtils.FORBIDDEN
-import common.TestUtils.NOT_FOUND
-import common.TestUtils.TIMEOUT
 import common.TestUtils.RunResult
 import common.BaseWsk
 import common.WskProps

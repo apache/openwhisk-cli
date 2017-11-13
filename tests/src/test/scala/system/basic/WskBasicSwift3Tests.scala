@@ -36,7 +36,7 @@ abstract class WskBasicSwift3Tests extends TestHelpers with WskTestHelpers with 
 
   implicit val wskprops: common.WskProps = WskProps()
   val wsk: BaseWsk
-  val defaultAction: Some[String] = Some(TestCLIUtils.getTestActionFilename("hello.swift"))
+  val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.swift"))
   lazy val currentSwiftDefaultKind = "swift:3"
 
   behavior of "Swift runtime"

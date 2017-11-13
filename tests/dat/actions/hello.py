@@ -1,3 +1,5 @@
+"""Python Hello test.
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,21 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+"""
 
-package system.basic
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-import common.JsHelpers
-import common.WskTestHelpers
-import common.Wsk
-
-@RunWith(classOf[JUnitRunner])
-class WskCliUnicodeSwift311Tests extends WskUnicodeTests with WskTestHelpers with JsHelpers {
-
-  override val wsk: common.Wsk = new Wsk
-  override lazy val actionKind = "swift:3.1.1"
-  override lazy val actionSource = "unicode.swift"
-
-}
+def main(args):
+    """Main."""
+    name = args.get('name', 'stranger')
+    greeting = 'Hello ' + name + '!'
+    print(greeting)
+    return {'greeting': greeting}
