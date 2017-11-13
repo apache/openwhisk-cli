@@ -26,7 +26,7 @@ import common.TestUtils.SUCCESS_EXIT
  * Tests for basic CLI usage. Some of these tests require a deployed backend.
  */
 @RunWith(classOf[JUnitRunner])
-class WskCliApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers with StreamLogging {
+class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers with StreamLogging {
 
   val systemId: String = "whisk.system"
   override implicit val wskprops = WskProps(authKey = WskAdmin.listKeys(systemId)(0)._1, namespace = systemId)
