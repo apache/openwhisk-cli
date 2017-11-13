@@ -1,3 +1,5 @@
+"""Python Version test.
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,21 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+"""
 
-package system.basic
+import sys
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-import common.JsHelpers
-import common.WskTestHelpers
-import common.Wsk
-
-@RunWith(classOf[JUnitRunner])
-class WskCliUnicodeNodeTests extends WskUnicodeTests with WskTestHelpers with JsHelpers {
-
-  override val wsk: common.Wsk = new Wsk
-  override lazy val actionKind = "nodejs:6"
-  override lazy val actionSource = "unicode.js"
-
-}
+def main(args):
+    """Main."""
+    return {"version": sys.version_info.major}

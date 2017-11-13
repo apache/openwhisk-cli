@@ -24,7 +24,6 @@ import common.ActivationResult
 import common.JsHelpers
 import common.TestHelpers
 import common.TestCLIUtils
-import common.TestUtils
 import common.BaseWsk
 import common.Wsk
 import common.WskProps

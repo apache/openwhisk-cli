@@ -24,5 +24,5 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class WskCliBasicSwift3Tests extends WskBasicSwift3Tests {
-  override val wsk: common.Wsk = new Wsk
+  override val wsk = new Wsk
 }
