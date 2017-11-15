@@ -35,13 +35,16 @@ $ANSIBLE_CMD apigateway.yml
 cd $TRAVIS_BUILD_DIR
 TERM=dumb ./gradlew buildBinaries
 
+cd $WHISKDIR
+TERM=dumb ./gradlew distDocker
+
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
-mkdir -p $WHISKDIR/bin
-cp $TRAVIS_BUILD_DIR/bin/wsk $WHISKDIR/bin
+#mkdir -p $WHISKDIR/bin
+#cp $TRAVIS_BUILD_DIR/bin/wsk $WHISKDIR/bin
 
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $TRAVIS_BUILD_DIR
