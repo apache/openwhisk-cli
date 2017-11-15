@@ -442,7 +442,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       activation.logs.get.mkString(" ") should include("action list has this many actions")
     }
 
-    wsk.action.delete(name, expectedExitCode = TestUtils.NOT_FOUND)
+    wsk.action.delete(name, expectedExitCode = NOT_FOUND)
   }
 
   it should "invoke an action receiving context properties" in withAssetCleaner(wskprops) { (wp, assetHelper) =>

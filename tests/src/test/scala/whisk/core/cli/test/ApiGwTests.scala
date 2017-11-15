@@ -27,7 +27,6 @@ import org.scalatest.junit.JUnitRunner
 
 import common.TestUtils._
 import common.TestCLIUtils
-import common.WhiskProperties
 import common.WskProps
 
 /**
