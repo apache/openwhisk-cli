@@ -355,7 +355,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
     }
 
     Seq(strErrInput, numErrInput, boolErrInput) foreach { input =>
-      getJSONFromCLIResponse(
+      getJSONFromResponse(
         wsk.action.invoke(name, parameters = input, blocking = true, expectedExitCode = 246).stderr)
         .fields("response")
         .asJsObject
