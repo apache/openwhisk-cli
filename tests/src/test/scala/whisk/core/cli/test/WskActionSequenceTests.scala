@@ -25,7 +25,7 @@ import common.TestCLIUtils
 import common.BaseWsk
 import common.WskProps
 import common.WskTestHelpers
-import TestUtils.RunResult
+import common.TestUtils.RunResult
 import spray.json._
 import whisk.core.entity.EntityPath
 

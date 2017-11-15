@@ -17,10 +17,19 @@
 
 package whisk.core.cli.test
 
-import common._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+import common.JsHelpers
+import common.StreamLogging
+import common.TestCLIUtils
 import common.TestUtils.ANY_ERROR_EXIT
 import common.TestUtils.DONTCARE_EXIT
 import common.TestUtils.SUCCESS_EXIT
+import common.Wsk
+import common.WskActorSystem
+import common.WskAdmin
+import common.WskProps
 
 /**
  * Tests for basic CLI usage. Some of these tests require a deployed backend.

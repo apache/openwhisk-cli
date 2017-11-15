@@ -23,7 +23,8 @@ WHISKDIR="$HOMEDIR/incubator-openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
+TERM=dumb ./gradlew distDocker -PdockerImagePrefix=testing
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
@@ -46,12 +47,12 @@ cp $TRAVIS_BUILD_DIR/bin/wsk $WHISKDIR/bin
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $TRAVIS_BUILD_DIR
 
-./gradlew :tests:test -Dtest.single=*ApiGwTests*
+./gradlew :tests:test -Dtest.single=*ApiGwCliTests*
 sleep 30
-./gradlew :tests:test -Dtest.single=*ApiGwRoutemgmtActionTests*
+./gradlew :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
 sleep 30
-./gradlew :tests:test -Dtest.single=*ApiGwEndToEndTests*
+./gradlew :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
 sleep 30
-./gradlew :tests:test -Dtest.single=Wsk*Tests*
+./gradlew :tests:test -Dtest.single=*Wsk*Tests*
 
 make integration_test
