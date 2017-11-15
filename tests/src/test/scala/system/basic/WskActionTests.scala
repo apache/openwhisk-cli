@@ -141,8 +141,8 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
         action.create(copiedActionName, Some(origActionName), Some("copy"))
       }
 
-      val copiedAction = getJSONFromCLIResponse(wsk.action.get(copiedActionName).stdout)
-      val origAction = getJSONFromCLIResponse(wsk.action.get(copiedActionName).stdout)
+      val copiedAction = getJSONFromResponse(wsk.action.get(copiedActionName).stdout)
+      val origAction = getJSONFromResponse(wsk.action.get(copiedActionName).stdout)
 
       copiedAction.fields("annotations") shouldBe origAction.fields("annotations")
       copiedAction.fields("parameters") shouldBe origAction.fields("parameters")
@@ -180,7 +180,7 @@ class WskActionTests extends TestHelpers with WskTestHelpers with JsHelpers {
         action.create(copiedName, Some(origName), Some("copy"), parameters = copiedParams, annotations = copiedAnnots)
       }
 
-      val copiedAction = getJSONFromCLIResponse(wsk.action.get(copiedName).stdout)
+      val copiedAction = getJSONFromResponse(wsk.action.get(copiedName).stdout)
 
       // CLI does not guarantee order of annotations and parameters so do a diff to compare the values
       copiedAction.fields("parameters").convertTo[Seq[JsObject]] diff resParams shouldBe List()
