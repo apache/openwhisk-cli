@@ -282,9 +282,9 @@ var triggerUpdateCmd = &cobra.Command{
 
         if len(fullFeedName) > 0 {
             fullTriggerName := fmt.Sprintf("/%s/%s", qualifiedName.GetNamespace(), qualifiedName.GetEntityName())
-            flags.common.param = append(flags.common.param, getFormattedJSON(FEED_LIFECYCLE_EVENT, FEED_UPDATE))
-            flags.common.param = append(flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
-            flags.common.param = append(flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
+            Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_LIFECYCLE_EVENT, FEED_UPDATE))
+            Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
+            Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
 
             // Invoke the specified feed action to configure the trigger feed
             err = configureFeed(qualifiedName.GetEntityName(), fullFeedName)
