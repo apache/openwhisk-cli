@@ -289,7 +289,7 @@ var triggerUpdateCmd = &cobra.Command{
             // Invoke the specified feed action to configure the trigger feed
             err = configureFeed(qualifiedName.GetEntityName(), fullFeedName)
             if err != nil {
-                whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), flags.common.feed,
+                whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), Flags.common.feed,
                     err)
                 errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
                         map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
