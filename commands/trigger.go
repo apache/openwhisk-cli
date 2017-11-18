@@ -244,24 +244,24 @@ var triggerUpdateCmd = &cobra.Command{
         // The 1 or more --param arguments have all been combined into a single []string
         // e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
 
-        whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", flags.common.param)
-        parameters, err := getJSONFromStrings(flags.common.param, true)
+        whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+        parameters, err := getJSONFromStrings(Flags.common.param, true)
 
         if err != nil {
-            whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.param, err)
+            whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
             errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-                    map[string]interface{}{"param": fmt.Sprintf("%#v",flags.common.param), "err": err})
+                    map[string]interface{}{"param": fmt.Sprintf("%#v",Flags.common.param), "err": err})
             werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return werr
         }
 
-        whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", flags.common.annotation)
-        annotations, err := getJSONFromStrings(flags.common.annotation, true)
+        whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+        annotations, err := getJSONFromStrings(Flags.common.annotation, true)
 
         if err != nil {
-            whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", flags.common.annotation, err)
+            whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
             errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-                    map[string]interface{}{"annotation": fmt.Sprintf("%#v",flags.common.annotation), "err": err})
+                    map[string]interface{}{"annotation": fmt.Sprintf("%#v",Flags.common.annotation), "err": err})
             werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return werr
         }
