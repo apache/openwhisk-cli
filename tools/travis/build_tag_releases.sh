@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#declare -a os_list=("linux" "windows" "darwin")
-#declare -a arc_list=("amd64" "386")
-
 #  Currently supported combinations of OS and Architecture
 declare -a builds=(
     "linux amd64"
