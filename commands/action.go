@@ -398,6 +398,11 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
         action.Annotations = annotations.(whisk.KeyValueArr)
     }
 
+    if len(Flags.action.kind) > 0 && len(Flags.action.docker) > 0 {
+        errStr := wski18n.T("Cannot specify both --kind and --docker at the same time.")
+        return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+    }
+
     if Flags.action.copy {
         var copiedQualifiedName = new(QualifiedName)
 

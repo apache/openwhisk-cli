@@ -24,6 +24,7 @@ import common.ActivationResult
 import common.JsHelpers
 import common.TestHelpers
 import common.TestCLIUtils
+import common.TestUtils._
 import common.BaseWsk
 import common.Wsk
 import common.WskProps
@@ -294,5 +295,19 @@ abstract class WskActionTests extends TestHelpers with WskTestHelpers with JsHel
       activation.response.status shouldBe "success"
       activation.logs.get.mkString(" ") should include(s"hello $utf8")
     }
+  }
+
+  it should "not be able to use --kind and --docker at the same time when running action create" in {
+    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+    val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
+        kind = Some("nodejs:6"), docker = Some("mydockerimagename"))
+    out.stderr should include("Cannot specify both --kind and --docker at the same time")
+  }
+
+  it should "not be able to use --kind and --docker at the same time when running action update" in {
+    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+    val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
+      kind = Some("nodejs:6"), docker = Some("mydockerimagename"), update = true)
+    out.stderr should include("Cannot specify both --kind and --docker at the same time")
   }
 }

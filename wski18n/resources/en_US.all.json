@@ -1554,5 +1554,9 @@
   {
     "id": "Cannot create file '{{.name}}': {{.err}}",
     "translation": "Cannot create file '{{.name}}': {{.err}}"
+  },
+  {
+    "id": "Cannot specify both --kind and --docker at the same time.",
+    "translation": "Cannot specify both --kind and --docker at the same time."
   }
 ]
