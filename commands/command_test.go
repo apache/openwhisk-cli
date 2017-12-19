@@ -17,25 +17,25 @@
  * limitations under the License.
  */
 
-package tests
+package commands
 
 import (
     "testing"
     "os"
     "github.com/stretchr/testify/assert"
-    "github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
+    "github.com/apache/incubator-openwhisk-cli/sharedtest"
 )
 
-var wsk *common.Wsk = common.NewWsk()
-var tmpProp = common.GetRepoPath() + "/wskprops.tmp"
-var invalidArgs []common.InvalidArg
+var wsk *sharedtest.Wsk = sharedtest.NewWsk()
+var tmpProp = sharedtest.GetRepoPath() + "/wskprops.tmp"
+var invalidArgs []sharedtest.InvalidArg
 var invalidParamMsg = "Arguments for '-p' must be a key/value pair"
 var invalidAnnotMsg = "Arguments for '-a' must be a key/value pair"
 var invalidParamFileMsg = "An argument must be provided for '-P'"
 var invalidAnnotFileMsg = "An argument must be provided for '-A'"
 
-var emptyFile = common.GetTestActionFilename("emtpy.js")
-var helloFile = common.GetTestActionFilename("hello.js")
+var emptyFile = sharedtest.GetTestActionFilename("emtpy.js")
+var helloFile = sharedtest.GetTestActionFilename("hello.js")
 var missingFile = "notafile"
 var emptyFileMsg = "File '" + emptyFile + "' is not a valid file or it does not exist"
 var missingFileMsg = "File '" + missingFile + "' is not a valid file or it does not exist"
@@ -64,7 +64,7 @@ func TestHelpUsageInfoCommandLanguage(t *testing.T) {
 func TestShowCLIBuildVersion(t *testing.T) {
     stdout, err := wsk.RunCommand("property", "get", "--cliversion")
     assert.Equal(t, nil, err, "The command property get --cliversion failed to run.")
-    output := common.RemoveRedundentSpaces(string(stdout))
+    output := sharedtest.RemoveRedundentSpaces(string(stdout))
     assert.NotContains(t, output, "whisk CLI version not set",
         "The output of the command property get --cliversion contains \"whisk CLI version not set\".")
     assert.Contains(t, output, "whisk CLI version",
@@ -80,22 +80,22 @@ func TestShowAPIVersion(t *testing.T) {
 
 // Test case to verify the default namespace _.
 func TestDefaultNamespace(t *testing.T) {
-    common.CreateFile(tmpProp)
-    common.WriteFile(tmpProp, []string{"NAMESPACE="})
+    sharedtest.CreateFile(tmpProp)
+    sharedtest.WriteFile(tmpProp, []string{"NAMESPACE="})
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
     stdout, err := wsk.RunCommand("property", "get", "-i", "--namespace")
     assert.Equal(t, nil, err, "The command property get -i --namespace failed to run.")
-    assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk namespace _",
+    assert.Contains(t, sharedtest.RemoveRedundentSpaces(string(stdout)), "whisk namespace _",
         "The output of the command does not contain \"whisk namespace _\".")
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 // Test case to validate default property values.
 func TestValidateDefaultProperties(t *testing.T) {
-    common.CreateFile(tmpProp)
+    sharedtest.CreateFile(tmpProp)
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
@@ -114,40 +114,40 @@ func TestValidateDefaultProperties(t *testing.T) {
 
     stdout, err = wsk.RunCommand("property", "get", "--auth")
     assert.Equal(t, nil, err, "The command property get --auth failed to run.")
-    assert.Equal(t, "whisk auth", common.RemoveRedundentSpaces(string(stdout)),
+    assert.Equal(t, "whisk auth", sharedtest.RemoveRedundentSpaces(string(stdout)),
         "The output of the command does not equal to \"whisk auth\".")
 
     stdout, err = wsk.RunCommand("property", "get", "--apihost")
     assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
-    assert.Equal(t, "whisk API host", common.RemoveRedundentSpaces(string(stdout)),
+    assert.Equal(t, "whisk API host", sharedtest.RemoveRedundentSpaces(string(stdout)),
         "The output of the command does not equal to \"whisk API host\".")
 
     stdout, err = wsk.RunCommand("property", "get", "--namespace")
     assert.Equal(t, nil, err, "The command property get --namespace failed to run.")
-    assert.Equal(t, "whisk namespace _", common.RemoveRedundentSpaces(string(stdout)),
+    assert.Equal(t, "whisk namespace _", sharedtest.RemoveRedundentSpaces(string(stdout)),
         "The output of the command does not equal to \"whisk namespace _\".")
 
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 // Test case to set auth in property file.
 func TestSetAuth(t *testing.T) {
-    common.CreateFile(tmpProp)
+    sharedtest.CreateFile(tmpProp)
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
     _, err := wsk.RunCommand("property", "set", "--auth", "testKey")
     assert.Equal(t, nil, err, "The command property set --auth testKey failed to run.")
-    output := common.ReadFile(tmpProp)
+    output := sharedtest.ReadFile(tmpProp)
     assert.Contains(t, output, "AUTH=testKey",
         "The wsk property file does not contain \"AUTH=testKey\".")
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 // Test case to set multiple property values with single command.
 func TestSetMultipleValues(t *testing.T) {
-    common.CreateFile(tmpProp)
+    sharedtest.CreateFile(tmpProp)
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
@@ -155,17 +155,17 @@ func TestSetMultipleValues(t *testing.T) {
     _, err := wsk.RunCommand("property", "set", "--auth", "testKey", "--apihost", "openwhisk.ng.bluemix.net",
         "--apiversion", "v1")
     assert.Equal(t, nil, err, "The command property set --auth --apihost --apiversion failed to run.")
-    output := common.ReadFile(tmpProp)
+    output := sharedtest.ReadFile(tmpProp)
     assert.Contains(t, output, "AUTH=testKey", "The wsk property file does not contain \"AUTH=testKey\".")
     assert.Contains(t, output, "APIHOST=openwhisk.ng.bluemix.net",
         "The wsk property file does not contain \"APIHOST=openwhisk.ng.bluemix.net\".")
     assert.Contains(t, output, "APIVERSION=v1", "The wsk property file does not contain \"APIVERSION=v1\".")
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 // Test case to reject bad command.
 func TestRejectBadComm(t *testing.T) {
-    common.CreateFile(tmpProp)
+    sharedtest.CreateFile(tmpProp)
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
@@ -174,239 +174,239 @@ func TestRejectBadComm(t *testing.T) {
     assert.NotEqual(t, nil, err, "The command bogus should fail to run.")
     assert.Contains(t, string(stdout), "Run 'wsk --help' for usage",
         "The output of the command does not contain \"Run 'wsk --help' for usage\".")
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 // Test case to reject a command when the API host is not set.
 func TestRejectCommAPIHostNotSet(t *testing.T) {
-    common.CreateFile(tmpProp)
+    sharedtest.CreateFile(tmpProp)
 
     os.Setenv("WSK_CONFIG_FILE", tmpProp)
     assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
     stdout, err := wsk.RunCommand("property", "get")
     assert.NotEqual(t, nil, err, "The command property get --apihost --apiversion should fail to run.")
-    assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)),
+    assert.Contains(t, sharedtest.RemoveRedundentSpaces(string(stdout)),
         "The API host is not valid: An API host must be provided",
         "The output of the command does not contain \"The API host is not valid: An API host must be provided\".")
-    common.DeleteFile(tmpProp)
+    sharedtest.DeleteFile(tmpProp)
 }
 
 func initInvalidArgsNotEnoughParamsArgs() {
-    invalidArgs = []common.InvalidArg{
-        common.InvalidArg{
+    invalidArgs = []sharedtest.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-p"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-p", "key"},
             Err: invalidParamMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-P"},
             Err: invalidParamFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-A"},
             Err: invalidAnnotFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-a"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-a", "key"},
             Err: invalidAnnotMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-A"},
             Err: invalidAnnotFileMsg,
         },
@@ -414,124 +414,124 @@ func initInvalidArgsNotEnoughParamsArgs() {
 }
 
 func initInvalidArgsMissingInvalidParamsAnno(){
-    invalidArgs = []common.InvalidArg{
-        common.InvalidArg{
+    invalidArgs = []sharedtest.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", helloFile, "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", helloFile, "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-P", emptyFile},
             Err: emptyFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", helloFile, "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", helloFile, "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "create", "actionName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "update", "actionName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"action", "invoke", "actionName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "create", "packageName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "update", "packageName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"package", "bind", "packageName", "boundPackageName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "create", "triggerName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "update", "triggerName", "-A", missingFile},
             Err: missingFileMsg,
         },
-        common.InvalidArg{
+        sharedtest.InvalidArg{
             Cmd: []string{"trigger", "fire", "triggerName", "-A", missingFile},
             Err: missingFileMsg,
         },

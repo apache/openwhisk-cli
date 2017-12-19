@@ -9,7 +9,7 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	go get -d -t ./...
+	dep ensure
 
 LDFLAGS=-ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`"
 
@@ -19,11 +19,11 @@ updatedeps:
 
 # Build the project
 build: deps
-	go build ${LDFLAGS} -o ${BINARY}
+	go build ${LDFLAGS} -o ${CURDIR}/${BINARY} .
 
 test:
 	@echo "Launch the unit tests."
-	go test ./... -tags=unit
+	go test -v ./... -tags=unit
 
 native_test:
 	@echo "Launch the native tests for the commands."

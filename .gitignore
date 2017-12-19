@@ -2,3 +2,7 @@ javascript/
 wsk
 scripts
 Godeps/_workspace
+pkg/
+**/vendor/*
+.gradle/*
+wskprops.tmp
