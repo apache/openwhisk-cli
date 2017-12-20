@@ -18,12 +18,14 @@ git:
 before_install:
   - pip install --upgrade pip setuptools
 
+before_script:
+  - ./tools/travis/install_dep.sh
+  - export PATH=$PATH:$PWD/golang-dep
+
 install:
   - ./tools/travis/setupscan.sh
   - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
-  - go get -u github.com/stretchr/testify
-  - go get -u github.com/spf13/viper
 
 script:
   - ./tools/travis/test_openwhisk.sh
