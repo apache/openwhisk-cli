@@ -313,7 +313,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
       wsk.action.get(name, fieldFilter = Some("exec")).stdout should include(s"""$successMsg""")
       wsk.action
         .get(name, fieldFilter = Some("exec"))
-        .stdout should include regex (s"""$successMsg exec\n\\{\\s+"kind":\\s+"nodejs:6",\\s+"code":\\s+"\\/\\*\\*[\\\\r]*\\\\n \\* Hello, world.[\\\\r]*\\\\n \\*\\/[\\\\r]*\\\\nfunction main\\(params\\) \\{[\\\\r]*\\\\n    greeting \\= 'hello, ' \\+ params.payload \\+ '!'[\\\\r]*\\\\n    console.log\\(greeting\\);[\\\\r]*\\\\n    return \\{payload: greeting\\}[\\\\r]*\\\\n\\}""")
+        .stdout should include regex (s"""$successMsg exec\n\\{\\s+"kind":\\s+"nodejs:6",\\s+"binary":\\s+false\\s+\\}""")
       wsk.action
         .get(name, fieldFilter = Some("parameters"))
         .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")

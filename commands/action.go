@@ -214,67 +214,67 @@ func handleInvocationResponse(
 }
 
 var actionGetCmd = &cobra.Command{
-    Use:           "get ACTION_NAME [FIELD_FILTER | --summary | --url]",
-    Short:         wski18n.T("get action"),
-    SilenceUsage:  true,
-    SilenceErrors: true,
-    PreRunE:       SetupClientConfig,
-    RunE: func(cmd *cobra.Command, args []string) error {
-        var err error
-        var field string
-        var action *whisk.Action
-        var qualifiedName = new(QualifiedName)
-        var fetchCode bool
+	Use:           "get ACTION_NAME [FIELD_FILTER | --summary | --url]",
+	Short:         wski18n.T("get action"),
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	PreRunE:       SetupClientConfig,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var err error
+		var field string
+		var action *whisk.Action
+		var qualifiedName = new(QualifiedName)
+		var fetchCode bool
 
-        if whiskErr := CheckArgs(args, 1, 2, "Action get", wski18n.T("An action name is required.")); whiskErr != nil {
-            return whiskErr
-        }
+		if whiskErr := CheckArgs(args, 1, 2, "Action get", wski18n.T("An action name is required.")); whiskErr != nil {
+			return whiskErr
+		}
 
-        if !Flags.action.url && !Flags.common.summary && len(args) > 1 {
-            field = args[1]
+		if !Flags.action.url && !Flags.common.summary && len(args) > 1 {
+			field = args[1]
 
-            if !fieldExists(&whisk.Action{}, field) {
-                return invalidFieldFilterError(field)
-            }
-        }
+			if !fieldExists(&whisk.Action{}, field) {
+				return invalidFieldFilterError(field)
+			}
+		}
 
-        if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
-            return NewQualifiedNameError(args[0], err)
-        }
+		if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
+			return NewQualifiedNameError(args[0], err)
+		}
 
-        Client.Namespace = qualifiedName.GetNamespace()
-        fetchCode = cmd.LocalFlags().Changed(SAVE_AS_FLAG) || cmd.LocalFlags().Changed(SAVE_FLAG)
+		Client.Namespace = qualifiedName.GetNamespace()
+		fetchCode = cmd.LocalFlags().Changed(SAVE_AS_FLAG) || cmd.LocalFlags().Changed(SAVE_FLAG)
 
-        if action, _, err = Client.Actions.Get(qualifiedName.GetEntityName(), fetchCode); err != nil {
-            return actionGetError(qualifiedName.GetEntityName(), fetchCode, err)
-        }
+		if action, _, err = Client.Actions.Get(qualifiedName.GetEntityName(), fetchCode); err != nil {
+			return actionGetError(qualifiedName.GetEntityName(), fetchCode, err)
+		}
 
-        if Flags.action.url {
-            actionURL, err := action.ActionURL(Properties.APIHost,
-                DefaultOpenWhiskApiPath,
-                Properties.APIVersion,
-                qualifiedName.GetPackageName())
-            if err != nil {
-                errStr := wski18n.T("Invalid host address '{{.host}}': {{.err}}",
-                        map[string]interface{}{"host": Properties.APIHost, "err": err})
-                werr := whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-                return werr
-            }
-            printActionGetWithURL(qualifiedName.GetEntity(), actionURL)
-        } else if Flags.common.summary {
-            printSummary(action)
-        } else if cmd.LocalFlags().Changed(SAVE_AS_FLAG) || cmd.LocalFlags().Changed(SAVE_FLAG) {
-            return saveCode(*action, Flags.action.saveAs)
-        } else {
-            if len(field) > 0 {
-                printActionGetWithField(qualifiedName.GetEntityName(), field, action)
-            } else {
-                printActionGet(qualifiedName.GetEntityName(), action)
-            }
-        }
+		if Flags.action.url {
+			actionURL, err := action.ActionURL(Properties.APIHost,
+				DefaultOpenWhiskApiPath,
+				Properties.APIVersion,
+				qualifiedName.GetPackageName())
+			if err != nil {
+				errStr := wski18n.T("Invalid host address '{{.host}}': {{.err}}",
+					map[string]interface{}{"host": Properties.APIHost, "err": err})
+				werr := whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
+			printActionGetWithURL(qualifiedName.GetEntity(), actionURL)
+		} else if Flags.common.summary {
+			printSummary(action)
+		} else if cmd.LocalFlags().Changed(SAVE_AS_FLAG) || cmd.LocalFlags().Changed(SAVE_FLAG) {
+			return saveCode(*action, Flags.action.saveAs)
+		} else {
+			if len(field) > 0 {
+				printActionGetWithField(qualifiedName.GetEntityName(), field, action)
+			} else {
+				printActionGet(qualifiedName.GetEntityName(), action)
+			}
+		}
 
-        return nil
-    },
+		return nil
+	},
 }
 
 var actionDeleteCmd = &cobra.Command{
@@ -357,97 +357,97 @@ var actionListCmd = &cobra.Command{
 }
 
 func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action, error) {
-    var err error
-    var existingAction *whisk.Action
-    var paramArgs []string
-    var annotArgs []string
-    var parameters interface{}
-    var annotations interface{}
+	var err error
+	var existingAction *whisk.Action
+	var paramArgs []string
+	var annotArgs []string
+	var parameters interface{}
+	var annotations interface{}
 
-    var qualifiedName = new(QualifiedName)
+	var qualifiedName = new(QualifiedName)
 
-    if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
-        return nil, NewQualifiedNameError(args[0], err)
-    }
+	if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
+		return nil, NewQualifiedNameError(args[0], err)
+	}
 
-    Client.Namespace = qualifiedName.GetNamespace()
-    action := new(whisk.Action)
-    action.Name = qualifiedName.GetEntityName()
-    action.Namespace = qualifiedName.GetNamespace()
-    action.Limits = getLimits(
-        cmd.LocalFlags().Changed(MEMORY_FLAG),
-        cmd.LocalFlags().Changed(LOG_SIZE_FLAG),
-        cmd.LocalFlags().Changed(TIMEOUT_FLAG),
-        Flags.action.memory,
-        Flags.action.logsize,
-        Flags.action.timeout)
+	Client.Namespace = qualifiedName.GetNamespace()
+	action := new(whisk.Action)
+	action.Name = qualifiedName.GetEntityName()
+	action.Namespace = qualifiedName.GetNamespace()
+	action.Limits = getLimits(
+		cmd.LocalFlags().Changed(MEMORY_FLAG),
+		cmd.LocalFlags().Changed(LOG_SIZE_FLAG),
+		cmd.LocalFlags().Changed(TIMEOUT_FLAG),
+		Flags.action.memory,
+		Flags.action.logsize,
+		Flags.action.timeout)
 
-    paramArgs = Flags.common.param
-    annotArgs = Flags.common.annotation
+	paramArgs = Flags.common.param
+	annotArgs = Flags.common.annotation
 
-    if len(paramArgs) > 0 {
-        if parameters, err = getJSONFromStrings(paramArgs, true); err != nil {
-            return nil, getJSONFromStringsParamError(paramArgs, true, err)
-        }
+	if len(paramArgs) > 0 {
+		if parameters, err = getJSONFromStrings(paramArgs, true); err != nil {
+			return nil, getJSONFromStringsParamError(paramArgs, true, err)
+		}
 
-        action.Parameters = parameters.(whisk.KeyValueArr)
-    }
+		action.Parameters = parameters.(whisk.KeyValueArr)
+	}
 
-    if len(annotArgs) > 0 {
-        if annotations, err = getJSONFromStrings(annotArgs, true); err != nil {
-            return nil, getJSONFromStringsAnnotError(annotArgs, true, err)
-        }
+	if len(annotArgs) > 0 {
+		if annotations, err = getJSONFromStrings(annotArgs, true); err != nil {
+			return nil, getJSONFromStringsAnnotError(annotArgs, true, err)
+		}
 
-        action.Annotations = annotations.(whisk.KeyValueArr)
-    }
+		action.Annotations = annotations.(whisk.KeyValueArr)
+	}
 
-    if len(Flags.action.kind) > 0 && len(Flags.action.docker) > 0 {
-        errStr := wski18n.T("Cannot specify both --kind and --docker at the same time.")
-        return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-    }
+	if len(Flags.action.kind) > 0 && len(Flags.action.docker) > 0 {
+		errStr := wski18n.T("Cannot specify both --kind and --docker at the same time.")
+		return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+	}
 
-    if Flags.action.copy {
-        var copiedQualifiedName = new(QualifiedName)
+	if Flags.action.copy {
+		var copiedQualifiedName = new(QualifiedName)
 
-        if copiedQualifiedName, err = NewQualifiedName(args[1]); err != nil {
-            return nil, NewQualifiedNameError(args[1], err)
-        }
+		if copiedQualifiedName, err = NewQualifiedName(args[1]); err != nil {
+			return nil, NewQualifiedNameError(args[1], err)
+		}
 
-        Client.Namespace = copiedQualifiedName.GetNamespace()
+		Client.Namespace = copiedQualifiedName.GetNamespace()
 
-        if existingAction, _, err = Client.Actions.Get(copiedQualifiedName.GetEntityName(), true); err != nil {
-            return nil, actionGetError(copiedQualifiedName.GetEntityName(), true, err)
-        }
+		if existingAction, _, err = Client.Actions.Get(copiedQualifiedName.GetEntityName(), true); err != nil {
+			return nil, actionGetError(copiedQualifiedName.GetEntityName(), true, err)
+		}
 
-        Client.Namespace = qualifiedName.GetNamespace()
-        action.Exec = existingAction.Exec
-        action.Parameters = append(action.Parameters, existingAction.Parameters...)
-        action.Annotations = append(action.Annotations, existingAction.Annotations...)
-    } else if Flags.action.sequence {
-        if len(args) == 2 {
-            action.Exec = new(whisk.Exec)
-            action.Exec.Kind = SEQUENCE
-            action.Exec.Components = csvToQualifiedActions(args[1])
-        } else {
-            return nil, noArtifactError()
-        }
-    } else if len(args) > 1 || len(Flags.action.docker) > 0 {
-        action.Exec, err = getExec(args, Flags.action)
-        if err != nil {
-            return nil, err
-        }
-    } else if !update {
-        return nil, noArtifactError()
-    }
+		Client.Namespace = qualifiedName.GetNamespace()
+		action.Exec = existingAction.Exec
+		action.Parameters = append(action.Parameters, existingAction.Parameters...)
+		action.Annotations = append(action.Annotations, existingAction.Annotations...)
+	} else if Flags.action.sequence {
+		if len(args) == 2 {
+			action.Exec = new(whisk.Exec)
+			action.Exec.Kind = SEQUENCE
+			action.Exec.Components = csvToQualifiedActions(args[1])
+		} else {
+			return nil, noArtifactError()
+		}
+	} else if len(args) > 1 || len(Flags.action.docker) > 0 {
+		action.Exec, err = getExec(args, Flags.action)
+		if err != nil {
+			return nil, err
+		}
+	} else if !update {
+		return nil, noArtifactError()
+	}
 
-    if cmd.LocalFlags().Changed(WEB_FLAG) {
-        preserveAnnotations := action.Annotations == nil
-        action.Annotations, err = webAction(Flags.action.web, action.Annotations, qualifiedName.GetEntityName(), preserveAnnotations)
-    }
+	if cmd.LocalFlags().Changed(WEB_FLAG) {
+		preserveAnnotations := action.Annotations == nil
+		action.Annotations, err = webAction(Flags.action.web, action.Annotations, qualifiedName.GetEntityName(), preserveAnnotations)
+	}
 
-    whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
+	whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
 
-    return action, err
+	return action, err
 }
 
 func getExec(args []string, params ActionFlags) (*whisk.Exec, error) {
@@ -622,28 +622,28 @@ func webAction(webMode string, annotations whisk.KeyValueArr, entityName string,
 type WebActionAnnotationMethod func(annotations whisk.KeyValueArr) whisk.KeyValueArr
 
 func webActionAnnotations(
-    preserveAnnotations bool,
-    annotations whisk.KeyValueArr,
-    entityName string,
-    webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
-        var action *whisk.Action
-        var err error
+	preserveAnnotations bool,
+	annotations whisk.KeyValueArr,
+	entityName string,
+	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
+	var action *whisk.Action
+	var err error
 
-        if preserveAnnotations {
-            if action, _, err = Client.Actions.Get(entityName, false); err != nil {
-                whiskErr, isWhiskError := err.(*whisk.WskError)
+	if preserveAnnotations {
+		if action, _, err = Client.Actions.Get(entityName, false); err != nil {
+			whiskErr, isWhiskError := err.(*whisk.WskError)
 
-                if (isWhiskError && whiskErr.ExitCode != whisk.EXIT_CODE_NOT_FOUND) || !isWhiskError {
-                    return nil, actionGetError(entityName, false, err)
-                }
-            } else {
-                annotations = whisk.KeyValueArr.AppendKeyValueArr(annotations, action.Annotations)
-            }
-        }
+			if (isWhiskError && whiskErr.ExitCode != whisk.EXIT_CODE_NOT_FOUND) || !isWhiskError {
+				return nil, actionGetError(entityName, false, err)
+			}
+		} else {
+			annotations = whisk.KeyValueArr.AppendKeyValueArr(annotations, action.Annotations)
+		}
+	}
 
-        annotations = webActionAnnotationMethod(annotations)
+	annotations = webActionAnnotationMethod(annotations)
 
-        return annotations, nil
+	return annotations, nil
 }
 
 func addWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
@@ -794,8 +794,8 @@ func actionDeleteError(entityName string, err error) error {
 	return nestedError(errMsg, err)
 }
 
-func actionGetError(entityName string, fetchCode bool, err error) (error) {
-    whisk.Debug(whisk.DbgError, "Client.Actions.Get(%s, %t) error: %s\n", entityName, fetchCode, err)
+func actionGetError(entityName string, fetchCode bool, err error) error {
+	whisk.Debug(whisk.DbgError, "Client.Actions.Get(%s, %t) error: %s\n", entityName, fetchCode, err)
 
 	errMsg := wski18n.T(
 		"Unable to get action '{{.name}}': {{.err}}",
@@ -1011,34 +1011,34 @@ func printSavedActionCodeSuccess(name string) {
 }
 
 // Check if the specified action is a web-action
-func isWebAction(client *whisk.Client, qname QualifiedName) (error) {
-    var err error = nil
+func isWebAction(client *whisk.Client, qname QualifiedName) error {
+	var err error = nil
 
-    savedNs := client.Namespace
-    client.Namespace = qname.GetNamespace()
-    fullActionName := "/" + qname.GetNamespace() + "/" + qname.GetEntityName()
+	savedNs := client.Namespace
+	client.Namespace = qname.GetNamespace()
+	fullActionName := "/" + qname.GetNamespace() + "/" + qname.GetEntityName()
 
-    action, _, err := client.Actions.Get(qname.GetEntityName(), false)
+	action, _, err := client.Actions.Get(qname.GetEntityName(), false)
 
-    if err != nil {
-        whisk.Debug(whisk.DbgError, "client.Actions.Get(%s, %t) error: %s\n", fullActionName, false, err)
-        whisk.Debug(whisk.DbgError, "Unable to obtain action '%s' for web action validation\n", fullActionName)
-        errMsg := wski18n.T("Unable to get action '{{.name}}': {{.err}}",
-            map[string]interface{}{"name": fullActionName, "err": err})
-        err = whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_NETWORK, whisk.DISPLAY_MSG,
-            whisk.NO_DISPLAY_USAGE)
-    } else {
-        err = errors.New(wski18n.T("Action '{{.name}}' is not a web action. Issue 'wsk action update \"{{.name}}\" --web true' to convert the action to a web action.",
-            map[string]interface{}{"name": fullActionName}))
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "client.Actions.Get(%s, %t) error: %s\n", fullActionName, false, err)
+		whisk.Debug(whisk.DbgError, "Unable to obtain action '%s' for web action validation\n", fullActionName)
+		errMsg := wski18n.T("Unable to get action '{{.name}}': {{.err}}",
+			map[string]interface{}{"name": fullActionName, "err": err})
+		err = whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_NETWORK, whisk.DISPLAY_MSG,
+			whisk.NO_DISPLAY_USAGE)
+	} else {
+		err = errors.New(wski18n.T("Action '{{.name}}' is not a web action. Issue 'wsk action update \"{{.name}}\" --web true' to convert the action to a web action.",
+			map[string]interface{}{"name": fullActionName}))
 
-        if action.WebAction() {
-            err = nil
-        }
-    }
+		if action.WebAction() {
+			err = nil
+		}
+	}
 
-    client.Namespace = savedNs
+	client.Namespace = savedNs
 
-    return err
+	return err
 }
 
 func init() {
