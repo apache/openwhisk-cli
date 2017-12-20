@@ -60,7 +60,7 @@ func (wsk *Wsk)Exists() bool {
 func (wsk *Wsk)RunCommand(s ...string) ([]byte, error) {
     cs := wsk.Arg
     cs = append(cs, s...)
-    command := exec.Command(wsk.Path, cs...)
+    command := exec.Command(wsk.Dir + "/" + wsk.Path, cs...)
     command.Dir = wsk.Dir
     return command.CombinedOutput()
 }
