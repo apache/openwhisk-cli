@@ -6,3 +6,4 @@ pkg/
 **/vendor/*
 .gradle/*
 wskprops.tmp
+tools/golang-dep
