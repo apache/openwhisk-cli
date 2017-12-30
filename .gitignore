@@ -5,3 +5,9 @@ Godeps/_workspace
 .idea/
 *.iml
 .gradle
+
+# Gradle build working directories
+.gogradle/
+bin/
+build/
+vendor/

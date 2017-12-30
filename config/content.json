@@ -1,0 +1,40 @@
+{
+  "cli": {
+    "linux": {
+      "386": {
+        "path": "linux/386/OpenWhisk_CLI-linux-32bit.tgz"
+      },
+      "default": {
+        "path": "linux/amd64/OpenWhisk_CLI-linux.tgz"
+      },
+      "amd64": {
+        "path": "linux/amd64/OpenWhisk_CLI-linux.tgz"
+      },
+      "s390x": {
+        "path": "linux/s390x/OpenWhisk_CLI-linux-s390x.tgz"
+      }
+    },
+    "mac": {
+      "386": {
+        "path": "mac/386/OpenWhisk_CLI-mac-32bit.zip"
+      },
+      "default": {
+        "path": "mac/amd64/OpenWhisk_CLI-mac.zip"
+      },
+      "amd64": {
+        "path": "mac/amd64/OpenWhisk_CLI-mac.zip"
+      }
+    },
+    "windows": {
+      "386": {
+        "path": "windows/386/OpenWhisk_CLI-windows-32bit.zip"
+      },
+      "default": {
+        "path": "windows/amd64/OpenWhisk_CLI-windows.zip"
+      },
+      "amd64": {
+        "path": "windows/amd64/OpenWhisk_CLI-windows.zip"
+      }
+    }
+  }
+}

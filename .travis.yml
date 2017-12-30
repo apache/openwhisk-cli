@@ -59,7 +59,9 @@ deploy:
   api_key:
     secure: Yh1aYiM/qIWkPMSVjGUq1g9TjpACjavQ00QAqp4oqghNZc6xBcmdzsfD2VjzVPHleNI1FIZyjJ1x6laRfWBzRkAcJcjUHXA2bO/V0jqePVmgVm75WwTZ/9EaWIJeAg5CQMm5DGS28Yhc60C0ut3ZzKMWGTiKb73UADXPTGd/tjndxjfksX/THXPuInKB9QZesmluBAC2am/x/6J311WA2wqe0p1+9JFwMr8XwIcwzCwgi/d9CFpS1RnVpLE/ORSgmN/dFbZ7A/qVbx377QoxKiEB0jmUwi13f7REFAw18JdgzbQCH3X4HNu9pCJwHEAq3lP2CfmHbAXcViBeji/Xh9PPJVV9TYqO+uT8oPxCPJND1A/3O2xJ8LyZ/FP2bWqG/Ds/8SZCvxfOR/X77opUeZ4qAp7HJMVCsFi3TsnmzxCe0BOxCppVJLhoSZ2rOAPJi9mKgS/Z/VA5VhNNmnPtkReEWK4vT9h3/iCwv9anvC0RKeLckSHpCm5C5otNXtV4L990fL5L5krMatxynHnCmmhYeLg/Ns+5ncax58Y8hmhnhzTqbPGHpe79bJRfvwRI9lboq7kEj4x5O/M16TKRfQ8ZU5UHvrCPdlTfT7NUXRGZkvWX20X6Ta/DRROTF+xZGiq7da3Oi+xyNDx/LmymfR49thjzgIPXVZolknGYQ9Q=
   file_glob: true
-  file: ${zip_file_name}-*.*
+  file:
+    - build/${zip_file_name}-*.tgz
+    - build/${zip_file_name}-*.zip
   overwrite: true
   skip_cleanup: true
   on:
