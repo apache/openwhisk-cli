@@ -12,6 +12,15 @@
       },
       "s390x": {
         "path": "linux/s390x/OpenWhisk_CLI-linux-s390x.tgz"
+      },
+      "ppc64le": {
+        "path": "linux/ppc64le/OpenWhisk_CLI-linux-ppc64le.tgz"
+      },
+      "arm": {
+        "path": "linux/arm/OpenWhisk_CLI-linux-arm.tgz"
+      },
+      "arm64": {
+        "path": "linux/arm64/OpenWhisk_CLI-linux-arm64.tgz"
       }
     },
     "mac": {

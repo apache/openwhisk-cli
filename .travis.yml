@@ -49,6 +49,7 @@ before_deploy:
   - sudo apt-get -y install jq
   - go get github.com/inconshreveable/mousetrap
   - go get github.com/mattn/go-isatty
+  - go get golang.org/x/sys/unix
   - export build_file_name=wsk
   - export zip_file_name=OpenWhisk_CLI
   - chmod +x tools/travis/build_tag_releases.sh
