@@ -1,0 +1,26 @@
+apply plugin: 'scala'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+ext.dockerImageName = 'invoker'
+apply from: '../../gradle/docker.gradle'
+distDocker.dependsOn ':common:scala:distDocker', 'distTar'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.scala-lang:scala-library:${gradle.scala.version}"
+    compile project(':common:scala')
+
+    compile 'org.apache.curator:curator-recipes:4.0.0', { exclude group: 'org.apache.zookeeper', module:'zookeeper' }
+    compile 'org.apache.zookeeper:zookeeper:3.4.11'
+    compile 'com.lightbend.akka:akka-stream-alpakka-file_2.11:0.14'
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = gradle.scala.compileFlags
+}
+
+mainClassName = "whisk.core.invoker.Invoker"
