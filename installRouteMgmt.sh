@@ -13,7 +13,7 @@ set -x
 
 if [ $# -eq 0 ]
 then
-echo "Usage: ./installRouteMgmt.sh AUTHKEY APIHOST NAMESPACE PATH_TO_WSK_CLI"
+echo "Usage: ./installRouteMgmt.sh AUTHKEY APIHOST NAMESPACE PATH_TO_WSK_CLI APIGW_AUTH_USER APIGW_AUTH_PWD APIGW_HOST_V2 "
 fi
 
 AUTH="$1"
@@ -21,16 +21,9 @@ APIHOST="$2"
 NAMESPACE="$3"
 WSK_CLI="$4"
 
-WHISKPROPS_FILE="$OPENWHISK_HOME/whisk.properties"
-if [ -z "$GW_USER" ]; then
-   GW_USER=`fgrep apigw.auth.user= $WHISKPROPS_FILE | cut -d'=' -f2`
-fi
-if [ -z "$GW_PWD" ]; then
-    GW_PWD=`fgrep apigw.auth.pwd= $WHISKPROPS_FILE | cut -d'=' -f2-`
-fi
-if [ -z "$GW_HOST_V2" ]; then
-    GW_HOST_V2=`fgrep apigw.host.v2= $WHISKPROPS_FILE | cut -d'=' -f2`
-fi
+GW_USER="$5"
+GW_PWD="$6"
+GW_HOST_V2="$7"
 
 # If the auth key file exists, read the key in the file. Otherwise, take the
 # first argument as the key itself.
@@ -48,22 +41,22 @@ $WSK_CLI -i --apihost "$APIHOST" package update --auth "$AUTH"  --shared no "$NA
 -p gwUrlV2 "$GW_HOST_V2"
 
 echo Creating NPM module .zip files
-zip -j "$OPENWHISK_HOME/core/routemgmt/getApi/getApi.zip" "$OPENWHISK_HOME/core/routemgmt/getApi/getApi.js" "$OPENWHISK_HOME/core/routemgmt/getApi/package.json" "$OPENWHISK_HOME/core/routemgmt/common/utils.js" "$OPENWHISK_HOME/core/routemgmt/common/apigw-utils.js"
-zip -j "$OPENWHISK_HOME/core/routemgmt/createApi/createApi.zip" "$OPENWHISK_HOME/core/routemgmt/createApi/createApi.js" "$OPENWHISK_HOME/core/routemgmt/createApi/package.json" "$OPENWHISK_HOME/core/routemgmt/common/utils.js" "$OPENWHISK_HOME/core/routemgmt/common/apigw-utils.js"
-zip -j "$OPENWHISK_HOME/core/routemgmt/deleteApi/deleteApi.zip" "$OPENWHISK_HOME/core/routemgmt/deleteApi/deleteApi.js" "$OPENWHISK_HOME/core/routemgmt/deleteApi/package.json" "$OPENWHISK_HOME/core/routemgmt/common/utils.js" "$OPENWHISK_HOME/core/routemgmt/common/apigw-utils.js"
+zip -j "getApi/getApi.zip" "getApi/getApi.js" "getApi/package.json" "common/utils.js" "common/apigw-utils.js"
+zip -j "createApi/createApi.zip" "createApi/createApi.js" "createApi/package.json" "common/utils.js" "common/apigw-utils.js"
+zip -j "deleteApi/deleteApi.zip" "deleteApi/deleteApi.js" "deleteApi/package.json" "common/utils.js" "common/apigw-utils.js"
 
 echo Installing apimgmt actions
-$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/getApi" "$OPENWHISK_HOME/core/routemgmt/getApi/getApi.zip" \
+$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/getApi" "getApi/getApi.zip" \
 -a description 'Retrieve the specified API configuration (in JSON format)' \
 --kind nodejs:default \
 -a web-export true -a final true
 
-$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/createApi" "$OPENWHISK_HOME/core/routemgmt/createApi/createApi.zip" \
+$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/createApi" "createApi/createApi.zip" \
 -a description 'Create an API' \
 --kind nodejs:default \
 -a web-export true -a final true
 
-$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/deleteApi" "$OPENWHISK_HOME/core/routemgmt/deleteApi/deleteApi.zip" \
+$WSK_CLI -i --apihost "$APIHOST" action update --auth "$AUTH" "$NAMESPACE/apimgmt/deleteApi" "deleteApi/deleteApi.zip" \
 -a description 'Delete the API' \
 --kind nodejs:default \
 -a web-export true -a final true
