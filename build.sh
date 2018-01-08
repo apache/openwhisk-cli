@@ -2,6 +2,7 @@
 
 set +x
 set -e
+set -f
 
 get_bin_name () {
   local os=$1
@@ -30,7 +31,8 @@ build_cli () {
   export GOARCH=$arch
 
   cd /src/github.com/apache/incubator-openwhisk-cli
-  go build -ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`" -v -o build/$os/$arch/$bin main.go;
+  go build -ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`" \
+      -v -o build/$os/$arch/$bin main.go;
 };
 
 get_compressed_name() {
@@ -70,36 +72,34 @@ compress_binary() {
 };
 
 create_cli_packages() {
-  local dirIndex="{\"cli\":{"
+  local dirIndex='{"cli":{'
 
-  for platform in $platforms; do
-    dirIndex="$dirIndex\"$platform\":{"
+  IFS="," echo "$platforms" | tr " " "\n" | sort | while read -r platform arch
+  do
+      #  Control-break processing for platform changes
+      if [ "$platform" != "$old_platform" ]; then
+        if [ "$old_platform" != "" ]; then
+          dirIndex="${dirIndex/%','/'},'/}" # Replace trailing comma with end-brace comma
+        fi
+        dirIndex+='"$platform":{'
+      fi
+      old_platform=$platform
 
-    for arch in $archs; do
       bin=$(get_bin_name $platform)
       build_cli $platform $arch $bin
       comp_name=$(get_compressed_name $platform $arch)
       comp_path=$(compress_binary $comp_name $bin $platform $arch)
 
       if [ $arch = $default_arch ]; then
-          dirIndex="$dirIndex\"default\":{\"path\":\"$comp_path\"},";
+          dirIndex+="\"default\":{\"path\":\"${comp_path}\"},";
       fi
-
-      dirIndex="$dirIndex\"$arch\":{\"path\":\"$comp_path\"},";
-    done
-
-    dirIndex="$(echo $dirIndex | rev | cut -c2- | rev)"
-    dirIndex="$dirIndex},";
+      dirIndex+="\"${arch}\":{\"path\":\"${comp_path}\"},";
   done
 
-  dirIndex="$(echo $dirIndex | rev | cut -c2- | rev)"
-  dirIndex="$dirIndex}}"
-
+  dirIndex="${dirIndex/%','/'}}}'/}"   # Replace trailing comma with end-braces
   echo $dirIndex > ./build/content.json
 };
 
-platforms="$CLI_OS"
-archs="$CLI_ARCH";
+platforms="${CLI_OS_ARCH}"  # In format 'linux,386 linux,amd64 linux,s390x mac,386 ...'
 default_arch="amd64"
-
 create_cli_packages

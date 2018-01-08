@@ -1,93 +1,153 @@
-ext.dockerImageName = "cli"
-ext.dockerContainerName = "cli"
-ext.dockerBuildArgs = getDockerBuildArgs()
-apply from: 'gradle/docker.gradle'
-
-
-task removeBinary(type: Delete) {
-    delete "${projectDir}/bin/wsk"
-    delete "${projectDir}/bin/mac"
-    delete "${projectDir}/bin/linux"
-    delete "${projectDir}/bin/windows"
+plugins {
+    id 'com.github.blindpirate.gogradle' version '0.8.0'
 }
 
-task distBinary(dependsOn: [removeBinary, buildBinaries]) {
-    doLast {
-        run(dockerBinary + ["rm", "-f", dockerContainerName], true)
-        run(dockerBinary + ["run", "--name", dockerContainerName, dockerTaggedImageName])
+golang {
+    packagePath = 'github.com/apache/incubator-openwhisk-cli' as String 
+}
 
-        // Copy all Go binaries from Docker into openwhisk/bin folder
-        run(dockerBinary + ["cp", dockerContainerName +
-                ":/src/github.com/apache/incubator-openwhisk-cli/build/.", "${projectDir}/bin"])
-
-        run(dockerBinary + ["rm", "-f", dockerContainerName])
+dependencies {
+    golang {
+        // BEGIN - Imported from Godeps
+        build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
+        build(['name':'github.com/fatih/color', 'version':'87d4004f2ab62d0d255e0a38f1680aa534549fe3', 'transitive':false])
+        build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
+        build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
+        build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
+        build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
+        build(['name':'github.com/mattn/go-isatty', 'version':'66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8', 'transitive':false])
+        build(['name':'github.com/mitchellh/go-homedir', 'version':'1111e456ffea841564ac0fa5f69c26ef44dafec9', 'transitive':false])
+        build(['name':'github.com/nicksnyder/go-i18n/i18n/...', 'version':'37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3', 'transitive':false])
+        build(['name':'github.com/spf13/cobra', 'version':'1238ba19d24b0b9ceee2094e1cb31947d45c3e86', 'transitive':false])
+        build(['name':'github.com/spf13/pflag', 'version':'367864438f1b1a3c7db4da06a2f55b144e6784e0', 'transitive':false])
+        build(['name':'golang.org/x/sys/unix', 'version':'7f918dd405547ecb864d14a8ecbbfe205b5f930f', 'transitive':false])
+        build(['name':'gopkg.in/yaml.v2', 'version':'cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b', 'transitive':false])
+        build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
+        build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk', 'version':'a67e8509a92beb6c68f0c9da43562af1f5d2b13c', 'transitive':false])
+        // END - Imported from Godeps
     }
 }
 
-task dumpOSInfo {
-    doLast {
-        println "os.name = "+getOsName()
-        println "os.arch = "+getOsArch()
-        println "go.name = "+mapOsNameToGoName(getOsName())
-        println "go.arch = "+mapOsArchToGoArch(getOsArch())
+/*
+    Helper functions -- Facilitate conversion between Go architecture and
+        OpenWhisk architecture representations.  
+        
+    Note:  If this collection keeps growing, it may be appropriate to
+        encapsulate 'platform' in a reusable Groovy class.
+ */
+def os(goos) { ((goos == 'darwin') ? 'mac' : goos) }
+def archiveDirName(goos, goarch) { "${os(goos)}/${goarch}" }
+def archiveFileName(goos, goarch) {
+    String suffix
+    switch (goarch) {
+        case "386": suffix = '-32bit'; break;
+        case "amd64": suffix = ''; break;
+        default: suffix = "-${goarch}"; break;
     }
+    String archivetype = (goos == 'linux') ? 'tgz' : 'zip'
+    "OpenWhisk_CLI-${os(goos)}${suffix}.${archivetype}"
 }
 
-task copyCLIShortcut(type: Copy, dependsOn: [distBinary, dumpOSInfo]) {
-    String go_osname     = mapOsNameToGoName(getOsName())
-    String go_osarch     = mapOsArchToGoArch(getOsArch())
-    String from_path_wsk = "${projectDir}/bin/${go_osname}/${go_osarch}/wsk"
-    String to_path_dir   = "${projectDir}/bin"
-
-    from from_path_wsk
-    into to_path_dir
-}
-
-pushImage.finalizedBy copyCLIShortcut
-
-// Returns the Go CLI docker build args
-def getDockerBuildArgs() {
-    String local_os = mapOsNameToGoName(getOsName())
-    String local_arch = mapOsArchToGoArch(getOsArch())
-    def res = []
-
-    if(!project.hasProperty('crossCompileCLI') || project.crossCompileCLI == "false") {
-        res = ["CLI_OS=${local_os}", "CLI_ARCH=${local_arch}"]
+/*
+    'platforms' property will be null for a local compile, or a list (comma or
+    space-separated) of hyphenated Goos-Goarch pairs.  Some transformation is
+    done when parsing to handle misconceptions.
+    
+    TODO:  More syntax/validity checking and feedback. 
+*/
+if (rootProject.hasProperty('buildPlatforms')) {
+    rootProject.ext.platforms = buildPlatforms.tokenize(' ,')
+        .collect(){ s -> s.replaceAll(~/^mac-/, 'darwin-')
+                    .replaceAll(~/-x86_64$/, '-amd64')}
+} else {
+    if (rootProject.findProperty('crossCompile')) {
+        rootProject.ext.platforms = [
+            'linux-386', 'linux-amd64', 
+            'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
+            'darwin-386', 'darwin-amd64',
+            'windows-386', 'windows-amd64' 
+        ]
     } else {
-        res = ["CLI_OS=mac linux windows", "CLI_ARCH=386 amd64"]
-    }
-
-    return res
-}
-
-def run(cmd, ignoreError = false) {
-    println("Executing '${cmd.join(" ")}'")
-    def proc = cmd.execute()
-    proc.waitFor()
-    if(!ignoreError && proc.exitValue() != 0) {
-        println("Command '${cmd.join(" ")}' failed with exitCode ${proc.exitValue()}")
+        rootProject.ext.platforms = null
     }
 }
 
-def getOsName() {
-    return System.properties['os.name']
+/*
+    Build
+ */
+
+build {
+    def wskLocation = './bin/wsk${GOEXE}'
+    if (rootProject.platforms) {
+        targetPlatform = rootProject.platforms
+        wskLocation = './bin/${GOOS}/${GOARCH}/wsk${GOEXE}'
+    } 
+    def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+
+    go(['build',
+      '-ldflags', "-X main.CLI_BUILD_TIME=$now" as String,
+      '-o', wskLocation, golang.packagePath ] as List<String>)
 }
 
-def getOsArch() {
-    return System.properties['os.arch']
+/*
+    Individual Archives
+    
+    For each platform, create an individual archive in a platform appropriate
+    format (tarball for Linux, zipfile for Mac & Windows).
+ */
+task individualArchives(
+    dependsOn: rootProject.platforms?.collect() { platform ->
+        def (goos, goarch) = platform.split('-')
+        task("release${goos.capitalize()}${goarch.capitalize()}", 
+            type: (goos == 'linux') ? Tar : Zip, 
+            dependsOn: "build${goos.capitalize()}${goarch.capitalize()}") {
+                if (goos == 'linux') { compression = Compression.GZIP }
+                destinationDir = file('./release')
+                baseName = "OpenWhisk_CLI-latest-${os(goos)}-${goarch}"
+                from "./build/${goos}/${goarch}/"
+            }
+    })
+
+/*
+    Nginx tarball - create a 'content.json' file representing all that was 
+    compiled and its appropriate directory in the Tarball that will be created
+    for deployment to local Nginx instances.
+    
+    TODO: Default architecture should be configurable as a property
+ */
+def content = [:]
+for (platform in platforms) {
+    def (goos, goarch) = platform.split('-')
+    def pathObject = [ "path" : "${archiveDirName(goos, goarch)}/${archiveFileName(goos, goarch)}" ]
+    content.get(os(goos),[:])[goarch] = pathObject
+    if (goarch == 'amd64') { content.get(os(goos),[:])['default'] = pathObject }
 }
 
-def mapOsNameToGoName(String osname) {
-    String osname_l = osname.toLowerCase()
-    if (osname_l.contains("nux") || osname.contains("nix")) return "linux"
-    if (osname_l.contains("mac")) return "mac"
-    if (osname_l.contains("windows")) return "windows"
-    return osname_l
+task contentJson() {
+    file('./release/content.json').text = groovy.json.JsonOutput.toJson(["cli":content])
 }
 
-def mapOsArchToGoArch(String osarch) {
-    String osarch_l = osarch.toLowerCase()
-    if (osarch_l.contains("x86_64") || osarch_l == "amd64") return "amd64"
-    if (osarch_l.contains("i386") || osarch_l.contains("x86_32")) return "386"
-    return osarch_l
+task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
+    // TODO -- Add a warning if there are NO platforms defined for the build;
+    //         because the archive will be meaningless.
+    compression = Compression.GZIP
+    destinationDir = file('./release')
+    baseName = 'OpenWhisk_CLI-latest-all'
+    from('./release/content.json') { into('.') }
+    for (platform in rootProject.platforms) {
+        from('./release/') {
+            def (goos,goarch) = platform.split('-')
+            include("OpenWhisk_CLI-latest-${os(goos)}-${goarch}.*")
+            into archiveDirName(goos, goarch)
+            rename { archiveFileName(goos, goarch) }
+        }
+    }
 }
+
+//  Note:  Okay, because nginxTarball depends on individualArchives, this
+//         isn't strictly accurate, but documents the intent:  we release
+//         both the tarball (with content.json) and the standalone archives.
+task release(dependsOn: [nginxTarball, individualArchives] )
+
+//  TODO:  Add tests as supported in original gradle & in Makefile
+//         Also, add a 'clean' task to remove ./.gogradle, ./build and ./release
