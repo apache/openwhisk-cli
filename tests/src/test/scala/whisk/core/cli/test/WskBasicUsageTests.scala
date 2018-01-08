@@ -275,6 +275,19 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
   }
 
+  it should "invoke an action that exits during run and check that the activation summary has the name in quoted" in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val name = "helloRunSummary"
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
+      }
+      val activationId = wsk.action.invoke(name).stdout.split("with id ")(1).trim
+      wsk.activation.waitForActivation(activationId)
+      val activationResponse = wsk.activation.get(Some(activationId), summary = Some(true))
+      activationResponse.stdout should include(s"""activation result for '/guest/${name}'""")
+  }
+
+
   it should "retrieve the last activation using --last flag" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val auth: Seq[String] = Seq("--auth", wskprops.authKey)
     val includeStr = "hello, undefined!"

@@ -31,6 +31,8 @@ import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
 
+import scala.sys.process._
+
 @RunWith(classOf[JUnitRunner])
 class WskSdkTests extends TestHelpers with WskTestHelpers {
 
@@ -77,6 +79,76 @@ class WskSdkTests extends TestHelpers with WskTestHelpers {
 
       val buildAndPushFile = new File(sdk, "buildAndPush.sh")
       buildAndPushFile.canExecute() should be(true)
+    } finally {
+      FileUtils.deleteDirectory(dir)
+    }
+  }
+
+  it should "download docker sdk when blackbox.tar.gz exists, and docker name should be quoted in error." in {
+    val fileName = "blackbox.tar.gz"
+    val dir = File.createTempFile("wskinstall", ".tmp")
+    dir.delete()
+    dir.mkdir() should be(true)
+    val file = new File(dir, fileName)
+    file.createNewFile should be (true)
+    try {
+      wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "docker"),
+        workingDir = dir,
+        expectedExitCode = 1).stderr should include(
+        s"""The file '${fileName}' already exists.  Delete it and retry.""")
+    } finally {
+      file.delete()
+      FileUtils.deleteDirectory(dir)
+    }
+  }
+
+  it should "download ios sdk when OpenWhiskIOSStarterApp.zip exists, and ios name should be quoted in error." in {
+    val fileName = "OpenWhiskIOSStarterApp.zip"
+    val dir = File.createTempFile("wskinstall", ".tmp")
+    dir.delete()
+    dir.mkdir() should be(true)
+    val file = new File(dir, fileName)
+    file.createNewFile should be (true)
+    try {
+      wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "ios"),
+        workingDir = dir,
+        expectedExitCode = 1).stderr should include(
+        s"""The file '${fileName}' already exists.  Delete it and retry.""")
+    } finally {
+      file.delete()
+      FileUtils.deleteDirectory(dir)
+    }
+  }
+
+  it should "download ios sdk, check filename is quoted in error when create fails." in {
+    val fileName = "OpenWhiskIOSStarterApp.zip"
+    val dir = File.createTempFile("wskinstall", ".tmp")
+    dir.delete()
+    dir.mkdir() should be(true)
+    Seq("chmod", "555", dir.getAbsolutePath).!!
+    try {
+      wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "ios"),
+        workingDir = dir,
+        expectedExitCode = 1).stderr should include(
+        s"""Error creating SDK file '${fileName}':""")
+    } finally {
+      FileUtils.deleteDirectory(dir)
+    }
+  }
+
+  it should "download docker sdk twice, check directory is quoted in error when create fails." in {
+    val dir = File.createTempFile("wskinstall", ".tmp")
+    dir.delete()
+    dir.mkdir() should be(true)
+    try {
+      wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "docker"),
+        workingDir = dir).stdout should include(
+        s"""The docker skeleton is now installed at the current directory.""")
+
+      wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "docker"),
+        workingDir = dir,
+        expectedExitCode = 1).stderr should include(
+        s"""The directory 'dockerSkeleton' already exists.  Delete it and retry.""")
     } finally {
       FileUtils.deleteDirectory(dir)
     }

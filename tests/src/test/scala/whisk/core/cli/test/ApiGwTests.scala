@@ -262,6 +262,32 @@ abstract class ApiGwTests extends BaseApiGwTests {
     verifyMissingField(rr)
   }
 
+  it should "api create should fail if action is not a web action" in {
+    val testName = "CLI_APIGWTEST_RO1"
+    val testbasepath = "/" + testName + "_bp"
+    val testrelpath = "/path"
+    val testnewrelpath = "/path_new"
+    val testurlop = "get"
+    val testapiname = testName + " API Name"
+    val actionName = testName + "_action"
+    try {
+      // Create the action for the API.  It must be a "web-action" action.
+      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode)
+
+      var rr = apiCreate(
+        basepath = Some(testbasepath),
+        relpath = Some(testrelpath),
+        operation = Some(testurlop),
+        action = Some(actionName),
+        apiname = Some(testapiname),
+        expectedExitCode = ERROR_EXIT)
+      rr.stderr should include(s"""Action '/_/${actionName}' is not a web action. Issue 'wsk action update "/_/${actionName}" --web true' to convert the action to a web action.""")
+    } finally {
+      wsk.action.delete(name = actionName, expectedExitCode = DONTCARE_EXIT)
+    }
+  }
+
   it should "verify full list output" in {
     val testName = "CLI_APIGWTEST_RO1"
     val testbasepath = "/" + testName + "_bp"
