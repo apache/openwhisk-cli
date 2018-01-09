@@ -29,36 +29,102 @@ dependencies {
 }
 
 /*
+    The OpenWhiskPlatform class is a utility class to make the rest of what
+    happens with platforms a bit more understandable.  A "Platform" is a tuple
+    of an operating system and a processor.  Currently, the OpenWhisk CLI 
+    supports three OS's:  Linux, Mac/Darwin, and Windows.  It supports x86 
+    (32-bit or 64-bit) on all OS's.  On Linux, it also support System Z (s390x), 
+    PowerPC (ppc64le), and ARM (32-bit and 64-bit) architectures.
+    
+    Different contexts us different codings to refer to these architectures --
+    the class attempts to provide and interpret all needed codings.  Internal
+    storage is in "GO" format:
+    
+        OS: linux, darwin, windows
+        Arch: 386, amd64, s390x, ppc64le, arm
+        
+    TODO - It may be appropriate to refactor into a general purpose Platform
+           class for all builds, then to extend with 
+ */
+class OpenWhiskPlatform {
+    /*
+        TODO - Consider the pros and cons of enums to implement this.
+    */
+    String goOs
+    String goArch
+
+    /*
+        Create a platform for the local platform
+     */
+    OpenWhiskPlatform() {
+        this(System.properties['os.name'], System.properties['os.arch'])
+    }
+    
+    OpenWhiskPlatform(String platformSpec) {
+        this(*platformSpec.split('-'))
+    }
+    
+    OpenWhiskPlatform(String inOs, String inArch) {
+        goOs=inOs.toLowerCase()
+                 .replaceAll(~/^mac.*$/,'darwin')
+                 .replaceAll(~/^.*n[ui]x.*$/,'linux')
+        goArch=inArch.toLowerCase()
+                     .replaceAll('x86_64','amd64')
+                     .replaceAll('i386','386')
+                     .replaceAll('x86_32','386')
+    }
+    
+    /**
+     * Return the Openwhisk OS for this Platform
+     */
+    String getOwOs() {
+        ((goOs == 'darwin') ? 'mac' : goOs)
+    }
+    
+    String getGoPlatform() {
+        "${goOs}-${goArch}"
+    }
+    
+    /*
+        Everything below here is specific to the CLI build and could be
+        factored out into a subclass.
+     */
+    String getArchiveDirName() { 
+        "${this.owOs}/${goArch}" 
+    }
+    
+    String getArchiveFileName() {
+        String suffix
+        switch (goArch) {
+            case "386": suffix = '-32bit'; break;
+            case "amd64": suffix = ''; break;
+            default: suffix = "-${goArch}"; break;
+        }
+        String archivetype = (goOs == 'linux') ? 'tgz' : 'zip'
+        "OpenWhisk_CLI-${this.owOs}${suffix}.${archivetype}"
+    }    
+}
+
+/*
     Helper functions -- Facilitate conversion between Go architecture and
         OpenWhisk architecture representations.  
         
     Note:  If this collection keeps growing, it may be appropriate to
         encapsulate 'platform' in a reusable Groovy class.
  */
-def os(goos) { ((goos == 'darwin') ? 'mac' : goos) }
-def archiveDirName(goos, goarch) { "${os(goos)}/${goarch}" }
-def archiveFileName(goos, goarch) {
-    String suffix
-    switch (goarch) {
-        case "386": suffix = '-32bit'; break;
-        case "amd64": suffix = ''; break;
-        default: suffix = "-${goarch}"; break;
-    }
-    String archivetype = (goos == 'linux') ? 'tgz' : 'zip'
-    "OpenWhisk_CLI-${os(goos)}${suffix}.${archivetype}"
-}
 
 /*
     'platforms' property will be null for a local compile, or a list (comma or
     space-separated) of hyphenated Goos-Goarch pairs.  Some transformation is
     done when parsing to handle misconceptions.
     
-    TODO:  More syntax/validity checking and feedback. 
+    TODO:  More syntax/validity checking and feedback, perhaps as part of a
+    Platform object as proposed above...
 */
+rootProject.ext.localPlatform = new OpenWhiskPlatform()
 if (rootProject.hasProperty('buildPlatforms')) {
     rootProject.ext.platforms = buildPlatforms.tokenize(' ,')
-        .collect(){ s -> s.replaceAll(~/^mac-/, 'darwin-')
-                    .replaceAll(~/-x86_64$/, '-amd64')}
+        .collect() { new OpenWhiskPlatform(it) }
 } else {
     if (rootProject.findProperty('crossCompile')) {
         rootProject.ext.platforms = [
@@ -66,27 +132,35 @@ if (rootProject.hasProperty('buildPlatforms')) {
             'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
             'darwin-386', 'darwin-amd64',
             'windows-386', 'windows-amd64' 
-        ]
+        ].collect { new OpenWhiskPlatform(it) }
     } else {
-        rootProject.ext.platforms = null
+        rootProject.ext.platforms = [ rootProject.localPlatform ]
     }
 }
 
 /*
     Build
  */
-
 build {
-    def wskLocation = './bin/wsk${GOEXE}'
-    if (rootProject.platforms) {
-        targetPlatform = rootProject.platforms
-        wskLocation = './bin/${GOOS}/${GOARCH}/wsk${GOEXE}'
-    } 
+    targetPlatform = rootProject.platforms*.goPlatform
     def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
     go(['build',
       '-ldflags', "-X main.CLI_BUILD_TIME=$now" as String,
-      '-o', wskLocation, golang.packagePath ] as List<String>)
+      '-o', './build/${GOOS}-${GOARCH}/wsk${GOEXE}', 
+      golang.packagePath ] as List<String>)
+}
+
+task buildBinaries(type: Copy, dependsOn: build) {
+    destinationDir = file('./bin')
+    for (p in platforms) {
+        from("./build/${p.goOs}-${p.goArch}") {
+            into("${p.owOs}/${p.goArch}")
+        }
+    }
+    rootProject.localPlatform.with() { l ->
+        from("./build/${l.goOs}-${l.goArch}")
+    }
 }
 
 /*
@@ -96,15 +170,14 @@ build {
     format (tarball for Linux, zipfile for Mac & Windows).
  */
 task individualArchives(
-    dependsOn: rootProject.platforms?.collect() { platform ->
-        def (goos, goarch) = platform.split('-')
-        task("release${goos.capitalize()}${goarch.capitalize()}", 
-            type: (goos == 'linux') ? Tar : Zip, 
-            dependsOn: "build${goos.capitalize()}${goarch.capitalize()}") {
-                if (goos == 'linux') { compression = Compression.GZIP }
+    dependsOn: rootProject.platforms.collect() { p ->
+        task("release${p.goOs.capitalize()}${p.goArch.capitalize()}", 
+            type: (p.goOs == 'linux') ? Tar : Zip, 
+            dependsOn: "build${p.goOs.capitalize()}${p.goArch.capitalize()}") {
+                if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
-                baseName = "OpenWhisk_CLI-latest-${os(goos)}-${goarch}"
-                from "./build/${goos}/${goarch}/"
+                baseName = "OpenWhisk_CLI-latest-${p.owOs}-${p.goArch}"
+                from "./build/${p.goOs}-${p.goArch}/"
             }
     })
 
@@ -116,15 +189,17 @@ task individualArchives(
     TODO: Default architecture should be configurable as a property
  */
 def content = [:]
-for (platform in platforms) {
-    def (goos, goarch) = platform.split('-')
-    def pathObject = [ "path" : "${archiveDirName(goos, goarch)}/${archiveFileName(goos, goarch)}" ]
-    content.get(os(goos),[:])[goarch] = pathObject
-    if (goarch == 'amd64') { content.get(os(goos),[:])['default'] = pathObject }
+for (p in platforms) {
+    def pathObject = [ "path" : "${p.archiveDirName}/${p.archiveFileName}" ]
+    content.get(p.owOs,[:])[p.goArch] = pathObject
+    if (p.goArch == 'amd64') { content.get(p.owOs,[:])['default'] = pathObject }
 }
 
 task contentJson() {
-    file('./release/content.json').text = groovy.json.JsonOutput.toJson(["cli":content])
+    doLast {
+        mkdir('./release')
+        file('./release/content.json').text = groovy.json.JsonOutput.toJson(["cli":content])
+    }
 }
 
 task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
@@ -134,20 +209,20 @@ task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
     destinationDir = file('./release')
     baseName = 'OpenWhisk_CLI-latest-all'
     from('./release/content.json') { into('.') }
-    for (platform in rootProject.platforms) {
+    rootProject.platforms.each() { p ->
         from('./release/') {
-            def (goos,goarch) = platform.split('-')
-            include("OpenWhisk_CLI-latest-${os(goos)}-${goarch}.*")
-            into archiveDirName(goos, goarch)
-            rename { archiveFileName(goos, goarch) }
+            include("OpenWhisk_CLI-latest-${p.owOs}-${p.goArch}.*")
+            into p.archiveDirName
+            rename { p.archiveFileName }
         }
     }
 }
 
-//  Note:  Okay, because nginxTarball depends on individualArchives, this
-//         isn't strictly accurate, but documents the intent:  we release
-//         both the tarball (with content.json) and the standalone archives.
+/*
+  Note:  Okay, because nginxTarball depends on individualArchives, this
+         isn't strictly all necessary, but documents the intent:  we release
+         both the tarball (with content.json) and the standalone archives.
+*/
 task release(dependsOn: [nginxTarball, individualArchives] )
 
-//  TODO:  Add tests as supported in original gradle & in Makefile
-//         Also, add a 'clean' task to remove ./.gogradle, ./build and ./release
+clean { delete './bin', './build', './release' }

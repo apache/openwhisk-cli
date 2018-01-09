@@ -9,8 +9,8 @@ Godeps/_workspace
 *.iml
 
 # Gradle build working directories
-.gradle
-.gogradle/
+/.gradle/
+/.gogradle/
 /bin/
 /build/
 /release/
