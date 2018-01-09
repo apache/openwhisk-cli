@@ -7,10 +7,11 @@ cd $TRAVIS_BUILD_DIR
 make lint
 make build
 make test
-export PATH=$PATH:$TRAVIS_BUILD_DIR;
-make native_test;
+export PATH=$PATH:$TRAVIS_BUILD_DIR
+make native_test
 
-export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/incubator-openwhisk";
+OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/incubator-openwhisk"
+export OPENWHISK_HOME
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
