@@ -3,7 +3,7 @@ plugins {
 }
 
 golang {
-    packagePath = 'github.com/apache/incubator-openwhisk-cli' as String 
+    packagePath = 'github.com/apache/incubator-openwhisk-cli' as String
 }
 
 dependencies {
@@ -31,20 +31,20 @@ dependencies {
 /*
     The OpenWhiskPlatform class is a utility class to make the rest of what
     happens with platforms a bit more understandable.  A "Platform" is a tuple
-    of an operating system and a processor.  Currently, the OpenWhisk CLI 
-    supports three OS's:  Linux, Mac/Darwin, and Windows.  It supports x86 
-    (32-bit or 64-bit) on all OS's.  On Linux, it also support System Z (s390x), 
+    of an operating system and a processor.  Currently, the OpenWhisk CLI
+    supports three OS's:  Linux, Mac/Darwin, and Windows.  It supports x86
+    (32-bit or 64-bit) on all OS's.  On Linux, it also support System Z (s390x),
     PowerPC (ppc64le), and ARM (32-bit and 64-bit) architectures.
-    
+
     Different contexts us different codings to refer to these architectures --
     the class attempts to provide and interpret all needed codings.  Internal
     storage is in "GO" format:
-    
+
         OS: linux, darwin, windows
         Arch: 386, amd64, s390x, ppc64le, arm
-        
+
     TODO - It may be appropriate to refactor into a general purpose Platform
-           class for all builds, then to extend with 
+           class for all builds, then to extend with
  */
 class OpenWhiskPlatform {
     /*
@@ -59,11 +59,11 @@ class OpenWhiskPlatform {
     OpenWhiskPlatform() {
         this(System.properties['os.name'], System.properties['os.arch'])
     }
-    
+
     OpenWhiskPlatform(String platformSpec) {
         this(*platformSpec.split('-'))
     }
-    
+
     OpenWhiskPlatform(String inOs, String inArch) {
         goOs=inOs.toLowerCase()
                  .replaceAll(~/^mac.*$/,'darwin')
@@ -73,26 +73,26 @@ class OpenWhiskPlatform {
                      .replaceAll('i386','386')
                      .replaceAll('x86_32','386')
     }
-    
+
     /**
      * Return the Openwhisk OS for this Platform
      */
     String getOwOs() {
         ((goOs == 'darwin') ? 'mac' : goOs)
     }
-    
+
     String getGoPlatform() {
         "${goOs}-${goArch}"
     }
-    
+
     /*
         Everything below here is specific to the CLI build and could be
         factored out into a subclass.
      */
-    String getArchiveDirName() { 
-        "${this.owOs}/${goArch}" 
+    String getArchiveDirName() {
+        "${this.owOs}/${goArch}"
     }
-    
+
     String getArchiveFileName() {
         String suffix
         switch (goArch) {
@@ -102,13 +102,13 @@ class OpenWhiskPlatform {
         }
         String archivetype = (goOs == 'linux') ? 'tgz' : 'zip'
         "OpenWhisk_CLI-${this.owOs}${suffix}.${archivetype}"
-    }    
+    }
 }
 
 /*
     Helper functions -- Facilitate conversion between Go architecture and
-        OpenWhisk architecture representations.  
-        
+        OpenWhisk architecture representations.
+
     Note:  If this collection keeps growing, it may be appropriate to
         encapsulate 'platform' in a reusable Groovy class.
  */
@@ -117,7 +117,7 @@ class OpenWhiskPlatform {
     'platforms' property will be null for a local compile, or a list (comma or
     space-separated) of hyphenated Goos-Goarch pairs.  Some transformation is
     done when parsing to handle misconceptions.
-    
+
     TODO:  More syntax/validity checking and feedback, perhaps as part of a
     Platform object as proposed above...
 */
@@ -128,10 +128,10 @@ if (rootProject.hasProperty('buildPlatforms')) {
 } else {
     if (rootProject.findProperty('crossCompile')) {
         rootProject.ext.platforms = [
-            'linux-386', 'linux-amd64', 
+            'linux-386', 'linux-amd64',
             'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
             'darwin-386', 'darwin-amd64',
-            'windows-386', 'windows-amd64' 
+            'windows-386', 'windows-amd64'
         ].collect { new OpenWhiskPlatform(it) }
     } else {
         rootProject.ext.platforms = [ rootProject.localPlatform ]
@@ -147,7 +147,7 @@ build {
 
     go(['build',
       '-ldflags', "-X main.CLI_BUILD_TIME=$now" as String,
-      '-o', './build/${GOOS}-${GOARCH}/wsk${GOEXE}', 
+      '-o', './build/${GOOS}-${GOARCH}/wsk${GOEXE}',
       golang.packagePath ] as List<String>)
 }
 
@@ -165,14 +165,14 @@ task buildBinaries(type: Copy, dependsOn: build) {
 
 /*
     Individual Archives
-    
+
     For each platform, create an individual archive in a platform appropriate
     format (tarball for Linux, zipfile for Mac & Windows).
  */
 task individualArchives(
     dependsOn: rootProject.platforms.collect() { p ->
-        task("release${p.goOs.capitalize()}${p.goArch.capitalize()}", 
-            type: (p.goOs == 'linux') ? Tar : Zip, 
+        task("release${p.goOs.capitalize()}${p.goArch.capitalize()}",
+            type: (p.goOs == 'linux') ? Tar : Zip,
             dependsOn: "build${p.goOs.capitalize()}${p.goArch.capitalize()}") {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
@@ -182,10 +182,10 @@ task individualArchives(
     })
 
 /*
-    Nginx tarball - create a 'content.json' file representing all that was 
+    Nginx tarball - create a 'content.json' file representing all that was
     compiled and its appropriate directory in the Tarball that will be created
     for deployment to local Nginx instances.
-    
+
     TODO: Default architecture should be configurable as a property
  */
 def content = [:]
