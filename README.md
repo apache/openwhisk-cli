@@ -100,12 +100,14 @@ the folder `bin/<os>/<architecture>/`. For example, if your local operating
 system is Mac, and the CPU architecture is amd64, the binary and its compressed
 package can also be found under `bin/mac/amd64/`. 
 
-OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process which is copied from the
-Docker container to the local file system in the following directory: bin. This binary will be platform
-specific, it will only run on the operating system, and CPU architecture that matches the build machine.
+OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process
+which is copied from the Docker container to the local file system in the
+following directory: bin. This binary will be platform specific, it will only
+run on the operating system, and CPU architecture that matches the build
 
-If you would like to build the binaries available for all the operating systems and architectures, run the following
-command:
+
+If you would like to build the binaries available for all the operating systems
+and architectures, run the following command: 
 
 ```
 $ ./gradlew buildBinaries -PcrossCompile=true
@@ -116,22 +118,30 @@ the folder `bin/<os>/<cpu arc>/` for each operating system and CPU
 architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows
 operating systems.
 
+To specify a build for specific architectures, you can provide a comma- or 
+space-delimited list of hyphenated os-architecture pairs, like this:
+
+```
+$ ./gradlew buildBinaries -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
+```
 
 # How to use the binary
 
-When you have the binary, you can copy the binary to any folder, and add folder into the system PATH in order to
-run the OpenWhisk CLI command. To get the CLI command help, execute the following command:
+When you have the binary, you can copy the binary to any folder, and add folder
+into the system PATH in order to run the OpenWhisk CLI command. To get the CLI
+command help, execute the following command: 
 
 ```
 $ wsk --help
 ```
 
-To get CLI command debug information, include the -d, or --debug flag when executing this command.
-
+To get CLI command debug information, include the -d, or --debug flag when
+executing this command. 
 
 # Continuous Integration
 
-In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses Travis CI as the continuous
-delivery service for Linux and Mac. OpenWhisk CLI is a Go project. Currently Travis CI supports the environments
-of Linux and Mac, but it is not available for Windows. We will add support of AppVeyor CI in future to run the
-test cases and build the binary for Windows.
+In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses
+Travis CI as the continuous delivery service for Linux and Mac. OpenWhisk CLI is
+a Go project. Currently Travis CI supports the environments of Linux and Mac,
+but it is not available for Windows. We will add support of AppVeyor CI in
+future to run the test cases and build the binary for Windows. 
