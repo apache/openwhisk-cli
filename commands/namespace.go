@@ -61,50 +61,33 @@ var namespaceListCmd = &cobra.Command{
 }
 
 var namespaceGetCmd = &cobra.Command{
-    Use:   "get [NAMESPACE]",
-    Short: wski18n.T("get triggers, actions, and rules in the registry for a namespace"),
+    Use:   "get",
+    Short: wski18n.T("get triggers, actions, and rules in the registry for namespace"),
     SilenceUsage:   true,
     SilenceErrors:  true,
     PreRunE: SetupClientConfig,
     RunE: func(cmd *cobra.Command, args []string) error {
-        var qualifiedName = new(QualifiedName)
         var err error
+        var namespace string = getClientNamespace()
 
-        if whiskErr := CheckArgs(args, 0, 1, "Namespace get",
-                wski18n.T("An optional namespace is the only valid argument.")); whiskErr != nil {
+        if whiskErr := CheckArgs(args,0,0,"Namespace get",
+                wski18n.T("No arguments are required.")); whiskErr != nil {
             return whiskErr
         }
 
-        // Namespace argument is optional; defaults to configured property namespace
-        if len(args) == 1 {
-            if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
-                return NewQualifiedNameError(args[0], err)
-            }
+        actions, _, err := Client.Actions.List("", &whisk.ActionListOptions{ Skip: 0, Limit: 0 })
+        if err != nil { return entityListError(err, namespace,"Actions") }
 
-            if len(qualifiedName.GetEntityName()) > 0 {
-                return entityNameError(qualifiedName.GetEntityName())
-            }
-        }
+        packages, _, err := Client.Packages.List(&whisk.PackageListOptions{ Skip: 0, Limit: 0 })
+        if err != nil { return entityListError(err, namespace,"Packages") }
 
-        namespace, _, err := Client.Namespaces.Get(qualifiedName.GetNamespace())
+        triggers, _, err := Client.Triggers.List(&whisk.TriggerListOptions{ Skip: 0, Limit: 0 })
+        if err != nil { return entityListError(err, namespace,"Triggers") }
 
-        if err != nil {
-            whisk.Debug(whisk.DbgError, "Client.Namespaces.Get(%s) error: %s\n", getClientNamespace(), err)
-            errStr := wski18n.T("Unable to obtain the list of entities for namespace '{{.namespace}}': {{.err}}",
-                    map[string]interface{}{"namespace": getClientNamespace(), "err": err})
-            werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_NETWORK,
-                whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-            return werr
-        }
-
-        fmt.Fprintf(color.Output, wski18n.T("Entities in namespace: {{.namespace}}\n",
-            map[string]interface{}{"namespace": boldString(getClientNamespace())}))
-        sortByName := Flags.common.nameSort
-        printList(namespace.Contents.Packages, sortByName)
-        printList(namespace.Contents.Actions, sortByName)
-        printList(namespace.Contents.Triggers, sortByName)
-        //No errors, lets attempt to retrieve the status of each rule #312
-        for index, rule := range namespace.Contents.Rules {
+        rules, _, err := Client.Rules.List(&whisk.RuleListOptions{ Skip: 0, Limit: 0 })
+        if err != nil { return entityListError(err, namespace,"Rules") }
+        //No errors, lets attempt to retrieve the status of each rule
+        for index, rule := range rules {
             ruleStatus, _, err := Client.Rules.Get(rule.Name)
             if err != nil {
                 errStr := wski18n.T("Unable to get status of rule '{{.name}}': {{.err}}",
@@ -113,9 +96,16 @@ var namespaceGetCmd = &cobra.Command{
                 werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
                 return werr
             }
-            namespace.Contents.Rules[index].Status = ruleStatus.Status
+            rules[index].Status = ruleStatus.Status
         }
-        printList(namespace.Contents.Rules, sortByName)
+
+        fmt.Fprintf(color.Output, wski18n.T("Entities in namespace: {{.namespace}}\n",
+            map[string]interface{}{"namespace": boldString(getClientNamespace())}))
+        sortByName := Flags.common.nameSort
+        printList(packages, sortByName)
+        printList(actions, sortByName)
+        printList(triggers, sortByName)
+        printList(rules, sortByName)
 
         return nil
     },
