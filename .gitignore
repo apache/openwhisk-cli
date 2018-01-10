@@ -2,3 +2,6 @@ javascript/
 wsk
 scripts
 Godeps/_workspace
+.idea/
+*.iml
+.gradle
