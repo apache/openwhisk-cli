@@ -139,8 +139,8 @@ func initInvalidArgs() {
             Err: tooManyArgsMsg + invalidArg + ". " + noArgsReqMsg,
         },
         common.InvalidArg {
-            Cmd: []string{"namespace", "get", "namespace", invalidArg},
-            Err: tooManyArgsMsg + invalidArg + ". " + optNamespaceMsg,
+            Cmd: []string{"namespace", "get", invalidArg},
+            Err: tooManyArgsMsg + invalidArg + ". " + noArgsReqMsg,
         },
         common.InvalidArg {
             Cmd: []string{"package", "create"},

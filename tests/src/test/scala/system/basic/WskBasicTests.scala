@@ -780,12 +780,6 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
     wsk.namespace.get(expectedExitCode = SUCCESS_EXIT)(WskProps()).stdout should include("default")
   }
 
-  it should "not accept a namespace on 'wsk list' or 'wsk namespace get'" in {
-    val namespace = "fakeNamespace"
-    val stderr = wsk.namespace.get(Some(s"/${namespace}"), expectedExitCode = MISUSE_EXIT).stderr
-    stderr should include(s"No arguments are required.'")
-  }
-
   behavior of "Wsk Activation CLI"
 
   it should "create a trigger, and fire a trigger to get its individual fields from an activation" in withAssetCleaner(

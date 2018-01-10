@@ -70,9 +70,11 @@ var namespaceGetCmd = &cobra.Command{
         var err error
         var namespace string = getClientNamespace()
 
-        if whiskErr := CheckArgs(args,0,0,"Namespace get",
+        if (!(len(args) == 1 && args[0] == "/_")) {
+            if whiskErr := CheckArgs(args, 0, 0, "Namespace get",
                 wski18n.T("No arguments are required.")); whiskErr != nil {
-            return whiskErr
+                return whiskErr
+            }
         }
 
         actions, _, err := Client.Actions.List("", &whisk.ActionListOptions{ Skip: 0, Limit: 0 })
