@@ -72,8 +72,8 @@
     "translation": "Unable to obtain the list of available namespaces: {{.err}}"
   },
   {
-    "id": "get triggers, actions, and rules in the registry for a namespace",
-    "translation": "get triggers, actions, and rules in the registry for a namespace"
+    "id": "get triggers, actions, and rules in the registry for namespace",
+    "translation": "get triggers, actions, and rules in the registry for namespace"
   },
   {
     "id": "'{{.name}}' is not a valid qualified name: {{.err}}",

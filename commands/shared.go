@@ -33,3 +33,12 @@ func entityNameError(entityName string) (error) {
 
     return whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 }
+
+func entityListError(err error, namespace string, kind string) error {
+    whisk.Debug(whisk.DbgError, "Client.%s.List(%s) error: %s\n", kind, namespace, err)
+    errStr := wski18n.T("Unable to obtain the list of entities for namespace '{{.namespace}}': {{.err}}",
+        map[string]interface{}{"namespace": namespace, "err": err})
+    return whisk.MakeWskErrorFromWskError(errors.New(errStr), err,
+        whisk.EXIT_CODE_ERR_NETWORK, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+}
+
