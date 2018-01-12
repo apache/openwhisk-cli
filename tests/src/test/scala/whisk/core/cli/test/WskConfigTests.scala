@@ -31,6 +31,7 @@ import common.TestUtils._
 import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
+import java.nio.charset.StandardCharsets
 
 @RunWith(classOf[JUnitRunner])
 class WskConfigTests extends TestHelpers with WskTestHelpers {
@@ -356,7 +357,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
             val rr = wsk.cli(Seq("property", "set", "--apihost", apihost), env = env)
             rr.stdout.trim shouldBe s"ok: whisk API host set to $apihost"
             rr.stderr shouldBe 'empty
-            val fileContent = FileUtils.readFileToString(tmpwskprops)
+            val fileContent = FileUtils.readFileToString(tmpwskprops, StandardCharsets.UTF_8)
             fileContent should include(s"APIHOST=$apihost")
           }
         }
@@ -371,7 +372,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
     val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
     wsk.cli(Seq("property", "set", "--auth", "testKey"), env = env)
     try {
-      val fileContent = FileUtils.readFileToString(tmpwskprops)
+      val fileContent = FileUtils.readFileToString(tmpwskprops, StandardCharsets.UTF_8)
       fileContent should include("AUTH=testKey")
     } finally {
       tmpwskprops.delete()
@@ -404,7 +405,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       stdout should include regex ("ok: client key set")
       stdout should include regex ("ok: whisk API host set")
       stdout should include regex ("ok: whisk API version set")
-      val fileContent = FileUtils.readFileToString(tmpwskprops)
+      val fileContent = FileUtils.readFileToString(tmpwskprops, StandardCharsets.UTF_8)
       fileContent should include("AUTH=testKey")
       fileContent should include("APIHOST=openwhisk.ng.bluemix.net")
       fileContent should include("APIVERSION=v1")

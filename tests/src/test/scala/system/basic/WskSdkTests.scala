@@ -30,6 +30,7 @@ import common.TestUtils.SUCCESS_EXIT
 import common.Wsk
 import common.WskProps
 import common.WskTestHelpers
+import java.nio.charset.StandardCharsets
 
 @RunWith(classOf[JUnitRunner])
 class WskSdkTests extends TestHelpers with WskTestHelpers {
@@ -71,7 +72,7 @@ class WskSdkTests extends TestHelpers with WskTestHelpers {
       val dockerfile = new File(sdk, "Dockerfile")
       dockerfile.exists() should be(true)
       dockerfile.isFile() should be(true)
-      val lines = FileUtils.readLines(dockerfile)
+      val lines = FileUtils.readLines(dockerfile, StandardCharsets.UTF_8)
       // confirm that the image is correct
       lines.get(1) shouldBe "FROM openwhisk/dockerskeleton"
 
@@ -108,7 +109,7 @@ class WskSdkTests extends TestHelpers with WskTestHelpers {
     try {
       val stdout = wsk.cli(Seq("sdk", "install", "bashauto"), workingDir = dir, expectedExitCode = SUCCESS_EXIT).stdout
       stdout should include("is installed in the current directory")
-      val fileContent = FileUtils.readFileToString(scriptfile)
+      val fileContent = FileUtils.readFileToString(scriptfile, StandardCharsets.UTF_8)
       fileContent should include("bash completion for wsk")
     } finally {
       scriptfile.delete()
