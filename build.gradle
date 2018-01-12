@@ -150,12 +150,12 @@ task golint(type: com.github.blindpirate.gogradle.Go) {
     run('golint ' + golang.packagePath )
 }
 
-check.dependsOn(golint)
+goCheck.dependsOn(golint)
 
 /*
     Build
  */
-build {
+goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
     def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
@@ -165,7 +165,7 @@ build {
       golang.packagePath ] as List<String>)
 }
 
-task buildBinaries(type: Copy, dependsOn: build) {
+task buildBinaries(type: Copy, dependsOn: goBuild) {
     destinationDir = file('./bin')
     for (p in platforms) {
         from("./build/${p.goOs}-${p.goArch}") {
@@ -186,8 +186,7 @@ task buildBinaries(type: Copy, dependsOn: build) {
 task individualArchives(
     dependsOn: rootProject.platforms.collect() { p ->
         task("release${p.goOs.capitalize()}${p.goArch.capitalize()}",
-            type: (p.goOs == 'linux') ? Tar : Zip,
-            dependsOn: "build${p.goOs.capitalize()}${p.goArch.capitalize()}") {
+            type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: goBuild) {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
                 baseName = "OpenWhisk_CLI-latest-${p.owOs}-${p.goArch}"
@@ -239,4 +238,6 @@ task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
 */
 task release(dependsOn: [nginxTarball, individualArchives] )
 
-clean { delete './bin', './build', './release' }
+task clean(type: Delete, dependsOn: goClean) {
+    delete './bin', './build', './release'
+}
