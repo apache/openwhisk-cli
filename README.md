@@ -60,6 +60,7 @@ If it is executed successfully, you can find your binary `wsk` directly under Op
 
 This is the second choice for you to build the binary. Make sure that you have Docker and gradle on your machine:
 [installing Docker](https://docs.docker.com/engine/installation/) and [installing Gradle](https://gradle.org/install) for your local machine.
+The environment variable OPENWHISK_HOME needs to be correctly set, by pointing to the home directory of openwhisk. 
 
 After that, open an terminal, go to the directory of OpenWhisk CLI home directory, and
 build the binary via the following command under Linux or Mac:
