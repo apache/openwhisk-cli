@@ -19,7 +19,7 @@ of OpenWhisk CLI from OpenWhisk.
 The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that
 provides a consistent interface to interact with OpenWhisk services. With this
 tool to download and configure, you are able to manage OpenWhisk services from
-the command line and automate them through scripts. 
+the command line and automate them through scripts.
 
 # Where to download the binary of OpenWhisk CLI
 
@@ -34,17 +34,17 @@ architecture. You can download the binary, which fits your local environment.
 The OpenWhisk CLI is written in the Go language.  You have two options to build
 the binary locally:
 
-1.  Compile in your logal Go environment, 
+1.  Compile in your logal Go environment,
 2.  Build using the packaged Gradle scripts (including the 'gogradle' plugin)
 
 ## Build the binary with Go
 
 Make sure that you have Go installed [installing
 Go](https://golang.org/doc/install), and `$GOPATH` is defined [Go development
-environment](https://golang.org/doc/code.html). 
+environment](https://golang.org/doc/code.html).
 
 Then download the source code of the OpenWhisk CLI and the dependencies by
-typing: 
+typing:
 
 ```
 $ cd $GOPATH
@@ -52,7 +52,7 @@ $ go get github.com/apache/incubator-openwhisk-cli
 ```
 
 Open an terminal, go to the directory of OpenWhisk CLI home directory, and build
-the binary via the following command: 
+the binary via the following command:
 
 ```
 $ go build -o wsk
@@ -61,7 +61,7 @@ $ go build -o wsk
 If you would like to build the binary for a specific operating system, you may
 add the arguments GOOS and GOARCH into the Go build command. Since it is only
 applicable under amd64 architecture, you have to set GOARCH to amd64. GOOS can
-be set to "linux" "darwin" or "windows". 
+be set to "linux" "darwin" or "windows".
 
 For example, run the following command to build the binary for Linux:
 
@@ -70,19 +70,19 @@ $ GOOS=linux GOARCH=amd64 go build -o wsk
 ```
 
 If it is executed successfully, you can find your binary `wsk` directly under
-OpenWhisk CLI home directory. 
+OpenWhisk CLI home directory.
 
 ## Build the binary with Gradle
 
 **Note:** For those who may have used the Gradle build previously, it has been
 re-engineered to no longer required Docker or Go to be pre-installed on your
-system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin, the 
+system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin, the
 script now uses a go environment if you have it, but will also create a local
 Go environment if you do now.
 
 To build with Gradle, open an terminal, go to the directory of OpenWhisk CLI
 home directory, and build the binary via the following command under Linux or
-Mac: 
+Mac:
 
 ```
 $ ./gradlew buildBinaries
@@ -98,7 +98,7 @@ After the build, you can find the binary `wsk` or `wsk.exe` in the bin folder
 under the OpenWhisk CLI home directory. In addition, it is also available under
 the folder `bin/<os>/<architecture>/`. For example, if your local operating
 system is Mac, and the CPU architecture is amd64, the binary and its compressed
-package can also be found under `bin/mac/amd64/`. 
+package can also be found under `bin/mac/amd64/`.
 
 OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process
 which is copied from the Docker container to the local file system in the
@@ -107,7 +107,7 @@ run on the operating system, and CPU architecture that matches the build
 
 
 If you would like to build the binaries available for all the operating systems
-and architectures, run the following command: 
+and architectures, run the following command:
 
 ```
 $ ./gradlew buildBinaries -PcrossCompile=true
@@ -118,25 +118,27 @@ the folder `bin/<os>/<cpu arc>/` for each operating system and CPU
 architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows
 operating systems.
 
-To specify a build for specific architectures, you can provide a comma- or 
+To specify a build for specific architectures, you can provide a comma- or
 space-delimited list of hyphenated os-architecture pairs, like this:
 
 ```
 $ ./gradlew buildBinaries -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
 ```
 
+The build library understands most representations of most Operating Systems.
+
 # How to use the binary
 
 When you have the binary, you can copy the binary to any folder, and add folder
 into the system PATH in order to run the OpenWhisk CLI command. To get the CLI
-command help, execute the following command: 
+command help, execute the following command:
 
 ```
 $ wsk --help
 ```
 
 To get CLI command debug information, include the -d, or --debug flag when
-executing this command. 
+executing this command.
 
 # Continuous Integration
 
@@ -144,4 +146,4 @@ In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses
 Travis CI as the continuous delivery service for Linux and Mac. OpenWhisk CLI is
 a Go project. Currently Travis CI supports the environments of Linux and Mac,
 but it is not available for Windows. We will add support of AppVeyor CI in
-future to run the test cases and build the binary for Windows. 
+future to run the test cases and build the binary for Windows.

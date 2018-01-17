@@ -4,6 +4,7 @@ plugins {
 
 golang {
     packagePath = 'github.com/apache/incubator-openwhisk-cli' as String
+    buildTags = (rootProject.findProperty('goTags')?:'').split(',')
 }
 
 dependencies {
@@ -59,6 +60,11 @@ class OpenWhiskPlatform {
     String goArch
 
     /*
+        The 'zipFileName' property is the root file name to use for archives.
+     */
+    static String zipFileName
+
+    /*
         Create a platform for the local platform
      */
     OpenWhiskPlatform() {
@@ -106,17 +112,10 @@ class OpenWhiskPlatform {
             default: suffix = "-${goArch}"; break;
         }
         String archivetype = (goOs == 'linux') ? 'tgz' : 'zip'
-        "OpenWhisk_CLI-${this.owOs}${suffix}.${archivetype}"
+        "${zipFileName}-${this.owOs}${suffix}.${archivetype}"
     }
 }
-
-/*
-    Helper functions -- Facilitate conversion between Go architecture and
-        OpenWhisk architecture representations.
-
-    Note:  If this collection keeps growing, it may be appropriate to
-        encapsulate 'platform' in a reusable Groovy class.
- */
+OpenWhiskPlatform.zipFileName = rootProject.findProperty('zipFileName') ?: 'OpenWhisk_CLI'
 
 /*
     'platforms' property will be null for a local compile, or a list (comma or
@@ -146,7 +145,7 @@ if (rootProject.hasProperty('buildPlatforms')) {
 /*
     Checks -- add golint and scancode to the checks run prior to build.
  */
-task golint(type: com.github.blindpirate.gogradle.Go) {
+task goLint(type: com.github.blindpirate.gogradle.Go) {
     run('golint ' + golang.packagePath )
 }
 
@@ -189,7 +188,7 @@ task individualArchives(
             type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: goBuild) {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
-                baseName = "OpenWhisk_CLI-latest-${p.owOs}-${p.goArch}"
+                baseName = "${p.zipFileName}-latest-${p.owOs}-${p.goArch}"
                 from "./build/${p.goOs}-${p.goArch}/"
             }
     })
@@ -220,11 +219,11 @@ task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
     //         because the archive will be meaningless.
     compression = Compression.GZIP
     destinationDir = file('./release')
-    baseName = 'OpenWhisk_CLI-latest-all'
+    baseName = "${OpenWhiskPlatform.zipFileName}-latest-all"
     from('./release/content.json') { into('.') }
     rootProject.platforms.each() { p ->
         from('./release/') {
-            include("OpenWhisk_CLI-latest-${p.owOs}-${p.goArch}.*")
+            include("${p.zipFileName}-latest-${p.owOs}-${p.goArch}.*")
             into p.archiveDirName
             rename { p.archiveFileName }
         }
