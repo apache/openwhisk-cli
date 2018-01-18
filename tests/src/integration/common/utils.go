@@ -21,6 +21,8 @@ import (
     "os"
     "unicode"
     "io"
+    "path"
+    "runtime"
     "strings"
 )
 
@@ -102,6 +104,11 @@ func GetTestActionFilename(fileName string) string {
 
 func GetRepoPath() string {
     return os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-cli"
+}
+
+func GetBinPath() string {
+    _, goFileName, _, _ := runtime.Caller(1)
+    return path.Join(path.Dir(goFileName), "../../../../bin")
 }
 
 type InvalidArg struct {
