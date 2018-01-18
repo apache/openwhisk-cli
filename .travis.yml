@@ -19,7 +19,6 @@ before_install:
   - pip install --upgrade pip setuptools
 
 install:
-  - ./tools/travis/setupscan.sh
   - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
   - go get -u github.com/stretchr/testify
@@ -29,8 +28,8 @@ install:
 script:
   - ./tools/travis/test_openwhisk.sh
 
-after_script:
-  - make clean
+#after_script:
+#  - make clean
 
 after_success:
   - DEPLOY_BUILD_READY=true
