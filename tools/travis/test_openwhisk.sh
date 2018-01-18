@@ -43,8 +43,7 @@ export OPENWHISK_HOME
 #
 #  These are the basic tests
 #
-cd $TRAVIS_BUILD_DIR
-./tools/travis/scancode.sh
+../incubator-openwhisk-utilities/scancode/scanCode.py $TRAVIS_BUILD_DIR
 
 #  Run separate test scopes as separate
 ./gradlew --console=plain goLint
