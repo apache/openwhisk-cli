@@ -5,6 +5,7 @@ declare -a builds=(
     "linux amd64"
     "linux 386"
     "linux s390x"
+    "linux ppc64le"
     "darwin amd64"
     "darwin 386"
     "windows amd64"
