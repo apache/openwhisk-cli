@@ -9,13 +9,15 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	go get -d -t ./...
+	./bin/godep restore -v
+	# go get -d -t ./...
 
 LDFLAGS=-ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`"
 
-updatedeps:
-	@echo "Updating all dependencies"
-	@go get -d -u -f -fix -t ./...
+# Never want to do this ever
+# updatedeps:
+# @echo "Updating all dependencies"
+#	@go get -d -u -f -fix -t ./...
 
 # Build the project
 build: deps
