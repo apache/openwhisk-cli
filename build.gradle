@@ -85,7 +85,8 @@ dependencies {
         Arch: 386, amd64, s390x, ppc64le, arm
 
     TODO - It may be appropriate to refactor into a general purpose Platform
-           class for all builds, then to extend with
+           class for all builds, then to extend with specifics needed for
+           the OpenWhisk CLI build.
  */
 class OpenWhiskPlatform {
     /*
