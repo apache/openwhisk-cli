@@ -24,6 +24,7 @@ install:
   - go get -u github.com/golang/lint/golint
   - go get -u github.com/stretchr/testify
   - go get -u github.com/spf13/viper
+  - go get -u github.com/tools/godep
 
 script:
   - ./tools/travis/test_openwhisk.sh

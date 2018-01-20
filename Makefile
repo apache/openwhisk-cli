@@ -9,7 +9,7 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	go get -d -t ./...
+	godep restore -v
 
 LDFLAGS=-ldflags "-X main.CLI_BUILD_TIME=`date -u '+%Y-%m-%dT%H:%M:%S%:z'`"
 
