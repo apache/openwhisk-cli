@@ -34,42 +34,9 @@ local environment.
 The OpenWhisk CLI is written in the Go language. You have two options to build
 the binary locally:
 
-1.  Compile in your local Go environment,
-2.  Build using the packaged Gradle scripts (including the 'gogradle' plugin)
-
-## Build the binary with Go
-
-Make sure that you have Go installed [installing
-Go](https://golang.org/doc/install), and `$GOPATH` is defined [Go development
-environment](https://golang.org/doc/code.html).
-
-Then download the source code of the OpenWhisk CLI and the dependencies by
-typing:
-
-```
-$ cd $GOPATH
-$ go get github.com/apache/incubator-openwhisk-cli
-```
-
-Open an terminal, go to the directory of OpenWhisk CLI home directory, and build
-the binary via the following command:
-
-```
-$ go build -o wsk
-```
-
-If you would like to build the binary for a specific operating system, you may
-add the arguments GOOS and GOARCH into the Go build command. GOOS can
-be set to "linux" "darwin" or "windows".
-
-For example, run the following command to build the binary for Linux:
-
-```
-$ GOOS=linux GOARCH=amd64 go build -o wsk
-```
-
-If it is executed successfully, you can find your binary `wsk` directly under
-OpenWhisk CLI home directory.
+1.  Build using the packaged Gradle scripts (including the 'gogradle' plugin),
+now the preferred build method.
+2.  Compile in your local Go environment,
 
 ## Build the binary with Gradle
 
@@ -125,6 +92,60 @@ $ ./gradlew buildBinaries -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
 ```
 
 The build library understands most representations of most Operating Systems.
+
+Tests can be run using the Gradle script as well:
+
+```
+$ ./gradlew goTests -PgoTags=unit
+$ ./gradlew goTests -PgoTags=native
+```
+
+Integration tests are best left to the Travis build as they depend on a fully
+functional OpenWhisk environment.
+
+## Compile the binary using your local Go environment
+
+Make sure that you have Go installed [installing
+Go](https://golang.org/doc/install), and `$GOPATH` is defined [Go development
+environment](https://golang.org/doc/code.html).
+
+Then download the source code of the OpenWhisk CLI and the dependencies by
+typing:
+
+```
+$ cd $GOPATH
+$ go get github.com/apache/incubator-openwhisk-cli
+$ cd $GOPATH/src/github.com/apache/incubator-openwhisk-cli
+```
+
+Unfortunately, it has become necessary to lock dependencies versions to obtain a
+clean build of wsk.  To that end, it's now necessary to populate the `vendors`
+folder using the versions held in `gogradle.lock`:
+
+```
+$ mkdir vendor
+$ ./gradlew goVendor
+```
+
+Once vendor is populated, it's possible to build the binary:
+
+```
+$ mkdir bin
+$ go build -o bin/wsk
+```
+
+If you would like to build the binary for a specific operating system, you may
+add the arguments GOOS and GOARCH into the Go build command. GOOS can
+be set to "linux" "darwin" or "windows".
+
+For example, run the following command to build the binary for Linux:
+
+```
+$ GOOS=linux GOARCH=amd64 go build -o bin/wsk-$GOOS-$GOARCH
+```
+
+If it is executed successfully, you can find your binary `wsk` directly under
+OpenWhisk CLI home directory.
 
 # How to use the binary
 

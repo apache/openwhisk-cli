@@ -62,10 +62,10 @@ dependencies {
         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
         build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk', 'version':'a67e8509a92beb6c68f0c9da43562af1f5d2b13c', 'transitive':false])
         // END - Imported from Godeps
-        test name:'github.com/golang/lint/golint'
-        test name:'github.com/stretchr/testify'
-        test name:'github.com/spf13/viper'
-        test name:'github.com/cpuguy83/go-md2man/md2man'
+        test name: 'github.com/golang/lint/golint', transitive:false
+        test name:'github.com/stretchr/testify', transitive:false
+        test name:'github.com/spf13/viper', transitive:false
+        test name:'github.com/cpuguy83/go-md2man/md2man', transitive:false
     }
 }
 
