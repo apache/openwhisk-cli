@@ -1,6 +1,9 @@
-// plugins {
-//     id 'com.github.blindpirate.gogradle' version '0.8.0'
-// }
+/*
+    Holding these lines for when gogradle 0.8.1 is released.
+plugins {
+    id 'com.github.blindpirate.gogradle' version '0.8.1'
+}
+*/
 
 buildscript {
     repositories {
@@ -74,7 +77,7 @@ dependencies {
     (32-bit or 64-bit) on all OS's.  On Linux, it also support System Z (s390x),
     PowerPC (ppc64le), and ARM (32-bit and 64-bit) architectures.
 
-    Different contexts us different codings to refer to these architectures --
+    Different contexts use different codings to refer to these architectures --
     the class attempts to provide and interpret all needed codings.  Internal
     storage is in "GO" format:
 

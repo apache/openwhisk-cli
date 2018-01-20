@@ -15,7 +15,6 @@ folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-w
 in OpenWhisk for any CLI changes, before we officially announce the separation
 of OpenWhisk CLI from OpenWhisk.
 
-
 The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that
 provides a consistent interface to interact with OpenWhisk services. With this
 tool to download and configure, you are able to manage OpenWhisk services from
@@ -25,16 +24,17 @@ the command line and automate them through scripts.
 
 The OpenWhisk CLI is available on the release page: [click here to
 download](https://github.com/apache/incubator-openwhisk-cli/releases). We
-currently have binaries available for Linux, Mac OS and windows under amd64
-architecture. You can download the binary, which fits your local environment.
-
+currently have binaries available for Linux, Mac OS and windows under i386 and
+amd64 architectures.  Linux versions are also available under Linux on Z, Power
+and 64-bit ARM architectures.  You can download the binary, which fits your
+local environment.
 
 # How to build the binary locally
 
-The OpenWhisk CLI is written in the Go language.  You have two options to build
+The OpenWhisk CLI is written in the Go language. You have two options to build
 the binary locally:
 
-1.  Compile in your logal Go environment,
+1.  Compile in your local Go environment,
 2.  Build using the packaged Gradle scripts (including the 'gogradle' plugin)
 
 ## Build the binary with Go
@@ -59,8 +59,7 @@ $ go build -o wsk
 ```
 
 If you would like to build the binary for a specific operating system, you may
-add the arguments GOOS and GOARCH into the Go build command. Since it is only
-applicable under amd64 architecture, you have to set GOARCH to amd64. GOOS can
+add the arguments GOOS and GOARCH into the Go build command. GOOS can
 be set to "linux" "darwin" or "windows".
 
 For example, run the following command to build the binary for Linux:
@@ -76,9 +75,9 @@ OpenWhisk CLI home directory.
 
 **Note:** For those who may have used the Gradle build previously, it has been
 re-engineered to no longer required Docker or Go to be pre-installed on your
-system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin, the
-script now uses a go environment if you have it, but will also create a local
-Go environment if you do now.
+system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
+Gradle now uses a prexisting Go environment to build if it can be located, or
+downloads and installs an environment within the build directory.
 
 To build with Gradle, open an terminal, go to the directory of OpenWhisk CLI
 home directory, and build the binary via the following command under Linux or
@@ -113,12 +112,12 @@ and architectures, run the following command:
 $ ./gradlew buildBinaries -PcrossCompile=true
 ```
 
-Then, you will find the binaries and their compressed packages generated under
-the folder `bin/<os>/<cpu arc>/` for each operating system and CPU
-architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows
-operating systems.
+The build script will place the binaries into the folder `bin/<os>/<cpu arc>/`
+for each operating system and CPU architecture pair. The build supports both
+amd64 and 386 for Linux, Mac and Windows operating systems, as well as Power,
+64-bit ARM, and S390X architectures for Linux.
 
-To specify a build for specific architectures, you can provide a comma- or
+To specify a build for specific architectures, you can provide a comma or
 space-delimited list of hyphenated os-architecture pairs, like this:
 
 ```

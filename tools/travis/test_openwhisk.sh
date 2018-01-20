@@ -51,10 +51,9 @@ export OPENWHISK_HOME
 export PATH=$PATH:$TRAVIS_BUILD_DIR
 ./gradlew --console=plain goTest -PgoTags=native
 
-#
-#  Set up the OpenWhisk environment ( TODO: reusable script for incubtor-openwhisk? )
+#  Set up the OpenWhisk environment for integration testing
 cd $OPENWHISK_HOME
-./tools/travis/setup.sh
+./tools/travis/setup.sh  ### WARNING -- this script has sudo and privileged writes
 
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
 ./gradlew --console=plain distDocker -PdockerImagePrefix=testing
@@ -66,7 +65,6 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD wipe.yml
-# TODO -- Some flag might be needed to get CLI from local directory (?)
 $ANSIBLE_CMD openwhisk.yml -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
