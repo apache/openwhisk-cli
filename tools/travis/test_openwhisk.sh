@@ -7,7 +7,7 @@ set -e
 #  the release.  If you're running manually, this command should get you to
 #  the same place:
 #
-#    ./gradlew buildBinaries release --PcrossCompile=true
+#    ./gradlew buildBinaries release
 #
 #  Also at this point, you should already have incubator-openwhisk pulled down
 #  from gradle in the parent directory, using a command such as:
@@ -53,7 +53,7 @@ export PATH=$PATH:$TRAVIS_BUILD_DIR
 
 #  Set up the OpenWhisk environment for integration testing
 cd $OPENWHISK_HOME
-./tools/travis/setup.sh  ### WARNING -- this script has sudo and privileged writes
+#./tools/travis/setup.sh  ### WARNING -- this script has sudo and privileged writes
 
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
 ./gradlew --console=plain distDocker -PdockerImagePrefix=testing

@@ -44,7 +44,6 @@ golang {
 
 dependencies {
     golang {
-        // TODO - validate where version should and should not be locked.
         // BEGIN - Imported from Godeps
         build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
         build(['name':'github.com/fatih/color', 'version':'87d4004f2ab62d0d255e0a38f1680aa534549fe3', 'transitive':false])
@@ -62,10 +61,11 @@ dependencies {
         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
         build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk','version':'a67e8509a92beb6c68f0c9da43562af1f5d2b13c','transitive':false])
         // END - Imported from Godeps
-        test name:'github.com/golang/lint/golint', version:'e14d9b0f1d332b1420c1ffa32562ad2dc84d645d', transitive:false
         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
         test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
         test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
+        test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
+        test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
     }
 }
 
@@ -89,9 +89,6 @@ dependencies {
            the OpenWhisk CLI build.
  */
 class OpenWhiskPlatform {
-    /*
-        TODO - Consider the pros and cons of enums to implement this.
-    */
     String goOs
     String goArch
 
@@ -151,7 +148,13 @@ class OpenWhiskPlatform {
         "${zipFileName}-${this.owOs}${suffix}.${archivetype}"
     }
 }
-OpenWhiskPlatform.zipFileName = rootProject.findProperty('zipFileName') ?: 'OpenWhisk_CLI'
+
+/*
+    Configuration of OpenWhisk Platform behavior based on environment and defaults
+ */
+OpenWhiskPlatform.zipFileName =
+    System.env['zip_file_name'] ?:
+        (rootProject.findProperty('zipFileName') ?: 'OpenWhisk_CLI')
 
 /*
     'platforms' property will be null for a local compile, or a list (comma or
@@ -162,11 +165,13 @@ OpenWhiskPlatform.zipFileName = rootProject.findProperty('zipFileName') ?: 'Open
     Platform object as proposed above...
 */
 rootProject.ext.localPlatform = new OpenWhiskPlatform()
+
 if (rootProject.hasProperty('buildPlatforms')) {
-    rootProject.ext.platforms = buildPlatforms.tokenize(' ,')
-        .collect() { new OpenWhiskPlatform(it) }
+    rootProject.ext.platforms = buildPlatforms.tokenize(' ,').collect {
+        new OpenWhiskPlatform(it)
+    }
 } else {
-    if (rootProject.findProperty('crossCompile')) {
+    if (!rootProject.hasProperty('nativeCompile')) {
         rootProject.ext.platforms = [
             'linux-386', 'linux-amd64',
             'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
@@ -182,14 +187,11 @@ if (rootProject.hasProperty('buildPlatforms')) {
     Checks -- add golint and scancode to the checks run prior to build.
  */
 task goLint(type: com.github.blindpirate.gogradle.Go) {
-    run('golint ' + golang.packagePath )
+    run "golint ${golang.packagePath}"
 }
 
 goCheck.dependsOn(goLint)
 
-/*
-    Build
- */
 goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
     def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -200,15 +202,17 @@ goBuild {
       golang.packagePath ] as List<String>)
 }
 
-task buildBinaries(type: Copy, dependsOn: goBuild) {
+task compile(type: Copy, dependsOn: goBuild) {
     destinationDir = file('./bin')
     for (p in platforms) {
         from("./build/${p.goOs}-${p.goArch}") {
             into("${p.owOs}/${p.goArch}")
         }
     }
-    rootProject.localPlatform.with() { l ->
-        from("./build/${l.goOs}-${l.goArch}")
+
+    /* Guarantee that the ./bin/wsk binary is executable */
+    from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}") {
+        into('.')
     }
 }
 
@@ -223,17 +227,14 @@ goTest.generateTestReport = { testClassResults ->
     }
 }
 
-
 /*
-    Individual Archives
-
     For each platform, create an individual archive in a platform appropriate
     format (tarball for Linux, zipfile for Mac & Windows).
  */
 task individualArchives(
     dependsOn: rootProject.platforms.collect() { p ->
         task("release${p.goOs.capitalize()}${p.goArch.capitalize()}",
-            type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: goBuild) {
+            type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: compile) {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
                 baseName = "${p.zipFileName}-latest-${p.owOs}-${p.goArch}"
@@ -242,29 +243,29 @@ task individualArchives(
     })
 
 /*
-    Nginx tarball - create a 'content.json' file representing all that was
+    Create a 'content.json' file representing all that was
     compiled and its appropriate directory in the Tarball that will be created
     for deployment to local Nginx instances.
-
-    TODO: Default architecture should be configurable as a property
  */
-def content = [:]
-for (p in platforms) {
-    def pathObject = [ "path" : "${p.archiveDirName}/${p.archiveFileName}" ]
-    content.get(p.owOs,[:])[p.goArch] = pathObject
-    if (p.goArch == 'amd64') { content.get(p.owOs,[:])['default'] = pathObject }
-}
 
-task contentJson() {
+task index() {
+    def content = [:]
+    for (p in platforms) {
+        def pathObject = [ "path" : "${p.archiveDirName}/${p.archiveFileName}" ]
+        content.get(p.owOs,[:])[p.goArch] = pathObject
+        // TODO: Default architecture should be configurable as a property
+        if (p.goArch == 'amd64') {
+            content.get(p.owOs,[:])['default'] = pathObject
+        }
+    }
+
     doLast {
-        mkdir('./release')
-        file('./release/content.json').text = groovy.json.JsonOutput.toJson(["cli":content])
+        mkdir('./build')
+        file('./build/content.json').text = groovy.json.JsonOutput.toJson(["cli": content])
     }
 }
 
-task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
-    // TODO -- Add a warning if there are NO platforms defined for the build;
-    //         because the archive will be meaningless.
+task release(type: Tar, dependsOn: [individualArchives, index]) {
     compression = Compression.GZIP
     destinationDir = file('./release')
     baseName = "${OpenWhiskPlatform.zipFileName}-latest-all"
@@ -277,13 +278,6 @@ task nginxTarball(type: Tar, dependsOn: [individualArchives, contentJson]) {
         }
     }
 }
-
-/*
-  Note:  Okay, because nginxTarball depends on individualArchives, this
-         isn't strictly all necessary, but documents the intent:  we release
-         both the tarball (with content.json) and the standalone archives.
-*/
-task release(dependsOn: [nginxTarball, individualArchives] )
 
 task clean(type: Delete, dependsOn: goClean) {
     delete './bin', './build', './release'

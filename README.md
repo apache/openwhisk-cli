@@ -51,13 +51,13 @@ home directory, and build the binary via the following command under Linux or
 Mac:
 
 ```
-$ ./gradlew buildBinaries
+$ ./gradlew compile -PnativeCompile
 ```
 
 or run the following command for Windows:
 
 ```
-$ ./gradlew.bat buildBinaries
+$ ./gradlew.bat compile -PnativeCompile
 ```
 
 After the build, you can find the binary `wsk` or `wsk.exe` in the bin folder
@@ -76,7 +76,7 @@ If you would like to build the binaries available for all the operating systems
 and architectures, run the following command:
 
 ```
-$ ./gradlew buildBinaries -PcrossCompile=true
+$ ./gradlew compile
 ```
 
 The build script will place the binaries into the folder `bin/<os>/<cpu arc>/`
@@ -88,7 +88,7 @@ To specify a build for specific architectures, you can provide a comma or
 space-delimited list of hyphenated os-architecture pairs, like this:
 
 ```
-$ ./gradlew buildBinaries -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
+$ ./gradlew compile -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
 ```
 
 The build library understands most representations of most Operating Systems.
