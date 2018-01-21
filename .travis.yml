@@ -22,16 +22,17 @@ before_install:
   - export DEPLOY_BUILD_READY=false
 
 install:
+  - cd $TRAVIS_BUILD_DIR/..
   - pip install --upgrade pip setuptools
   - go get -u github.com/golang/lint/golint
-  - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/jonpspri/gogradle.git
   - cd gogradle && ./gradlew assemble
 
 before_script:
+  - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/apache/incubator-openwhisk-utilities.git
   - git clone https://github.com/apache/incubator-openwhisk.git
-  - ../incubator-openwhisk/tools/travis/setup.sh
+  - ./incubator-openwhisk/tools/travis/setup.sh
 
 script:
   - cd $TRAVIS_BUILD_DIR
