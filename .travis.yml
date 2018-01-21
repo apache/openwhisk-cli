@@ -20,16 +20,18 @@ before_install:
 
 install:
   - export DEPLOY_BUILD_READY=false
-  - go get -u github.com/golang/lint/golint
-  - go get -u github.com/stretchr/testify
-  - go get -u github.com/spf13/viper
-  - go get -u github.com/tools/godep
+  - cd $TRAVIS_BUILD_DIR/..
+  - git clone https://github.com/apache/incubator-openwhisk.git
+  - git clone https://github.com/apache/incubator-openwhisk-utilities.git
+  - git clone https://github.com/jonpspri/gogradle.git
+  - cd gogradle && ./gradlew assemble
 
 script:
+  - cd $TRAVIS_BUILD_DIR
+  - export build_file_name=wsk
+  - export zip_file_name=OpenWhisk_CLI
+  - ./gradlew --console=plain buildBinaries release -PcrossCompile=true
   - ./tools/travis/test_openwhisk.sh
-
-#after_script:
-#  - make clean
 
 after_success:
   - DEPLOY_BUILD_READY=true
@@ -44,8 +46,7 @@ after_success:
     fi
 
 before_deploy:
-  - ./gradlew release -PcrossCompile=true 
-  - export RELEASE_PKG_FILE=$(cd './release' && ls "${zip_file_name}-*.*")
+  - export RELEASE_PKG_FILE=$(cd './release' && ls "${zip_file_name}-*.tgz" "${zip_file_name}-*.zip")
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
 
 deploy:
