@@ -21,6 +21,8 @@ import (
     "os"
     "unicode"
     "io"
+    "path"
+    "runtime"
     "strings"
 )
 
@@ -102,6 +104,14 @@ func GetTestActionFilename(fileName string) string {
 
 func GetRepoPath() string {
     return os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-cli"
+}
+
+func GetBinPath() string {
+    _, goFileName, _, _ := runtime.Caller(1)
+    //  Yes, this assumes we're using the official build script.  I haven't
+    //  figured out a better approach yet given the panoply of options.
+    //  Maybe some sort of Go search path?
+    return path.Join(path.Dir(goFileName), "../../../../build")
 }
 
 type InvalidArg struct {

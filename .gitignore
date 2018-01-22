@@ -1,7 +1,16 @@
 javascript/
 wsk
+wsk.exe
 scripts
 Godeps/_workspace
+
+# IDE-related exclusions
 .idea/
 *.iml
-.gradle
+
+# Gradle build working directories
+/.gradle/
+/.gogradle/
+/build/
+/release/
+/vendor/

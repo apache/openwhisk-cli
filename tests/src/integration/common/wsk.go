@@ -33,7 +33,7 @@ type Wsk struct {
 }
 
 func NewWsk() *Wsk {
-    return NewWskWithPath(GetRepoPath())
+    return NewWskWithPath(GetBinPath())
 }
 
 func NewWskWithPath(path string) *Wsk {
