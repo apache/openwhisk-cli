@@ -194,7 +194,9 @@ task getGoLint(type: com.github.blindpirate.gogradle.Go) {
 }
 
 task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
-    run "./.gogradle/project_gopath/bin/golint ${golang.packagePath}"
+    // WARNING:  The single quotes are intentional!  The gogradle plugin will
+    //           parse the command with the GString engine at execution time.
+    run '${GOPATH}/bin/golint ' + golang.packagePath
 }
 
 goCheck.dependsOn(goLint)
@@ -203,8 +205,10 @@ goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
     def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
+    // WARNING:  The single quotes are intentional!  The gogradle plugin will
+    //           parse the command with the GString engine at execution time.
     go(['build',
-      '-ldflags', "-X main.CLI_BUILD_TIME=$now" as String,
+      '-ldflags', "-X main.CLI_BUILD_TIME=${now}" as String,
       '-o', './build/${GOOS}-${GOARCH}/wsk${GOEXE}',
       golang.packagePath ] as List<String>)
 }
