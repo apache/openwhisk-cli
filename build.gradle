@@ -61,7 +61,7 @@ dependencies {
         build(['name':'golang.org/x/sys/unix', 'version':'7f918dd405547ecb864d14a8ecbbfe205b5f930f', 'transitive':false])
         build(['name':'gopkg.in/yaml.v2', 'version':'cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b', 'transitive':false])
         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
-        build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk','version':'a67e8509a92beb6c68f0c9da43562af1f5d2b13c','transitive':false])
+        build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk','version':'ba3bbee442357a239667ef6de378d5b7d33e0ceb','transitive':false])
         // END - Imported from Godeps
         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
         test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
@@ -158,6 +158,9 @@ OpenWhiskPlatform.zipFileName =
     System.env['zip_file_name'] ?:
         (rootProject.findProperty('zipFileName') ?: 'OpenWhisk_CLI')
 
+String buildFileName = System.env['build_file_name'] ?:
+        (rootProject.findProperty('buildFileName') ?: 'wsk')
+
 /*
     'platforms' property will be null for a local compile, or a list (comma or
     space-separated) of hyphenated Goos-Goarch pairs.  Some transformation is
@@ -209,7 +212,7 @@ goBuild {
     //           parse the command with the GString engine at execution time.
     go(['build',
       '-ldflags', "-X main.CLI_BUILD_TIME=${now}" as String,
-      '-o', './build/${GOOS}-${GOARCH}/wsk${GOEXE}',
+      '-o', './build/${GOOS}-${GOARCH}/'+buildFileName+'${GOEXE}',
       golang.packagePath ] as List<String>)
 }
 
@@ -241,6 +244,7 @@ task individualArchives(
                 destinationDir = file('./release')
                 baseName = "${p.zipFileName}-latest-${p.owOs}-${p.goArch}"
                 from "./build/${p.goOs}-${p.goArch}/"
+                include "${buildFileName}*"
             }
     })
 
