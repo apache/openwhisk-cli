@@ -24,9 +24,9 @@ the command line and automate them through scripts.
 
 The OpenWhisk CLI is available on the release page: [click here to
 download](https://github.com/apache/incubator-openwhisk-cli/releases). We
-currently have binaries available for Linux, Mac OS and windows under i386 and
-amd64 architectures.  Linux versions are also available under Linux on Z, Power
-and 64-bit ARM architectures.  You can download the binary, which fits your
+currently have binaries available for Linux, Mac OS and Windows under i386 and
+amd64 architectures. Linux versions are also available under Linux on Z, Power
+and 64-bit ARM architectures. You can download the binary, which fits your
 local environment.
 
 # How to build the binary locally
@@ -60,17 +60,11 @@ or run the following command for Windows:
 $ ./gradlew.bat compile -PnativeCompile
 ```
 
-After the build, you can find the binary `wsk` or `wsk.exe` in the bin folder
+After the build, you can find the binary `wsk` or `wsk.exe` in the build folder
 under the OpenWhisk CLI home directory. In addition, it is also available under
-the folder `bin/<os>/<architecture>/`. For example, if your local operating
-system is Mac, and the CPU architecture is amd64, the binary and its compressed
-package can also be found under `bin/mac/amd64/`.
-
-OpenWhisk CLI(`wsk`) is produced in a Docker container during the build process
-which is copied from the Docker container to the local file system in the
-following directory: bin. This binary will be platform specific, it will only
-run on the operating system, and CPU architecture that matches the build
-
+the folder `build/<os>-<architecture>/`. For example, if your local operating
+system is Mac, and the CPU architecture is amd64, the binary can be found at
+`build/mac-amd64/wsk` and `build/mac`.
 
 If you would like to build the binaries available for all the operating systems
 and architectures, run the following command:
