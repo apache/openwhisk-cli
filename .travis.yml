@@ -24,9 +24,8 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR/..
   - pip install --upgrade pip setuptools
-  - go get -u github.com/golang/lint/golint
   - git clone https://github.com/jonpspri/gogradle.git
-  - cd gogradle && ./gradlew assemble
+  - cd gogradle && ./gradlew --console=plain assemble
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/..

@@ -27,8 +27,8 @@ set -e
 #
 
 #
-#  Figure out default directories, etc., so we're not beholden to Travis
-#  when running tests of the script.
+#  Determine default directories, etc., so we're not beholden to Travis
+#  when running tests of the script during the development cycle.
 #
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -41,20 +41,25 @@ OPENWHISK_HOME="$( cd "${OPENWHISK_HOME:-$HOMEDIR/incubator-openwhisk}" && pwd )
 export OPENWHISK_HOME
 
 #
-#  These are the basic tests
+#  Perform code validation using scanCode and Golint
 #
 ../incubator-openwhisk-utilities/scancode/scanCode.py $TRAVIS_BUILD_DIR
-
-#  Run separate test scopes as separate
 ./gradlew --console=plain goLint
-./gradlew --console=plain goTest -PgoTags=unit
-export PATH=$PATH:$TRAVIS_BUILD_DIR
-./gradlew --console=plain goTest -PgoTags=native
 
+#
+#  Run Unit and native tests
+#
+./gradlew --console=plain goTest -PgoTags=unit,native
+
+#
 #  Set up the OpenWhisk environment for integration testing
+#
+
+#  Build docker images
 cd $OPENWHISK_HOME
 ./gradlew --console=plain distDocker -PdockerImagePrefix=testing
 
+#  Fire up the cluster
 cd $OPENWHISK_HOME/ansible
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
 $ANSIBLE_CMD setup.yml
@@ -66,19 +71,20 @@ $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
-# TODO - if the ansible above were correctly configured, this wouldn't be necessary
 mkdir -p $OPENWHISK_HOME/bin
 cp -f $TRAVIS_BUILD_DIR/build/wsk $OPENWHISK_HOME/bin
 
-# Run the test cases under openwhisk to ensure the quality of the binary.
+#  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
+./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliTests*
+sleep 30
+./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
+sleep 30
+./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
+sleep 30
+./gradlew --console=plain :tests:test -Dtest.single=*Wsk*Tests*
 
-./gradlew :tests:test -Dtest.single=*ApiGwCliTests*
-sleep 30
-./gradlew :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
-sleep 30
-./gradlew :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
-sleep 30
-./gradlew :tests:test -Dtest.single=*Wsk*Tests*
-
+#
+#  Finally, run the integration test for the CLI
+#
 ./gradlew goTest -PgoTags=integration
