@@ -7,7 +7,7 @@ set -e
 #  the release.  If you're running manually, this command should get you to
 #  the same place:
 #
-#    ./gradlew buildBinaries release
+#    ./gradlew release
 #
 #  Also at this point, you should already have incubator-openwhisk pulled down
 #  from gradle in the parent directory, using a command such as:
@@ -53,12 +53,10 @@ export PATH=$PATH:$TRAVIS_BUILD_DIR
 
 #  Set up the OpenWhisk environment for integration testing
 cd $OPENWHISK_HOME
-#./tools/travis/setup.sh  ### WARNING -- this script has sudo and privileged writes
-
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
 ./gradlew --console=plain distDocker -PdockerImagePrefix=testing
 
 cd $OPENWHISK_HOME/ansible
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
 $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
@@ -70,17 +68,17 @@ $ANSIBLE_CMD openwhisk.yml -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 # Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
 # TODO - if the ansible above were correctly configured, this wouldn't be necessary
 mkdir -p $OPENWHISK_HOME/bin
-cp -f $TRAVIS_BUILD_DIR/bin/wsk $OPENWHISK_HOME/bin
+cp -f $TRAVIS_BUILD_DIR/build/wsk $OPENWHISK_HOME/bin
 
 # Run the test cases under openwhisk to ensure the quality of the binary.
 cd $TRAVIS_BUILD_DIR
 
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliTests*
-#sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
-#sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
-#sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*Wsk*Tests*
+./gradlew :tests:test -Dtest.single=*ApiGwCliTests*
+sleep 30
+./gradlew :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
+sleep 30
+./gradlew :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
+sleep 30
+./gradlew :tests:test -Dtest.single=*Wsk*Tests*
 
-./gradlew --console=plain goTest -PgoTags=integration
+./gradlew goTest -PgoTags=integration

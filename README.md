@@ -79,10 +79,13 @@ and architectures, run the following command:
 $ ./gradlew compile
 ```
 
-The build script will place the binaries into the folder `bin/<os>/<cpu arc>/`
+The build script will place the binaries into the folder `build/<os>-<cpu arc>/`
 for each operating system and CPU architecture pair. The build supports both
 amd64 and 386 for Linux, Mac and Windows operating systems, as well as Power,
 64-bit ARM, and S390X architectures for Linux.
+
+A binary compatible with the local architecture will be placed at `build/wsk`
+(`build\wsk.exe` on Windows).
 
 To specify a build for specific architectures, you can provide a comma or
 space-delimited list of hyphenated os-architecture pairs, like this:
@@ -120,18 +123,16 @@ $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-cli
 
 Unfortunately, it has become necessary to lock dependencies versions to obtain a
 clean build of wsk.  To that end, it's now necessary to populate the `vendors`
-folder using the versions held in `gogradle.lock`:
+folder using the versions selected in the `build.gradle`:
 
 ```
-$ mkdir vendor
 $ ./gradlew goVendor
 ```
 
 Once vendor is populated, it's possible to build the binary:
 
 ```
-$ mkdir bin
-$ go build -o bin/wsk
+$ go build -o wsk
 ```
 
 If you would like to build the binary for a specific operating system, you may
@@ -141,7 +142,7 @@ be set to "linux" "darwin" or "windows".
 For example, run the following command to build the binary for Linux:
 
 ```
-$ GOOS=linux GOARCH=amd64 go build -o bin/wsk-$GOOS-$GOARCH
+$ GOOS=linux GOARCH=amd64 go build -o wsk-$GOOS-$GOARCH
 ```
 
 If it is executed successfully, you can find your binary `wsk` directly under

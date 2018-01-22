@@ -108,7 +108,10 @@ func GetRepoPath() string {
 
 func GetBinPath() string {
     _, goFileName, _, _ := runtime.Caller(1)
-    return path.Join(path.Dir(goFileName), "../../../../bin")
+    //  Yes, this assumes we're using the official build script.  I haven't
+    //  figured out a better approach yet given the panoply of options.
+    //  Maybe some sort of Go search path?
+    return path.Join(path.Dir(goFileName), "../../../../build")
 }
 
 type InvalidArg struct {

@@ -1,7 +1,9 @@
 /*
-    Holding these lines for when gogradle 0.8.1 is released.
+    Holding these lines for when gogradle 0.8.2 is released (hopefully with
+    pull #194 (https://github.com/gogradle/gogradle/pull/194)
+
 plugins {
-    id 'com.github.blindpirate.gogradle' version '0.8.1'
+    id 'com.github.blindpirate.gogradle' version '0.8.2'
 }
 */
 
@@ -185,9 +187,14 @@ if (rootProject.hasProperty('buildPlatforms')) {
 
 /*
     Checks -- add golint and scancode to the checks run prior to build.
+       The get step is needed to be sure a golint binary is available to run.
  */
-task goLint(type: com.github.blindpirate.gogradle.Go) {
-    run "golint ${golang.packagePath}"
+task getGoLint(type: com.github.blindpirate.gogradle.Go) {
+    go 'get -u github.com/golang/lint/golint'
+}
+
+task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
+    run "./.gogradle/project_gopath/bin/golint ${golang.packagePath}"
 }
 
 goCheck.dependsOn(goLint)
@@ -203,17 +210,8 @@ goBuild {
 }
 
 task compile(type: Copy, dependsOn: goBuild) {
-    destinationDir = file('./bin')
-    for (p in platforms) {
-        from("./build/${p.goOs}-${p.goArch}") {
-            into("${p.owOs}/${p.goArch}")
-        }
-    }
-
-    /* Guarantee that the ./bin/wsk binary is executable */
-    from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}") {
-        into('.')
-    }
+    destinationDir = file('./build')
+    from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
 }
 
 /*
@@ -269,7 +267,7 @@ task release(type: Tar, dependsOn: [individualArchives, index]) {
     compression = Compression.GZIP
     destinationDir = file('./release')
     baseName = "${OpenWhiskPlatform.zipFileName}-latest-all"
-    from('./release/content.json') { into('.') }
+    from('./build/content.json') { into('.') }
     rootProject.platforms.each() { p ->
         from('./release/') {
             include("${p.zipFileName}-latest-${p.owOs}-${p.goArch}.*")
@@ -280,5 +278,5 @@ task release(type: Tar, dependsOn: [individualArchives, index]) {
 }
 
 task clean(type: Delete, dependsOn: goClean) {
-    delete './bin', './build', './release'
+    delete './build', './release'
 }
