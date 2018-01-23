@@ -53,7 +53,7 @@ after_success:
     fi
 
 before_deploy:
-  - export RELEASE_PKG_FILE=$(cd './release' && ls "${zip_file_name}-*.tgz" "${zip_file_name}-*.zip")
+  - export RELEASE_PKG_FILE=$(cd "$TRAVIS_BUILD_DIR/release" && ls "${zip_file_name}-*.tgz" "${zip_file_name}-*.zip")
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
 
 deploy:
