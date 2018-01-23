@@ -16,7 +16,6 @@ env:
     - build_file_name=wsk
     - zip_file_name=OpenWhisk_CLI
 
-
 git:
   depth: 3
 
@@ -26,8 +25,6 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR/..
   - pip install --upgrade pip setuptools
-  - git clone https://github.com/jonpspri/gogradle.git
-  - cd gogradle && ./gradlew --console=plain assemble
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
@@ -41,7 +38,7 @@ script:
   - ./tools/travis/test_openwhisk.sh
 
 after_success:
-  - DEPLOY_BUILD_READY=true
+  - export DEPLOY_BUILD_READY=true
   # This tag is automatically generated for the latest merged commit in master branch.
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
       git config --global user.email "builds@travis-ci.com";
