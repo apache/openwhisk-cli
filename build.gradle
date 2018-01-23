@@ -152,6 +152,20 @@ if (rootProject.hasProperty('buildPlatforms')) {
 }
 
 /*
+    I18n support
+ */
+task getGoI18n(type: com.github.blindpirate.gogradle.Go) {
+    go 'get -u github.com/jteeuwen/go-bindata/...'
+}
+
+task goI18n(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoI18n) {
+    // WARNING:  The single quotes are intentional!  The gogradle plugin will
+    //           parse the command with the GString engine at execution time.
+    run '${GOPATH}/bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources'
+}
+resolveBuildDependencies.dependsOn(goI18n)
+
+/*
     Checks -- add golint and scancode to the checks run prior to build.
        The get step is needed to be sure a golint binary is available to run.
  */
