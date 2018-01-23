@@ -49,7 +49,7 @@ export OPENWHISK_HOME
 #
 #  Run Unit and native tests
 #
-./gradlew --console=plain goTest -PgoTags=unit,native
+./gradlew --console=plain --info goTest -PgoTags=unit,native
 
 #
 #  Set up the OpenWhisk environment for integration testing
@@ -87,4 +87,4 @@ sleep 30
 #
 #  Finally, run the integration test for the CLI
 #
-./gradlew --console=plain goTest -PgoTags=integration
+./gradlew --console=plain --info goTest -PgoTags=integration
