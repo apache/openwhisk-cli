@@ -18,27 +18,26 @@
 package commands
 
 import (
-    "errors"
+	"errors"
 
-    "github.com/apache/incubator-openwhisk-cli/wski18n"
-    "github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-cli/wski18n"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
-func entityNameError(entityName string) (error) {
-    errMsg := wski18n.T(
-        "An entity name, '{{.name}}', was provided instead of a namespace. Valid namespaces are of the following format: /NAMESPACE.",
-        map[string]interface{}{
-            "name": entityName,
-        })
+func entityNameError(entityName string) error {
+	errMsg := wski18n.T(
+		"An entity name, '{{.name}}', was provided instead of a namespace. Valid namespaces are of the following format: /NAMESPACE.",
+		map[string]interface{}{
+			"name": entityName,
+		})
 
-    return whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+	return whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 }
 
 func entityListError(err error, namespace string, kind string) error {
-    whisk.Debug(whisk.DbgError, "Client.%s.List(%s) error: %s\n", kind, namespace, err)
-    errStr := wski18n.T("Unable to obtain the list of entities for namespace '{{.namespace}}': {{.err}}",
-        map[string]interface{}{"namespace": namespace, "err": err})
-    return whisk.MakeWskErrorFromWskError(errors.New(errStr), err,
-        whisk.EXIT_CODE_ERR_NETWORK, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+	whisk.Debug(whisk.DbgError, "Client.%s.List(%s) error: %s\n", kind, namespace, err)
+	errStr := wski18n.T("Unable to obtain the list of entities for namespace '{{.namespace}}': {{.err}}",
+		map[string]interface{}{"namespace": namespace, "err": err})
+	return whisk.MakeWskErrorFromWskError(errors.New(errStr), err,
+		whisk.EXIT_CODE_ERR_NETWORK, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 }
-
