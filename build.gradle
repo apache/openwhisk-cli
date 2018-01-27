@@ -193,6 +193,10 @@ goBuild {
       golang.packagePath ] as List<String>)
 }
 
+gofmt {
+    gofmt "-s -w ."
+}
+
 task compile(type: Copy, dependsOn: goBuild) {
     destinationDir = file('./build')
     from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
