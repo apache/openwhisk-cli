@@ -99,11 +99,11 @@ func isValidRelpath(relpath string) (error, bool) {
 func getManagedUrl(api *whisk.RetApi, relpath string, operation string) (url string) {
 	baseUrl := strings.TrimSuffix(api.BaseUrl, "/")
 	whisk.Debug(whisk.DbgInfo, "getManagedUrl: baseUrl = '%s', relpath = '%s', operation = '%s'\n", baseUrl, relpath, operation)
-	for path, _ := range api.Swagger.Paths {
+	for path := range api.Swagger.Paths {
 		whisk.Debug(whisk.DbgInfo, "getManagedUrl: comparing api relpath: '%s'\n", path)
 		if path == relpath {
 			whisk.Debug(whisk.DbgInfo, "getManagedUrl: relpath matches '%s'\n", relpath)
-			for op, _ := range api.Swagger.Paths[path] {
+			for op := range api.Swagger.Paths[path] {
 				whisk.Debug(whisk.DbgInfo, "getManagedUrl: comparing operation: '%s'\n", op)
 				if strings.ToLower(op) == strings.ToLower(operation) {
 					whisk.Debug(whisk.DbgInfo, "getManagedUrl: operation matches: '%s'\n", operation)
@@ -205,7 +205,7 @@ var apiCreateCmd = &cobra.Command{
 		} else {
 			whisk.Debug(whisk.DbgInfo, "Processing swagger based create API response\n")
 			baseUrl := retApi.BaseUrl
-			for path, _ := range retApi.Swagger.Paths {
+			for path := range retApi.Swagger.Paths {
 				managedUrl := strings.TrimSuffix(baseUrl, "/") + path
 				whisk.Debug(whisk.DbgInfo, "Managed path: '%s'\n", managedUrl)
 				for op, opv := range retApi.Swagger.Paths[path] {
@@ -573,7 +573,7 @@ func genFilteredList(resultApi *whisk.RetApi, apiPath string, apiVerb string) []
 	apiName := resultApi.Swagger.Info.Title
 	basePath := resultApi.Swagger.BasePath
 	if resultApi.Swagger != nil && resultApi.Swagger.Paths != nil {
-		for path, _ := range resultApi.Swagger.Paths {
+		for path := range resultApi.Swagger.Paths {
 			whisk.Debug(whisk.DbgInfo, "genFilteredApi: comparing api relpath: '%s'\n", path)
 			if len(apiPath) == 0 || path == apiPath {
 				whisk.Debug(whisk.DbgInfo, "genFilteredList: relpath matches\n")
@@ -611,7 +611,7 @@ func genFilteredRow(resultApi *whisk.RetApi, apiPath string, apiVerb string, max
 	apiName := resultApi.Swagger.Info.Title
 	basePath := resultApi.Swagger.BasePath
 	if resultApi.Swagger != nil && resultApi.Swagger.Paths != nil {
-		for path, _ := range resultApi.Swagger.Paths {
+		for path := range resultApi.Swagger.Paths {
 			whisk.Debug(whisk.DbgInfo, "genFilteredRow: comparing api relpath: '%s'\n", path)
 			if len(apiPath) == 0 || path == apiPath {
 				whisk.Debug(whisk.DbgInfo, "genFilteredRow: relpath matches\n")
@@ -674,7 +674,7 @@ func getLargestActionNameSize(retApiArray *whisk.RetApiArray, apiPath string, ap
 	for i := 0; i < len(retApiArray.Apis); i++ {
 		var resultApi = retApiArray.Apis[i].ApiValue
 		if resultApi.Swagger != nil && resultApi.Swagger.Paths != nil {
-			for path, _ := range resultApi.Swagger.Paths {
+			for path := range resultApi.Swagger.Paths {
 				whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing api relpath: '%s'\n", path)
 				if len(apiPath) == 0 || path == apiPath {
 					whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: relpath matches\n")
@@ -708,7 +708,7 @@ func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVe
 		var resultApi = retApiArray.Apis[i].ApiValue
 		apiName := resultApi.Swagger.Info.Title
 		if resultApi.Swagger != nil && resultApi.Swagger.Paths != nil {
-			for path, _ := range resultApi.Swagger.Paths {
+			for path := range resultApi.Swagger.Paths {
 				whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing api relpath: '%s'\n", path)
 				if len(apiPath) == 0 || path == apiPath {
 					whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: relpath matches\n")
