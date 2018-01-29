@@ -3,6 +3,10 @@ apply plugin: 'eclipse'
 compileTestScala.options.encoding = 'UTF-8'
 
 evaluationDependsOn(':clitests')
+evaluationDependsOn(':common:scala')
+
+project(':clitests').test.onlyIf = {false}
+compileTestScala.dependsOn(':clitests:compileTestScala')
 
 repositories {
     mavenCentral()
@@ -27,6 +31,10 @@ dependencies {
     compile "org.scala-lang:scala-library:${gradle.scala.version}"
     compile project(':clitests')
     compile project(':clitests').sourceSets.test.output
+
+    compile project(':common:scala')
+    compile project(':core:controller')
+    compile project(':core:invoker')
 }
 
 tasks.withType(ScalaCompile) {

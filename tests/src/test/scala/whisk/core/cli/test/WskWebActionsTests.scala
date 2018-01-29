@@ -36,7 +36,6 @@ import common.WhiskProperties
 import common.BaseWsk
 import common.WskProps
 import common.WskTestHelpers
-import common.SimpleExec
 
 import spray.json._
 import spray.json.DefaultJsonProtocol._
@@ -44,6 +43,7 @@ import spray.json.DefaultJsonProtocol._
 import system.rest.RestUtil
 
 import whisk.common.PrintStreamLogging
+import whisk.common.SimpleExec
 import whisk.common.TransactionId
 import whisk.core.entity.Subject
 
