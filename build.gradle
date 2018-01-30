@@ -202,6 +202,8 @@ task compile(type: Copy, dependsOn: goBuild) {
     from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
 }
 
+task build(type: DefaultTask, dependsOn: compile)
+
 /*
     For each platform, create an individual archive in a platform appropriate
     format (tarball for Linux, zipfile for Mac & Windows).
