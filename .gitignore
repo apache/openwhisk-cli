@@ -11,6 +11,6 @@ Godeps/_workspace
 # Gradle build working directories
 /.gradle/
 /.gogradle/
-/build/
+build
 /release/
 /vendor/
