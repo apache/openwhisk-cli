@@ -17,6 +17,8 @@
 
 package whisk.core.cli.test
 
+import com.jayway.restassured.RestAssured
+
 import java.io.File
 import java.io.BufferedWriter
 import java.io.FileWriter
@@ -25,9 +27,19 @@ import org.junit.runner.RunWith
 
 import org.scalatest.junit.JUnitRunner
 
+import com.jayway.restassured.config.RestAssuredConfig
+import com.jayway.restassured.config.SSLConfig
+
 import common.TestUtils._
-import common.TestCLIUtils
-import common.WskProps
+import common.TestUtils
+import common.WhiskProperties
+import common.{TestCLIUtils, WhiskProperties, WskProps}
+
+import scala.concurrent.duration.DurationInt
+import scala.util.parsing.json.JSON
+import scala.util.matching.Regex
+
+import org.apache.commons.io.FileUtils
 
 /**
  * Tests for testing the CLI "api" subcommand.  Most of these tests require a deployed backend.
@@ -163,7 +175,124 @@ abstract class ApiGwTests extends BaseApiGwTests {
     rr.stderr should include("The supplied authentication is invalid")
   }
 
+  def writeSwaggerFile(rr: RunResult): File = {
+    val swaggerfile = File.createTempFile("api", ".json")
+    swaggerfile.deleteOnExit()
+    val bw = new BufferedWriter(new FileWriter(swaggerfile))
+    bw.write(rr.stdout)
+    bw.close()
+    return swaggerfile
+  }
+
+  def getSwaggerUrl(rr: RunResult) : String = {
+    rr.stdout.split("\n")(1)
+  }
+
+  def replaceStringInFile(fileName: String, replacements: Map[Regex, String]): String = {
+    val encoding = "UTF-8"
+
+    val contents = FileUtils.readFileToString(new File(fileName), encoding)
+    var newContents = contents
+    replacements foreach ((regex) => newContents = regex._1.replaceAllIn(newContents, regex._2))
+    val tmpFileName = fileName + "-" + System.currentTimeMillis() + ".tmp"
+    val tmpFile = new File(tmpFileName)
+    if (tmpFile.exists()) {
+      FileUtils.forceDelete(tmpFile)
+    }
+    FileUtils.writeStringToFile(new File(tmpFileName), newContents, encoding)
+    tmpFileName
+  }
+
+  def getParametersFromJson(rr: RunResult, pathName: String): List[Map[String, Any]] = {
+    val parsed = JSON.parseFull(rr.stdout).asInstanceOf[Option[Map[String, Map[String, Map[String, Map[String, List[Map[String, String]]]]]]]]
+    parsed.get("paths").get(pathName).get("get").get("parameters").get
+  }
+
+  def getSslConfig(): RestAssuredConfig = {
+    // force RestAssured to allow all hosts in SSL certificates
+    new RestAssuredConfig().sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
+  }
+
+  def validateParameter(parameter: Map[String, Any], name: String, in: String, required: Boolean, pType: String, description: String): Unit = {
+    parameter.get("name").get should be(name)
+    parameter.get("in").get should be(in)
+    parameter.get("required") should be(Some(required))
+    parameter.get("type").get should be(pType)
+    parameter.get("description").get should be(description)
+  }
+
   behavior of "Wsk api"
+
+  behavior of "Cli Wsk api creation with path parameters with swagger"
+
+  it should "create the API when swagger file contains path parameters" in withAssetCleaner(
+    wskprops) { (wp, assetHelper) =>
+    val actionName = "cli_apigwtest_path_param_swagger_action"
+    var exception: Throwable = null
+    val apiName = "/guest/v1"
+    val reqPath = "\\$\\(request.path\\)"
+    val testRelPath = "/api2/greeting2/{name}"
+    val testUrlName = "scooby"
+    val testRelPathGet = s"/api2/greeting2/$testUrlName"
+    val testUrlOp = "get"
+    var file = TestUtils.getTestActionFilename(s"echo-web-http.js")
+    val hostRegex = "%HOST%".r
+    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
+      (action, _) =>
+        action.create(actionName, Some(file), web = Some("true"))
+    }
+    try {
+      //Create the API
+      var rr : RunResult = apiCreate(
+        basepath = Some(apiName),
+        relpath = Some(testRelPath),
+        operation = Some(testUrlOp),
+        action = Some(actionName),
+        responsetype = Some("http")
+      )
+      verifyApiCreated(rr)
+
+      //Get the api so we can create the swagger from the returned output
+      rr = apiGet(basepathOrApiName = Some(apiName))
+      rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
+      val swaggerFile = writeSwaggerFile(rr)
+
+      //Delete the api so we can re-create it using the swagger
+      rr = apiDelete(basepathOrApiName = apiName)
+      verifyApiDeleted(rr)
+
+      //Create the api using the swagger file.
+
+      rr = apiCreate(swagger = Some(swaggerFile.getAbsolutePath()), expectedExitCode = SUCCESS_EXIT)
+      verifyApiCreated(rr)
+      val swaggerApiUrl = getSwaggerUrl(rr).replace("{name}", testUrlName)
+
+      //Lets validate that the swagger we get from the create contains the correct info.
+      rr = apiGet(basepathOrApiName = Some(apiName))
+      rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
+      val params = getParametersFromJson(rr, testRelPath)
+      params.size should be(1)
+      validateParameter(params(0), "name", "path", true, "string", "Default description for 'name'")
+
+      //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
+      val apiToInvoke = s"$swaggerApiUrl"
+      println(s"Invoking: '${apiToInvoke}'")
+      val response = whisk.utils.retry({
+        val response = RestAssured.given().config(getSslConfig()).get(s"$apiToInvoke")
+        response.statusCode should be(200)
+        response
+      }, 6, Some(2.second))
+      val jsonReponse = JSON.parseFull(response.asString()).asInstanceOf[Option[Map[String, String]]].get
+      jsonReponse.get("__ow_path").get should not be ("")
+      jsonReponse.get("__ow_path").get should include (testRelPathGet)
+
+    } catch {
+      case unknown: Throwable => exception = unknown
+    } finally {
+      apiDelete(basepathOrApiName = apiName)
+    }
+    assert(exception == null)
+  }
 
   it should "reject an api commands with an invalid path parameter" in {
     val badpath = "badpath"

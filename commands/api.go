@@ -33,6 +33,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
+	"regexp"
 )
 
 const (
@@ -41,6 +42,8 @@ const (
 
 	formatOptionYaml = "yaml"
 	formatOptionJson = "json"
+
+	pathParamRegex = `/\{([^/]+)}/|/\{([^/]+)}$`
 )
 
 var apiCmd = &cobra.Command{
@@ -93,6 +96,34 @@ func isValidRelpath(relpath string) (error, bool) {
 	return nil, true
 }
 
+func hasPathParameters(path string) (bool, error) {
+	matched, err := regexp.MatchString(pathParamRegex, path)
+	hasBracket := strings.ContainsRune(path, '{') || strings.ContainsRune(path, '}')
+	if err != nil {
+		whisk.Debug(whisk.DbgInfo, "Unable to compile Regex '%s' to test against path '%s'\n", pathParamRegex, path)
+	}
+	if hasBracket && !matched {
+		errMsg := wski18n.T("Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.",
+			map[string]interface{}{"path": path})
+		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return false, whiskErr
+	}
+	return matched, nil
+}
+
+func isBasepathParameterized(basepath string) (error, bool) {
+	hasParams, err := hasPathParameters(basepath)
+	if hasParams || err != nil {
+		errMsg := wski18n.T("The base path '{{.path}}' cannot have parameters. Only the relative path supports path parameters.",
+			map[string]interface{}{"path": basepath})
+		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return whiskErr, false
+	}
+	return nil, true
+}
+
 /*
  * Pull the managedUrl (external API URL) from the API configuration
  */
@@ -103,7 +134,7 @@ func getManagedUrl(api *whisk.RetApi, relpath string, operation string) (url str
 		whisk.Debug(whisk.DbgInfo, "getManagedUrl: comparing api relpath: '%s'\n", path)
 		if path == relpath {
 			whisk.Debug(whisk.DbgInfo, "getManagedUrl: relpath matches '%s'\n", relpath)
-			for op := range api.Swagger.Paths[path] {
+			for op := range api.Swagger.Paths[path].MakeOperationMap() {
 				whisk.Debug(whisk.DbgInfo, "getManagedUrl: comparing operation: '%s'\n", op)
 				if strings.ToLower(op) == strings.ToLower(operation) {
 					whisk.Debug(whisk.DbgInfo, "getManagedUrl: operation matches: '%s'\n", operation)
@@ -208,7 +239,7 @@ var apiCreateCmd = &cobra.Command{
 			for path := range retApi.Swagger.Paths {
 				managedUrl := strings.TrimSuffix(baseUrl, "/") + path
 				whisk.Debug(whisk.DbgInfo, "Managed path: '%s'\n", managedUrl)
-				for op, opv := range retApi.Swagger.Paths[path] {
+				for op, opv := range retApi.Swagger.Paths[path].MakeOperationMap() {
 					whisk.Debug(whisk.DbgInfo, "Path operation: '%s'\n", op)
 					var fqActionName string
 					if opv.XOpenWhisk == nil {
@@ -577,7 +608,7 @@ func genFilteredList(resultApi *whisk.RetApi, apiPath string, apiVerb string) []
 			whisk.Debug(whisk.DbgInfo, "genFilteredApi: comparing api relpath: '%s'\n", path)
 			if len(apiPath) == 0 || path == apiPath {
 				whisk.Debug(whisk.DbgInfo, "genFilteredList: relpath matches\n")
-				for op, opv := range resultApi.Swagger.Paths[path] {
+				for op, opv := range resultApi.Swagger.Paths[path].MakeOperationMap() {
 					whisk.Debug(whisk.DbgInfo, "genFilteredList: comparing operation: '%s'\n", op)
 					if len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb) {
 						whisk.Debug(whisk.DbgInfo, "genFilteredList: operation matches: %#v\n", opv)
@@ -615,7 +646,7 @@ func genFilteredRow(resultApi *whisk.RetApi, apiPath string, apiVerb string, max
 			whisk.Debug(whisk.DbgInfo, "genFilteredRow: comparing api relpath: '%s'\n", path)
 			if len(apiPath) == 0 || path == apiPath {
 				whisk.Debug(whisk.DbgInfo, "genFilteredRow: relpath matches\n")
-				for op, opv := range resultApi.Swagger.Paths[path] {
+				for op, opv := range resultApi.Swagger.Paths[path].MakeOperationMap() {
 					whisk.Debug(whisk.DbgInfo, "genFilteredRow: comparing operation: '%s'\n", op)
 					if len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb) {
 						whisk.Debug(whisk.DbgInfo, "genFilteredRow: operation matches: %#v\n", opv)
@@ -678,7 +709,7 @@ func getLargestActionNameSize(retApiArray *whisk.RetApiArray, apiPath string, ap
 				whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing api relpath: '%s'\n", path)
 				if len(apiPath) == 0 || path == apiPath {
 					whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: relpath matches\n")
-					for op, opv := range resultApi.Swagger.Paths[path] {
+					for op, opv := range resultApi.Swagger.Paths[path].MakeOperationMap() {
 						whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing operation: '%s'\n", op)
 						if len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb) {
 							whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: operation matches: %#v\n", opv)
@@ -712,7 +743,7 @@ func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVe
 				whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing api relpath: '%s'\n", path)
 				if len(apiPath) == 0 || path == apiPath {
 					whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: relpath matches\n")
-					for op, opv := range resultApi.Swagger.Paths[path] {
+					for op, opv := range resultApi.Swagger.Paths[path].MakeOperationMap() {
 						whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: comparing operation: '%s'\n", op)
 						if len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb) {
 							whisk.Debug(whisk.DbgInfo, "getLargestActionNameSize: operation matches: %#v\n", opv)
@@ -726,6 +757,28 @@ func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVe
 		}
 	}
 	return maxNameSize
+}
+
+func generatePathParameters(relativePath string) []whisk.ApiParameter {
+	pathParams := []whisk.ApiParameter{}
+	regexObj, err := regexp.Compile(pathParamRegex)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "Failed to match path '%s' to regular expressions `%s`\n", relativePath, pathParamRegex)
+	}
+	matches := regexObj.FindAllString(relativePath, -1)
+	if matches != nil {
+		for _, paramName := range matches {
+			//The next 3 lines clean up the paramName, as the matches are something like `/{param}`
+			openIdx := strings.IndexRune(paramName, '{')
+			closeIdx := strings.IndexRune(paramName, '}')
+			paramName = string([]rune(paramName)[openIdx+1 : closeIdx])
+			param := whisk.ApiParameter{Name: paramName, In: "path", Required: true, Type: "string",
+				Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": paramName})}
+			pathParams = append(pathParams, param)
+		}
+	}
+
+	return pathParams
 }
 
 /*
@@ -754,6 +807,9 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 			whisk.Debug(whisk.DbgInfo, "Treating '%s' as an API name; as it does not begin with '/'\n", args[0])
 			basepathArgIsApiName = true
 		}
+		if err, _ := isBasepathParameterized(args[0]); err != nil {
+			return nil, nil, err
+		}
 		basepath = args[0]
 
 		// Shift the args so the remaining code works with or without the explicit base path arg
@@ -766,6 +822,19 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 			return nil, nil, whiskErr
 		}
 		api.GatewayRelPath = args[0] // Maintain case as URLs may be case-sensitive
+	}
+
+	// Attempting to use path parameters, lets validate that they provided them correctly.
+	hasPathParams, err := hasPathParameters(api.GatewayRelPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	// If they provided path Parameters, the response type better be http as its the only one that supports path parameters right now.
+	if hasPathParams && Flags.api.resptype != "http" {
+		errMsg := wski18n.T("A response type of 'http' is required when using path parameters.")
+		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, nil, whiskErr
 	}
 
 	// Is the API verb valid?
@@ -827,6 +896,7 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 	if !basepathArgIsApiName {
 		api.Id = "API:" + api.Namespace + ":" + api.GatewayBasePath
 	}
+	api.PathParameters = generatePathParameters(api.GatewayRelPath)
 
 	whisk.Debug(whisk.DbgInfo, "Parsed api struct: %#v\n", api)
 	return api, qName, nil

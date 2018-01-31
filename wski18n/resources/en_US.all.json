@@ -1558,5 +1558,21 @@
   {
     "id": "Cannot specify both --kind and --docker at the same time.",
     "translation": "Cannot specify both --kind and --docker at the same time."
+  },
+  {
+    "id": "Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.",
+    "translation": "Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'."
+  },
+  {
+    "id": "Default description for '{{.name}}'",
+    "translation": "Default description for '{{.name}}'"
+  },
+  {
+    "id": "The base path '{{.path}}' cannot have parameters. Only the relative path supports path parameters.",
+    "translation": "The base path '{{.path}}' cannot have parameters. Only the relative path supports path parameters."
+  },
+  {
+    "id": "A response type of 'http' is required when using path parameters.",
+    "translation": "A response type of 'http' is required when using path parameters."
   }
 ]
