@@ -115,6 +115,14 @@ $ go get github.com/apache/incubator-openwhisk-cli
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-cli
 ```
 
+The CLI internationalization should be generated dynamically using the
+bindata tool:
+
+```
+$ go get -u github.com/jteeuwen/go-bindata/...
+$ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
+```
+
 Unfortunately, it has become necessary to lock dependencies versions to obtain a
 clean build of wsk.  To that end, it's now necessary to populate the `vendors`
 folder using the versions selected in the `build.gradle`:
