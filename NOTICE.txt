@@ -1,0 +1,48 @@
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This product makes use of the Jibber Jabber library, which is released under the terms of the Apache Software License 2.0.
+https://github.com/cloudfoundry/jibber_jabber
+
+This product makes use of the Color library, which is released under the terms of the MIT License.
+https://github.com/fatih/color
+
+This product makes use of the Go-querystring library, which is released under the terms of the BSD License.
+https://github.com/google/go-querystring
+
+This product makes use of the Go-prettyjson library, which is released under the terms of the unknown License.
+https://github.com/hokaccha/go-prettyjson
+
+This product makes use of the Go-colorable library, which is released under the terms of the MIT License.
+https://github.com/mattn/go-colorable
+
+This product makes use of the Go-homedir library, which is released under the terms of the MIT License.
+https://github.com/mitchellh/go-homedir
+
+This product makes use of the Go-i18n library, which is released under the terms of the MIT License.
+https://github.com/nicksnyder/go-i18n
+
+This product makes use of the Cobra library, which is released under the terms of the Apache Software License 2.0.
+https://github.com/spf13/cobra
+
+This product makes use of the Yaml library, which is released under the terms of the MIT License.
+https://github.com/ghodss/yaml
+
+This product makes use of the OpenWhisk-client-go library, which is released under the terms of the Apache Software License 2.0.
+https://github.com/apache/incubator-openwhisk-client-go
+
+This product makes use of the Testify library, which is released under the terms of the unknown License:
+https://github.com/stretchr/testify/blob/master/LICENSE.
+https://github.com/stretchr/testify
+
+This product makes use of the Viper library, which is released under the terms of the MIT License.
+https://github.com/spf13/viper
+
+This product makes use of the Go-md2man library, which is released under the terms of the MIT License.
+https://github.com/cpuguy83/go-md2man
+
+This product makes use of the Go-spew library, which is released under the terms of the ISC License.
+https://github.com/davecgh/go-spew
+
+This product makes use of the Go-difflib library, which is released under the terms of the BSD 3-Clause License.
+https://github.com/pmezard/go-difflib
