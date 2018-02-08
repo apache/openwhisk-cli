@@ -1645,7 +1645,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       (Seq("activation", "result", "activationID", invalidArg), s"${tooManyArgsMsg}${invalidArg}."),
       (Seq("activation", "poll", "activationID", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${optNamespaceMsg}"),
       (Seq("namespace", "list", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${noArgsReqMsg}"),
-      (Seq("namespace", "get", "namespace", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${optNamespaceMsg}"),
+      (Seq("namespace", "get", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${noArgsReqMsg}"),
       (Seq("package", "create"), s"${tooFewArgsMsg} ${packageNameReqMsg}"),
       (Seq("package", "create", "packageName", invalidArg), s"${tooManyArgsMsg}${invalidArg}."),
       (Seq("package", "create", "packageName", "--shared", invalidArg), invalidShared),
@@ -1722,7 +1722,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
         // Limits to assert, standard values if CLI omits certain values
         val limits = JsObject(
           "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
-          "memory" -> memory.getOrElse(STD_MEMORY).toMB.toInt.toJson,
+          "memory" -> memory.getOrElse(stdMemory).toMB.toInt.toJson,
           "logs" -> logs.getOrElse(STD_LOGSIZE).toMB.toInt.toJson)
 
         val name = "ActionLimitTests" + Instant.now.toEpochMilli
@@ -1752,7 +1752,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
       // Assert for valid permutations that the values are set correctly
       for {
         time <- Seq(None, Some(MIN_DURATION), Some(MAX_DURATION))
-        mem <- Seq(None, Some(MIN_MEMORY), Some(MAX_MEMORY))
+        mem <- Seq(None, Some(minMemory), Some(maxMemory))
         log <- Seq(None, Some(MIN_LOGSIZE), Some(MAX_LOGSIZE))
       } testLimit(time, mem, log)
 

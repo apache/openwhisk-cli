@@ -1,10 +1,29 @@
-def owPath = System.getenv("OPENWHISK_HOME")
+def owPath = System.getenv("OPENWHISK_HOME") ?: '../incubator-openwhisk'
 def owDirectory = new File(owPath)
 
-include 'common:scala'; project(':common:scala').projectDir = new File(owDirectory, 'common/scala')
-include 'core:controller'; project(':core:controller').projectDir = new File(owDirectory, 'core/controller')
-include 'core:invoker'; project(':core:invoker').projectDir = new File(owDirectory, 'core/invoker')
+if (!owDirectory.exists()) {
+    throw new GradleScriptException(
+        "Environment variable OPENWHISK_HOME must point to a valid OpenWhisk build", null)
+}
+
 include 'clitests'; project(':clitests').projectDir = new File(owDirectory, 'tests')
+
+[   'common:scala',
+    'core:controller',
+    'core:invoker',
+    'actionRuntimes:nodejs6Action',
+    'actionRuntimes:actionProxy',
+    'actionRuntimes:pythonAction',
+    'actionRuntimes:python2Action',
+    'actionRuntimes:javaAction',
+    'actionRuntimes:swift3.1.1Action',
+    'sdk:docker',
+    'tests:dat:blackbox:badaction',
+    'tests:dat:blackbox:badproxy'
+].each() { p ->
+    include p
+    project(':'+p).projectDir = new File(owDirectory, p.replaceAll(':','/'))
+}
 
 include 'tests'
 

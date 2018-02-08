@@ -776,16 +776,8 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "list entities in default namespace" in {
-    // use a fresh wsk props instance that is guaranteed to use
-    // the default namespace
+    // use a fresh wsk props instance that is guaranteed to use the default namespace
     wsk.namespace.get(expectedExitCode = SUCCESS_EXIT)(WskProps()).stdout should include("default")
-  }
-
-  it should "not list entities with an invalid namespace" in {
-    val namespace = "fakeNamespace"
-    val stderr = wsk.namespace.get(Some(s"/${namespace}"), expectedExitCode = FORBIDDEN).stderr
-
-    stderr should include(s"Unable to obtain the list of entities for namespace '${namespace}'")
   }
 
   behavior of "Wsk Activation CLI"

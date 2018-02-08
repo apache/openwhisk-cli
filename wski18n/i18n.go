@@ -18,131 +18,131 @@
 package wski18n
 
 import (
-    "path/filepath"
-    "strings"
+	"path/filepath"
+	"strings"
 
-    goi18n "github.com/nicksnyder/go-i18n/i18n"
+	goi18n "github.com/nicksnyder/go-i18n/i18n"
 )
 
 const (
-    DEFAULT_LOCALE = "en_US"
+	DEFAULT_LOCALE = "en_US"
 )
 
 var SUPPORTED_LOCALES = []string{
-    "de_DE",
-    "en_US",
-    "es_ES",
-    "fr_FR",
-    "it_IT",
-    "ja_JA",
-    "ko_KR",
-    "pt_BR",
-    "zh_Hans",
-    "zh_Hant",
+	"de_DE",
+	"en_US",
+	"es_ES",
+	"fr_FR",
+	"it_IT",
+	"ja_JA",
+	"ko_KR",
+	"pt_BR",
+	"zh_Hans",
+	"zh_Hant",
 }
 
 var resourcePath = filepath.Join("wski18n", "resources")
 
 func GetResourcePath() string {
-    return resourcePath
+	return resourcePath
 }
 
 func SetResourcePath(path string) {
-    resourcePath = path
+	resourcePath = path
 }
 
 var T goi18n.TranslateFunc
 var curLocale string
 
 func init() {
-    curLocale = Init(new(JibberJabberDetector))
+	curLocale = Init(new(JibberJabberDetector))
 }
 
 func CurLocale() string {
-    return curLocale
+	return curLocale
 }
 
 func Locale(detector Detector) string {
 
-    // Use default locale until strings are translated
-    /*sysLocale := normalize(detector.DetectLocale())
-    if isSupported(sysLocale) {
-        return sysLocale
-    }
+	// Use default locale until strings are translated
+	/*sysLocale := normalize(detector.DetectLocale())
+	  if isSupported(sysLocale) {
+	      return sysLocale
+	  }
 
-    locale := defaultLocaleForLang(detector.DetectLanguage())
-    if locale != "" {
-        return locale
-    }*/
+	  locale := defaultLocaleForLang(detector.DetectLanguage())
+	  if locale != "" {
+	      return locale
+	  }*/
 
-    return DEFAULT_LOCALE
+	return DEFAULT_LOCALE
 }
 
 func Init(detector Detector) string {
-    l := Locale(detector)
-    InitWithLocale(l)
-    return l
+	l := Locale(detector)
+	InitWithLocale(l)
+	return l
 }
 
 func InitWithLocale(locale string) {
-    err := loadFromAsset(locale)
-    if err != nil {
-        panic(err)
-    }
-    T = goi18n.MustTfunc(locale)
+	err := loadFromAsset(locale)
+	if err != nil {
+		panic(err)
+	}
+	T = goi18n.MustTfunc(locale)
 }
 
 func loadFromAsset(locale string) (err error) {
-    assetName := locale + ".all.json"
-    assetKey := filepath.Join(resourcePath, assetName)
-    bytes, err := Asset(assetKey)
-    if err != nil {
-        return
-    }
-    err = goi18n.ParseTranslationFileBytes(assetName, bytes)
-    return
+	assetName := locale + ".all.json"
+	assetKey := filepath.Join(resourcePath, assetName)
+	bytes, err := Asset(assetKey)
+	if err != nil {
+		return
+	}
+	err = goi18n.ParseTranslationFileBytes(assetName, bytes)
+	return
 }
 
 func normalize(locale string) string {
-    locale = strings.ToLower(strings.Replace(locale, "-", "_", 1))
-    for _, l := range SUPPORTED_LOCALES {
-        if strings.EqualFold(locale, l) {
-            return l
-        }
-    }
-    switch locale {
-    case "zh_cn", "zh_sg":
-        return "zh_Hans"
-    case "zh_hk", "zh_tw":
-        return "zh_Hant"
-    }
-    return locale
+	locale = strings.ToLower(strings.Replace(locale, "-", "_", 1))
+	for _, l := range SUPPORTED_LOCALES {
+		if strings.EqualFold(locale, l) {
+			return l
+		}
+	}
+	switch locale {
+	case "zh_cn", "zh_sg":
+		return "zh_Hans"
+	case "zh_hk", "zh_tw":
+		return "zh_Hant"
+	}
+	return locale
 }
 
 func isSupported(locale string) bool {
-    for _, l := range SUPPORTED_LOCALES {
-        if strings.EqualFold(locale, l) {
-            return true
-        }
-    }
-    return false
+	for _, l := range SUPPORTED_LOCALES {
+		if strings.EqualFold(locale, l) {
+			return true
+		}
+	}
+	return false
 }
 
 func defaultLocaleForLang(lang string) string {
-    if lang != "" {
-        lang = strings.ToLower(lang)
-        for _, l := range SUPPORTED_LOCALES {
-            if lang == LangOfLocale(l) {
-                return l
-            }
-        }
-    }
-    return ""
+	if lang != "" {
+		lang = strings.ToLower(lang)
+		for _, l := range SUPPORTED_LOCALES {
+			if lang == LangOfLocale(l) {
+				return l
+			}
+		}
+	}
+	return ""
 }
 
 func LangOfLocale(locale string) string {
-    if len(locale) < 2 {
-        return ""
-    }
-    return locale[0:2]
+	if len(locale) < 2 {
+		return ""
+	}
+	return locale[0:2]
 }

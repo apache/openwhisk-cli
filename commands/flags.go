@@ -18,7 +18,7 @@
 package commands
 
 import (
-    "os"
+	"os"
 )
 
 ///////////
@@ -26,132 +26,129 @@ import (
 ///////////
 
 const (
-    MEMORY_FLAG     = "memory"
-    LOG_SIZE_FLAG   = "logsize"
-    TIMEOUT_FLAG    = "timeout"
-    WEB_FLAG        = "web"
-    SAVE_FLAG       = "save"
-    SAVE_AS_FLAG    = "save-as"
+	MEMORY_FLAG   = "memory"
+	LOG_SIZE_FLAG = "logsize"
+	TIMEOUT_FLAG  = "timeout"
+	WEB_FLAG      = "web"
+	SAVE_FLAG     = "save"
+	SAVE_AS_FLAG  = "save-as"
 )
 
-
-var cliDebug = os.Getenv("WSK_CLI_DEBUG")  // Useful for tracing init() code
+var cliDebug = os.Getenv("WSK_CLI_DEBUG") // Useful for tracing init() code
 
 var Flags FlagsStruct
 
 type FlagsStruct struct {
+	Global struct {
+		Verbose    bool
+		Debug      bool
+		Cert       string
+		Key        string
+		Auth       string
+		Apihost    string
+		Apiversion string
+		Insecure   bool
+	}
 
-    Global struct {
-        Verbose    bool
-        Debug      bool
-        Cert       string
-        Key        string
-        Auth       string
-        Apihost    string
-        Apiversion string
-        Insecure   bool
-    }
+	common struct {
+		blocking   bool
+		annotation []string
+		annotFile  string
+		param      []string
+		paramFile  string
+		shared     string // AKA "public" or "publish"
+		skip       int    // skip first N records
+		limit      int    // return max N records
+		full       bool   // return full records (docs=true for client request)
+		summary    bool
+		feed       string // name of feed
+		detail     bool
+		format     string
+		nameSort   bool // sorts list alphabetically by entity name
+	}
 
-    common struct {
-        blocking    bool
-        annotation  []string
-        annotFile   string
-        param       []string
-        paramFile   string
-        shared      string  // AKA "public" or "publish"
-        skip        int     // skip first N records
-        limit       int     // return max N records
-        full        bool    // return full records (docs=true for client request)
-        summary     bool
-        feed        string  // name of feed
-        detail      bool
-        format      string
-        nameSort   bool    // sorts list alphabetically by entity name
-    }
+	property struct {
+		cert          bool
+		key           bool
+		auth          bool
+		apihost       bool
+		apiversion    bool
+		namespace     bool
+		cliversion    bool
+		apibuild      bool
+		apibuildno    bool
+		insecure      bool
+		all           bool
+		apihostSet    string
+		apiversionSet string
+		namespaceSet  string
+	}
 
-    property struct {
-        cert            bool
-        key             bool
-        auth            bool
-        apihost         bool
-        apiversion      bool
-        namespace       bool
-        cliversion      bool
-        apibuild        bool
-        apibuildno      bool
-        insecure        bool
-        all             bool
-        apihostSet      string
-        apiversionSet   string
-        namespaceSet    string
-    }
+	action ActionFlags
 
-    action ActionFlags
+	activation struct {
+		action       string // retrieve results for this action
+		upto         int64  // retrieve results up to certain time
+		since        int64  // retrieve results after certain time
+		seconds      int    // stop polling for activation upda
+		sinceSeconds int
+		sinceMinutes int
+		sinceHours   int
+		sinceDays    int
+		exit         int
+		last         bool
+		strip        bool
+	}
 
-    activation struct {
-        action          string // retrieve results for this action
-        upto            int64  // retrieve results up to certain time
-        since           int64  // retrieve results after certain time
-        seconds         int    // stop polling for activation upda
-        sinceSeconds    int
-        sinceMinutes    int
-        sinceHours      int
-        sinceDays       int
-        exit            int
-        last            bool
-        strip           bool
-    }
+	// rule
+	rule struct {
+		disable bool
+		summary bool
+	}
 
-    // rule
-    rule       struct {
-        disable bool
-        summary bool
-    }
+	// trigger
+	trigger struct {
+		summary bool
+	}
 
-    // trigger
-    trigger    struct {
-        summary bool
-    }
+	//sdk
+	sdk struct {
+		stdout bool
+	}
 
-    //sdk
-    sdk struct {
-        stdout bool
-    }
-
-    // api
-    api        struct {
-        action     string
-        path       string
-        verb       string
-        basepath   string
-        apiname    string
-        configfile string
-        resptype   string
-    }
+	// api
+	api struct {
+		action     string
+		path       string
+		verb       string
+		basepath   string
+		apiname    string
+		configfile string
+		resptype   string
+	}
 }
 
-
 type ActionFlags struct {
-    docker      string
-    native      bool
-    copy        bool
-    web         string
-    sequence    bool
-    timeout     int
-    memory      int
-    logsize     int
-    result      bool
-    kind        string
-    main        string
-    url         bool
-    save        bool
-    saveAs     string
+	docker   string
+	native   bool
+	copy     bool
+	web      string
+	sequence bool
+	timeout  int
+	memory   int
+	logsize  int
+	result   bool
+	kind     string
+	main     string
+	url      bool
+	save     bool
+	saveAs   string
 }
 
 func IsVerbose() bool {
-    return Flags.Global.Verbose || IsDebug()
+	return Flags.Global.Verbose || IsDebug()
 }
 
 func IsDebug() bool {
-    return len(cliDebug) > 0 || Flags.Global.Debug
+	return len(cliDebug) > 0 || Flags.Global.Debug
 }

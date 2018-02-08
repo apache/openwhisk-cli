@@ -17,55 +17,55 @@
 package common
 
 import (
-    "os"
-    "os/exec"
-    "github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"os"
+	"os/exec"
 )
 
 const cmd = "wsk"
 const arg = "-i"
 
 type Wsk struct {
-    Path string
-    Arg []string
-    Dir string
-    Wskprops *whisk.Wskprops
+	Path     string
+	Arg      []string
+	Dir      string
+	Wskprops *whisk.Wskprops
 }
 
 func NewWsk() *Wsk {
-    return NewWskWithPath(GetRepoPath())
+	return NewWskWithPath(GetBinPath())
 }
 
 func NewWskWithPath(path string) *Wsk {
-    var dep Wsk
-    dep.Path = cmd
-    dep.Arg = []string{arg}
-    dep.Dir = path
-    pi := whisk.PropertiesImp{
-        OsPackage: whisk.OSPackageImp{},
-    }
-    dep.Wskprops, _ = whisk.GetDefaultWskProp(pi)
-    return &dep
+	var dep Wsk
+	dep.Path = cmd
+	dep.Arg = []string{arg}
+	dep.Dir = path
+	pi := whisk.PropertiesImp{
+		OsPackage: whisk.OSPackageImp{},
+	}
+	dep.Wskprops, _ = whisk.GetDefaultWskProp(pi)
+	return &dep
 }
 
-func (wsk *Wsk)Exists() bool {
-    _, err := os.Stat(wsk.Dir + "/" + wsk.Path);
-    if err == nil {
-        return true
-    } else {
-        return false
-    }
+func (wsk *Wsk) Exists() bool {
+	_, err := os.Stat(wsk.Dir + "/" + wsk.Path)
+	if err == nil {
+		return true
+	} else {
+		return false
+	}
 }
 
-func (wsk *Wsk)RunCommand(s ...string) ([]byte, error) {
-    cs := wsk.Arg
-    cs = append(cs, s...)
-    command := exec.Command(wsk.Dir + "/" + wsk.Path, cs...)
-    command.Dir = wsk.Dir
-    return command.CombinedOutput()
+func (wsk *Wsk) RunCommand(s ...string) ([]byte, error) {
+	cs := wsk.Arg
+	cs = append(cs, s...)
+	command := exec.Command(wsk.Dir+"/"+wsk.Path, cs...)
+	command.Dir = wsk.Dir
+	return command.CombinedOutput()
 }
 
-func (wsk *Wsk)ListNamespaces() ([]byte, error) {
-    return wsk.RunCommand("namespace", "list", "--apihost", wsk.Wskprops.APIHost,
-        "--auth", wsk.Wskprops.AuthKey)
+func (wsk *Wsk) ListNamespaces() ([]byte, error) {
+	return wsk.RunCommand("namespace", "list", "--apihost", wsk.Wskprops.APIHost,
+		"--auth", wsk.Wskprops.AuthKey)
 }
