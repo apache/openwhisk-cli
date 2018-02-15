@@ -45,6 +45,11 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   val wsk = new Wsk
   val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.js"))
 
+  /**
+   * Append the current timestamp in ms
+   */
+  def withTimestamp(text: String) = s"${text}-${System.currentTimeMillis}"
+
   behavior of "Wsk CLI"
 
   it should "reject creating duplicate entity" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
@@ -464,34 +469,95 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   behavior of "Wsk Trigger CLI"
 
   it should "create, update, get, fire and list trigger" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val name = "listTriggers"
+    val ruleName = withTimestamp("r1toa1")
+    val triggerName = withTimestamp("t1tor1")
+    val actionName = withTimestamp("a1")
     val params = Map("a" -> "A".toJson)
-    assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
-      trigger.create(name, parameters = params)
-      trigger.create(name, update = true)
+    val ns = wsk.namespace.whois()
+
+    assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
+      trigger.create(triggerName, parameters = params)
+      trigger.create(triggerName, update = true)
     }
-    val stdout = wsk.trigger.get(name).stdout
-    stdout should include regex (""""key": "a"""")
-    stdout should include regex (""""value": "A"""")
-    stdout should include regex (""""publish": false""")
-    stdout should include regex (""""version": "0.0.2"""")
+
+    assetHelper.withCleaner(wsk.action, actionName) { (action, name) =>
+      action.create(name, defaultAction)
+    }
+
+    assetHelper.withCleaner(wsk.rule, ruleName) { (rule, name) =>
+      rule.create(name, trigger = triggerName, action = actionName)
+    }
+
+    val trigger = wsk.trigger.get(triggerName)
+    trigger.getFieldJsValue("parameters") shouldBe JsArray(JsObject("key" -> JsString("a"), "value" -> JsString("A")))
+    trigger.getFieldJsValue("publish") shouldBe JsBoolean(false)
+    trigger.getField("version") shouldBe "0.0.2"
+
+    val expectedRules = JsObject(
+      ns + "/" + ruleName -> JsObject(
+        "action" -> JsObject("name" -> JsString(actionName), "path" -> JsString(ns)),
+        "status" -> JsString("active")))
+    trigger.getFieldJsValue("rules") shouldBe expectedRules
 
     val dynamicParams = Map("t" -> "T".toJson)
-    val run = wsk.trigger.fire(name, dynamicParams)
+    val run = wsk.trigger.fire(triggerName, dynamicParams)
     withActivation(wsk.activation, run) { activation =>
       activation.response.result shouldBe Some(dynamicParams.toJson)
       activation.duration shouldBe 0L // shouldn't exist but CLI generates it
       activation.end shouldBe Instant.EPOCH // shouldn't exist but CLI generates it
+      activation.logs shouldBe defined
+      activation.logs.get.size shouldBe 1
+
+      val logEntry = activation.logs.get(0).parseJson.asJsObject
+      val logs = JsArray(logEntry)
+      val ruleActivationId: String = logEntry.getFields("activationId")(0).convertTo[String]
+      val expectedLogs = JsArray(
+        JsObject(
+          "statusCode" -> JsNumber(0),
+          "activationId" -> JsString(ruleActivationId),
+          "success" -> JsBoolean(true),
+          "rule" -> JsString(ns + "/" + ruleName),
+          "action" -> JsString(ns + "/" + actionName)))
+      logs shouldBe expectedLogs
     }
 
-    val runWithNoParams = wsk.trigger.fire(name, Map())
+    val runWithNoParams = wsk.trigger.fire(triggerName, Map())
     withActivation(wsk.activation, runWithNoParams) { activation =>
       activation.response.result shouldBe Some(JsObject())
       activation.duration shouldBe 0L // shouldn't exist but CLI generates it
       activation.end shouldBe Instant.EPOCH // shouldn't exist but CLI generates it
     }
 
-    wsk.trigger.list().stdout should include(name)
+    val triggerList = wsk.trigger.list()
+    val triggers = triggerList.getBodyListJsObject()
+    triggers.exists(trigger => RestResult.getField(trigger, "name") == triggerName) shouldBe true
+  }
+
+  it should "create, and get a trigger summary" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+    val name = "triggerName"
+    val annots = Map(
+      "description" -> JsString("Trigger description"),
+      "parameters" -> JsArray(
+        JsObject("name" -> JsString("paramName1"), "description" -> JsString("Parameter description 1")),
+        JsObject("name" -> JsString("paramName2"), "description" -> JsString("Parameter description 2"))))
+
+    assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
+      trigger.create(name, annotations = annots)
+    }
+
+    val result = wsk.trigger.get(name)
+    val ns = wsk.namespace.whois()
+
+    result.getField("name") shouldBe name
+    result.getField("namespace") shouldBe ns
+    val annos = result.getFieldJsValue("annotations")
+    annos shouldBe JsArray(
+      JsObject("key" -> JsString("description"), "value" -> JsString("Trigger description")),
+      JsObject(
+        "key" -> JsString("parameters"),
+        "value" -> JsArray(
+          JsObject("name" -> JsString("paramName1"), "description" -> JsString("Parameter description 1")),
+          JsObject("name" -> JsString("paramName2"), "description" -> JsString("Parameter description 2")))))
   }
 
   it should "create, and get a trigger summary" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
@@ -523,17 +589,26 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "create, and fire a trigger using a parameter file" in withAssetCleaner(wskprops) {
-    val name = "paramFileTrigger"
-    val file = Some(TestCLIUtils.getTestActionFilename("argCheck.js"))
-    val argInput = Some(TestCLIUtils.getTestActionFilename("validInput2.json"))
+    val ruleName = withTimestamp("r1toa1")
+    val triggerName = withTimestamp("paramFileTrigger")
+    val actionName = withTimestamp("a1")
+    val argInput = Some(TestUtils.getTestActionFilename("validInput2.json"))
 
     (wp, assetHelper) =>
-      assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
-        trigger.create(name)
+      assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
+        trigger.create(triggerName)
+      }
+
+      assetHelper.withCleaner(wsk.action, actionName) { (action, name) =>
+        action.create(name, defaultAction)
+      }
+
+      assetHelper.withCleaner(wsk.rule, ruleName) { (rule, name) =>
+        rule.create(name, trigger = triggerName, action = actionName)
       }
 
       val expectedOutput = JsObject("payload" -> JsString("test"))
-      val run = wsk.trigger.fire(name, parameterFile = argInput)
+      val run = wsk.trigger.fire(triggerName, parameterFile = argInput)
       withActivation(wsk.activation, run) { activation =>
         activation.response.result shouldBe Some(expectedOutput)
       }
@@ -568,12 +643,23 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "create, and fire a trigger to ensure result is empty" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val name = "emptyResultTrigger"
-    assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
-      trigger.create(name)
+    val ruleName = withTimestamp("r1toa1")
+    val triggerName = withTimestamp("emptyResultTrigger")
+    val actionName = withTimestamp("a1")
+
+    assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
+      trigger.create(triggerName)
     }
 
-    val run = wsk.trigger.fire(name)
+    assetHelper.withCleaner(wsk.action, actionName) { (action, name) =>
+      action.create(name, defaultAction)
+    }
+
+    assetHelper.withCleaner(wsk.rule, ruleName) { (rule, name) =>
+      rule.create(name, trigger = triggerName, action = actionName)
+    }
+
+    val run = wsk.trigger.fire(triggerName)
     withActivation(wsk.activation, run) { activation =>
       activation.response.result shouldBe Some(JsObject())
     }
@@ -607,6 +693,65 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
     val name = "nonexistentTrigger"
     val stderr = wsk.trigger.fire(name, expectedExitCode = NOT_FOUND).stderr
     stderr should include regex (s"""Unable to fire trigger '$name': The requested resource does not exist. \\(code \\d+\\)""")
+  }
+
+  it should "create and fire a trigger with a rule whose action has been deleted" in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val ruleName1 = withTimestamp("r1toa1")
+      val ruleName2 = withTimestamp("r2toa2")
+      val triggerName = withTimestamp("t1tor1r2")
+      val actionName1 = withTimestamp("a1")
+      val actionName2 = withTimestamp("a2")
+      val ns = wsk.namespace.whois()
+
+      assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
+        trigger.create(triggerName)
+        trigger.create(triggerName, update = true)
+      }
+
+      assetHelper.withCleaner(wsk.action, actionName1) { (action, name) =>
+        action.create(name, defaultAction)
+      }
+      wsk.action.create(actionName2, defaultAction) // Delete this after the rule is created
+
+      assetHelper.withCleaner(wsk.rule, ruleName1) { (rule, name) =>
+        rule.create(name, trigger = triggerName, action = actionName1)
+      }
+      assetHelper.withCleaner(wsk.rule, ruleName2) { (rule, name) =>
+        rule.create(name, trigger = triggerName, action = actionName2)
+      }
+      wsk.action.delete(actionName2)
+
+      val run = wsk.trigger.fire(triggerName)
+      withActivation(wsk.activation, run) { activation =>
+        activation.duration shouldBe 0L // shouldn't exist but CLI generates it
+        activation.end shouldBe Instant.EPOCH // shouldn't exist but CLI generates it
+        activation.logs shouldBe defined
+        activation.logs.get.size shouldBe 2
+
+        val logEntry1 = activation.logs.get(0).parseJson.asJsObject
+        val logEntry2 = activation.logs.get(1).parseJson.asJsObject
+        val logs = JsArray(logEntry1, logEntry2)
+        val ruleActivationId: String = if (logEntry1.getFields("activationId").size == 1) {
+          logEntry1.getFields("activationId")(0).convertTo[String]
+        } else {
+          logEntry2.getFields("activationId")(0).convertTo[String]
+        }
+        val expectedLogs = JsArray(
+          JsObject(
+            "statusCode" -> JsNumber(0),
+            "activationId" -> JsString(ruleActivationId),
+            "success" -> JsBoolean(true),
+            "rule" -> JsString(ns + "/" + ruleName1),
+            "action" -> JsString(ns + "/" + actionName1)),
+          JsObject(
+            "statusCode" -> JsNumber(1),
+            "success" -> JsBoolean(false),
+            "error" -> JsString("The requested resource does not exist."),
+            "rule" -> JsString(ns + "/" + ruleName2),
+            "action" -> JsString(ns + "/" + actionName2)))
+        logs shouldBe expectedLogs
+      }
   }
 
   behavior of "Wsk Rule CLI"
@@ -784,41 +929,36 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
   it should "create a trigger, and fire a trigger to get its individual fields from an activation" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val name = "activationFields"
+    val ruleName = withTimestamp("r1toa1")
+    val triggerName = withTimestamp("activationFields")
+    val actionName = withTimestamp("a1")
 
-    assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
-      trigger.create(name)
+    assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
+      trigger.create(triggerName)
     }
 
-    val ns = s""""${wsk.namespace.whois()}""""
-    val run = wsk.trigger.fire(name)
+    assetHelper.withCleaner(wsk.action, actionName) { (action, name) =>
+      action.create(name, defaultAction)
+    }
+
+    assetHelper.withCleaner(wsk.rule, ruleName) { (rule, name) =>
+      rule.create(name, trigger = triggerName, action = actionName)
+    }
+
+    val ns = wsk.namespace.whois()
+    val run = wsk.trigger.fire(triggerName)
     withActivation(wsk.activation, run) { activation =>
-      val successMsg = s"ok: got activation ${activation.activationId}, displaying field"
-      wsk.activation
-        .get(Some(activation.activationId), fieldFilter = Some("namespace"))
-        .stdout should include regex (s"""(?i)$successMsg namespace\n$ns""")
-      wsk.activation.get(Some(activation.activationId), fieldFilter = Some("name")).stdout should include(
-        s"""$successMsg name\n"$name"""")
-      wsk.activation.get(Some(activation.activationId), fieldFilter = Some("version")).stdout should include(
-        s"""$successMsg version\n"0.0.1"""")
-      wsk.activation.get(Some(activation.activationId), fieldFilter = Some("publish")).stdout should include(
-        s"""$successMsg publish\nfalse""")
-      wsk.activation
-        .get(Some(activation.activationId), fieldFilter = Some("subject"))
-        .stdout should include regex (s"""(?i)$successMsg subject\n""")
-      wsk.activation.get(Some(activation.activationId), fieldFilter = Some("activationid")).stdout should include(
-        s"""$successMsg activationid\n"${activation.activationId}""")
-      wsk.activation
-        .get(Some(activation.activationId), fieldFilter = Some("start"))
-        .stdout should include regex (s"""$successMsg start\n\\d""")
-      wsk.activation
-        .get(Some(activation.activationId), fieldFilter = Some("end"))
-        .stdout should include regex (s"""$successMsg end\n\\d""")
-      wsk.activation
-        .get(Some(activation.activationId), fieldFilter = Some("duration"))
-        .stdout should include regex (s"""$successMsg duration\n\\d""")
-      wsk.activation.get(Some(activation.activationId), fieldFilter = Some("annotations")).stdout should include(
-        s"""$successMsg annotations\n[]""")
+      var result = wsk.activation.get(Some(activation.activationId))
+      result.getField("namespace") shouldBe ns
+      result.getField("name") shouldBe triggerName
+      result.getField("version") shouldBe "0.0.1"
+      result.getFieldJsValue("publish") shouldBe JsBoolean(false)
+      result.getField("subject") shouldBe ns
+      result.getField("activationId") shouldBe activation.activationId
+      result.getFieldJsValue("start").toString should not be JsObject().toString
+      result.getFieldJsValue("end").toString shouldBe JsObject().toString
+      result.getFieldJsValue("duration").toString shouldBe JsObject().toString
+      result.getFieldListJsObject("annotations").length shouldBe 0
     }
   }
 
