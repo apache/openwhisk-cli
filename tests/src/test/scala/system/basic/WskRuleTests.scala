@@ -100,13 +100,11 @@ abstract class WskRuleTests extends TestHelpers with WskTestHelpers {
 
     withActivation(wsk.activation, run) { triggerActivation =>
       triggerActivation.cause shouldBe None
-
-      withActivationsFromEntity(
-        wsk.activation,
-        ruleName,
-        since = Some(triggerActivation.start.minusMillis(activationTimeSkewFactorMs))) {
-        _.head.cause shouldBe Some(triggerActivation.activationId)
-      }
+      triggerActivation.logs.get.size shouldBe (1)
+      val logs = triggerActivation.logs.get.mkString(" ")
+      logs should include(""""statusCode":0""")
+      logs should include(""""activationId":""")
+      logs should include(""""success":true""")
 
       withActivationsFromEntity(
         wsk.activation,
@@ -137,13 +135,11 @@ abstract class WskRuleTests extends TestHelpers with WskTestHelpers {
 
     withActivation(wsk.activation, run) { triggerActivation =>
       triggerActivation.cause shouldBe None
-
-      withActivationsFromEntity(
-        wsk.activation,
-        ruleName,
-        since = Some(triggerActivation.start.minusMillis(activationTimeSkewFactorMs))) {
-        _.head.cause shouldBe Some(triggerActivation.activationId)
-      }
+      triggerActivation.logs.get.size shouldBe (1)
+      val logs = triggerActivation.logs.get.mkString(" ")
+      logs should include(""""statusCode":0""")
+      logs should include(""""activationId":""")
+      logs should include(""""success":true""")
 
       withActivationsFromEntity(
         wsk.activation,
@@ -159,7 +155,7 @@ abstract class WskRuleTests extends TestHelpers with WskTestHelpers {
     val ruleName = withTimestamp("pr1to1")
     val triggerName = withTimestamp("pt1to1")
     val pkgName = withTimestamp("rule pkg") // spaces in name intended to test uri path encoding
-    val pkgBindingName = withTimestamp("rule pkg binding")
+  val pkgBindingName = withTimestamp("rule pkg binding")
     val actionName = withTimestamp("a1 to 1")
     val pkgActionName = s"$pkgName/$actionName"
 
@@ -177,13 +173,11 @@ abstract class WskRuleTests extends TestHelpers with WskTestHelpers {
 
     withActivation(wsk.activation, run) { triggerActivation =>
       triggerActivation.cause shouldBe None
-
-      withActivationsFromEntity(
-        wsk.activation,
-        ruleName,
-        since = Some(triggerActivation.start.minusMillis(activationTimeSkewFactorMs))) {
-        _.head.cause shouldBe Some(triggerActivation.activationId)
-      }
+      triggerActivation.logs.get.size shouldBe (1)
+      val logs = triggerActivation.logs.get.mkString(" ")
+      logs should include(""""statusCode":0""")
+      logs should include(""""activationId":""")
+      logs should include(""""success":true""")
 
       withActivationsFromEntity(
         wsk.activation,
