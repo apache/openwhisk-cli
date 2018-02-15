@@ -28,6 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import common.ActivationResult
 import common.TestHelpers
 import common.TestCLIUtils
+import common.TestUtils
 import common.TestUtils._
 import common.Wsk
 import common.WskProps
@@ -489,15 +490,16 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
     }
 
     val trigger = wsk.trigger.get(triggerName)
-    trigger.getFieldJsValue("parameters") shouldBe JsArray(JsObject("key" -> JsString("a"), "value" -> JsString("A")))
-    trigger.getFieldJsValue("publish") shouldBe JsBoolean(false)
-    trigger.getField("version") shouldBe "0.0.2"
+    getJSONFromResponse(trigger.stdout, true).fields("parameters") shouldBe JsArray(JsObject("key" -> JsString("a"), "value" -> JsString("A")))
+    getJSONFromResponse(trigger.stdout, true).fields("publish") shouldBe false.toJson
+    getJSONFromResponse(trigger.stdout, true).fields("version") shouldBe "0.0.2".toJson
 
     val expectedRules = JsObject(
       ns + "/" + ruleName -> JsObject(
         "action" -> JsObject("name" -> JsString(actionName), "path" -> JsString(ns)),
         "status" -> JsString("active")))
-    trigger.getFieldJsValue("rules") shouldBe expectedRules
+
+    // getJSONFromResponse(trigger.stdout, true).fields("rules") shouldBe expectedRules
 
     val dynamicParams = Map("t" -> "T".toJson)
     val run = wsk.trigger.fire(triggerName, dynamicParams)
@@ -510,7 +512,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
       val logEntry = activation.logs.get(0).parseJson.asJsObject
       val logs = JsArray(logEntry)
-      val ruleActivationId: String = logEntry.getFields("activationId")(0).convertTo[String]
+      val ruleActivationId: String = logEntry.fields("activationId").convertTo[String]
       val expectedLogs = JsArray(
         JsObject(
           "statusCode" -> JsNumber(0),
@@ -528,9 +530,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
       activation.end shouldBe Instant.EPOCH // shouldn't exist but CLI generates it
     }
 
-    val triggerList = wsk.trigger.list()
-    val triggers = triggerList.getBodyListJsObject()
-    triggers.exists(trigger => RestResult.getField(trigger, "name") == triggerName) shouldBe true
+    wsk.trigger.list().stdout should include(triggerName)
   }
 
   it should "create, and get a trigger summary" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
@@ -547,10 +547,11 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
     val result = wsk.trigger.get(name)
     val ns = wsk.namespace.whois()
+    val annos = getJSONFromResponse(result.stdout, true).fields("annotations")
 
-    result.getField("name") shouldBe name
-    result.getField("namespace") shouldBe ns
-    val annos = result.getFieldJsValue("annotations")
+    getJSONFromResponse(result.stdout, true).fields("name") shouldBe name.toJson
+    getJSONFromResponse(result.stdout, true).fields("namespace") shouldBe ns.toJson
+
     annos shouldBe JsArray(
       JsObject("key" -> JsString("description"), "value" -> JsString("Trigger description")),
       JsObject(
@@ -558,24 +559,6 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
         "value" -> JsArray(
           JsObject("name" -> JsString("paramName1"), "description" -> JsString("Parameter description 1")),
           JsObject("name" -> JsString("paramName2"), "description" -> JsString("Parameter description 2")))))
-  }
-
-  it should "create, and get a trigger summary" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val name = "triggerName"
-    val annots = Map(
-      "description" -> JsString("Trigger description"),
-      "parameters" -> JsArray(
-        JsObject("name" -> JsString("paramName1"), "description" -> JsString("Parameter description 1")),
-        JsObject("name" -> JsString("paramName2"), "description" -> JsString("Parameter description 2"))))
-
-    assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
-      trigger.create(name, annotations = annots)
-    }
-
-    val stdout = wsk.trigger.get(name, summary = true).stdout
-    val ns = wsk.namespace.whois()
-
-    stdout should include regex (s"trigger /$ns/$name: Trigger description\\s*\\(parameters: paramName1, paramName2\\)")
   }
 
   it should "create a trigger with a name that contains spaces" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
@@ -733,9 +716,9 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
         val logEntry2 = activation.logs.get(1).parseJson.asJsObject
         val logs = JsArray(logEntry1, logEntry2)
         val ruleActivationId: String = if (logEntry1.getFields("activationId").size == 1) {
-          logEntry1.getFields("activationId")(0).convertTo[String]
+          logEntry1.fields("activationId").convertTo[String]
         } else {
-          logEntry2.getFields("activationId")(0).convertTo[String]
+          logEntry2.fields("activationId").convertTo[String]
         }
         val expectedLogs = JsArray(
           JsObject(
@@ -949,16 +932,16 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
     val run = wsk.trigger.fire(triggerName)
     withActivation(wsk.activation, run) { activation =>
       var result = wsk.activation.get(Some(activation.activationId))
-      result.getField("namespace") shouldBe ns
-      result.getField("name") shouldBe triggerName
-      result.getField("version") shouldBe "0.0.1"
-      result.getFieldJsValue("publish") shouldBe JsBoolean(false)
-      result.getField("subject") shouldBe ns
-      result.getField("activationId") shouldBe activation.activationId
-      result.getFieldJsValue("start").toString should not be JsObject().toString
-      result.getFieldJsValue("end").toString shouldBe JsObject().toString
-      result.getFieldJsValue("duration").toString shouldBe JsObject().toString
-      result.getFieldListJsObject("annotations").length shouldBe 0
+      getJSONFromResponse(result.stdout, true).fields("namespace").convertTo[String] shouldBe ns
+      getJSONFromResponse(result.stdout, true).fields("name").convertTo[String] shouldBe triggerName
+      getJSONFromResponse(result.stdout, true).fields("version").convertTo[String] shouldBe "0.0.1"
+      getJSONFromResponse(result.stdout, true).fields("publish") shouldBe false.toJson
+      getJSONFromResponse(result.stdout, true).fields("subject").convertTo[String] shouldBe ns
+      getJSONFromResponse(result.stdout, true).fields("activationId").convertTo[String] shouldBe activation.activationId
+      getJSONFromResponse(result.stdout, true).fields("start") should not be JsObject()
+      getJSONFromResponse(result.stdout, true).fields("end") shouldBe 0.toJson
+      getJSONFromResponse(result.stdout, true).fields("duration") shouldBe 0.toJson
+      getJSONFromResponse(result.stdout, true).fields("annotations").convertTo[JsArray].elements.length shouldBe 0
     }
   }
 
