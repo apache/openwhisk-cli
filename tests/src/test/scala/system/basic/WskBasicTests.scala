@@ -545,20 +545,18 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
       trigger.create(name, annotations = annots)
     }
 
-    val result = wsk.trigger.get(name)
+    val result = getJSONFromResponse(wsk.trigger.get(name).stdout, true)
     val ns = wsk.namespace.whois()
-    val annos = getJSONFromResponse(result.stdout, true).fields("annotations")
 
-    getJSONFromResponse(result.stdout, true).fields("name") shouldBe name.toJson
-    getJSONFromResponse(result.stdout, true).fields("namespace") shouldBe ns.toJson
-
-    annos shouldBe JsArray(
+    result.fields("name") shouldBe name.toJson
+    result.fields("namespace") shouldBe ns.toJson
+    result.fields("annotations") shouldBe JsArray(
       JsObject("key" -> JsString("description"), "value" -> JsString("Trigger description")),
       JsObject(
         "key" -> JsString("parameters"),
         "value" -> JsArray(
-          JsObject("name" -> JsString("paramName1"), "description" -> JsString("Parameter description 1")),
-          JsObject("name" -> JsString("paramName2"), "description" -> JsString("Parameter description 2")))))
+          JsObject("description" -> JsString("Parameter description 1"), "name" -> JsString("paramName1")),
+          JsObject("description" -> JsString("Parameter description 2"), "name" -> JsString("paramName2")))))
   }
 
   it should "create a trigger with a name that contains spaces" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
