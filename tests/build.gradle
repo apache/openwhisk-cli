@@ -40,3 +40,25 @@ dependencies {
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.additionalParameters = gradle.scala.compileFlags
 }
+
+
+def keystorePath = new File(sourceSets.test.scala.outputDir, 'keystore')
+task deleteKeystore(type: Delete) {
+    delete keystorePath
+}
+
+task createKeystore(dependsOn: deleteKeystore) {
+    doLast {
+        Properties props = new Properties()
+        props.load(new FileInputStream(file(gradle.owPath + '/whisk.properties')))
+        keystorePath.parentFile.mkdirs()
+        def cmd = ['keytool', '-import', '-alias', 'Whisk', '-noprompt', '-trustcacerts', '-file', file(props['whisk.ssl.cert']), '-keystore', keystorePath, '-storepass', 'openwhisk']
+        cmd.execute().waitForProcessOutput(System.out, System.err)
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Test) {
+        dependsOn createKeystore
+    }
+}
