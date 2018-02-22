@@ -498,8 +498,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
       ns + "/" + ruleName -> JsObject(
         "action" -> JsObject("name" -> JsString(actionName), "path" -> JsString(ns)),
         "status" -> JsString("active")))
-
-    // getJSONFromResponse(trigger.stdout, true).fields("rules") shouldBe expectedRules
+    getJSONFromResponse(trigger.stdout, true).fields("rules") shouldBe expectedRules
 
     val dynamicParams = Map("t" -> "T".toJson)
     val run = wsk.trigger.fire(triggerName, dynamicParams)
@@ -596,31 +595,45 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "create a trigger, and get its individual fields" in withAssetCleaner(wskprops) {
-    val name = "triggerFields"
+    val triggerName = "triggerFields"
+    val ruleName = "triggerFieldsRules"
+    val actionName = "triggerFieldsAction"
     val paramInput = Map("payload" -> "test".toJson)
-    val successMsg = s"ok: got trigger $name, displaying field"
+    val successMsg = s"ok: got trigger $triggerName, displaying field"
 
     (wp, assetHelper) =>
-      assetHelper.withCleaner(wsk.trigger, name) { (trigger, _) =>
+      assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, name) =>
         trigger.create(name, parameters = paramInput)
+      }
+      assetHelper.withCleaner(wsk.action, actionName) { (action, name) =>
+        action.create(name, defaultAction)
+      }
+      assetHelper.withCleaner(wsk.rule, ruleName) { (rule, name) =>
+        rule.create(name, trigger = triggerName, action = actionName)
       }
 
       val expectedParam = JsObject("payload" -> JsString("test"))
       val ns = wsk.namespace.whois()
 
       wsk.trigger
-        .get(name, fieldFilter = Some("namespace"))
+        .get(triggerName, fieldFilter = Some("namespace"))
         .stdout should include regex (s"""(?i)$successMsg namespace\n"$ns"""")
-      wsk.trigger.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
-      wsk.trigger.get(name, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
-      wsk.trigger.get(name, fieldFilter = Some("publish")).stdout should include(s"""$successMsg publish\nfalse""")
-      wsk.trigger.get(name, fieldFilter = Some("annotations")).stdout should include(s"""$successMsg annotations\n[]""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$triggerName"""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("publish")).stdout should include(s"""$successMsg publish\nfalse""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("annotations")).stdout should include(s"""$successMsg annotations\n[]""")
       wsk.trigger
-        .get(name, fieldFilter = Some("parameters"))
+        .get(triggerName, fieldFilter = Some("parameters"))
         .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")
-      wsk.trigger.get(name, fieldFilter = Some("limits")).stdout should include(s"""$successMsg limits\n{}""")
-      wsk.trigger.get(name, fieldFilter = Some("invalid"), expectedExitCode = ERROR_EXIT).stderr should include(
+      wsk.trigger.get(triggerName, fieldFilter = Some("limits")).stdout should include(s"""$successMsg limits\n{}""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("invalid"), expectedExitCode = ERROR_EXIT).stderr should include(
         "error: Invalid field filter 'invalid'.")
+
+      val expectedRules = JsObject(
+        ns + "/" + ruleName -> JsObject(
+          "action" -> JsObject("name" -> JsString(actionName), "path" -> JsString(ns)),
+          "status" -> JsString("active")))
+      getJSONFromResponse(wsk.trigger.get(triggerName, fieldFilter = Some("rules")).stdout, isCli = true) shouldBe expectedRules
   }
 
   it should "create, and fire a trigger to ensure result is empty" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
