@@ -117,7 +117,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "include CLI user agent headers with outbound requests" in {
-    val stdout = wsk.cli(Seq("list", "--auth", wskprops.authKey) ++ wskprops.overrides, verbose = true).stdout
+    val stdout = wsk.cli(Seq("action", "list", "--auth", wskprops.authKey) ++ wskprops.overrides, verbose = true).stdout
     stdout should include regex (usrAgentHeaderRegEx)
   }
 
