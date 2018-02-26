@@ -35,27 +35,29 @@ import (
 )
 
 const (
-	MEMORY_LIMIT     = 256
-	TIMEOUT_LIMIT    = 60000
-	LOGSIZE_LIMIT    = 10
-	ACTIVATION_ID    = "activationId"
-	WEB_EXPORT_ANNOT = "web-export"
-	RAW_HTTP_ANNOT   = "raw-http"
-	FINAL_ANNOT      = "final"
-	NODE_JS_EXT      = ".js"
-	PYTHON_EXT       = ".py"
-	JAVA_EXT         = ".jar"
-	SWIFT_EXT        = ".swift"
-	ZIP_EXT          = ".zip"
-	PHP_EXT          = ".php"
-	NODE_JS          = "nodejs"
-	PYTHON           = "python"
-	JAVA             = "java"
-	SWIFT            = "swift"
-	PHP              = "php"
-	DEFAULT          = "default"
-	BLACKBOX         = "blackbox"
-	SEQUENCE         = "sequence"
+	MEMORY_LIMIT      = 256
+	TIMEOUT_LIMIT     = 60000
+	LOGSIZE_LIMIT     = 10
+	ACTIVATION_ID     = "activationId"
+	WEB_EXPORT_ANNOT  = "web-export"
+	RAW_HTTP_ANNOT    = "raw-http"
+	FINAL_ANNOT       = "final"
+	NODE_JS_EXT       = ".js"
+	PYTHON_EXT        = ".py"
+	JAVA_EXT          = ".jar"
+	SWIFT_EXT         = ".swift"
+	ZIP_EXT           = ".zip"
+	PHP_EXT           = ".php"
+	NODE_JS           = "nodejs"
+	PYTHON            = "python"
+	JAVA              = "java"
+	SWIFT             = "swift"
+	PHP               = "php"
+	DEFAULT           = "default"
+	BLACKBOX          = "blackbox"
+	SEQUENCE          = "sequence"
+	FETCH_CODE        = true
+	DO_NOT_FETCH_CODE = false
 )
 
 var actionCmd = &cobra.Command{
@@ -415,8 +417,8 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 
 		Client.Namespace = copiedQualifiedName.GetNamespace()
 
-		if existingAction, _, err = Client.Actions.Get(copiedQualifiedName.GetEntityName(), true); err != nil {
-			return nil, actionGetError(copiedQualifiedName.GetEntityName(), true, err)
+		if existingAction, _, err = Client.Actions.Get(copiedQualifiedName.GetEntityName(), FETCH_CODE); err != nil {
+			return nil, actionGetError(copiedQualifiedName.GetEntityName(), FETCH_CODE, err)
 		}
 
 		Client.Namespace = qualifiedName.GetNamespace()
@@ -630,11 +632,11 @@ func webActionAnnotations(
 	var err error
 
 	if preserveAnnotations {
-		if action, _, err = Client.Actions.Get(entityName, false); err != nil {
+		if action, _, err = Client.Actions.Get(entityName, DO_NOT_FETCH_CODE); err != nil {
 			whiskErr, isWhiskError := err.(*whisk.WskError)
 
 			if (isWhiskError && whiskErr.ExitCode != whisk.EXIT_CODE_NOT_FOUND) || !isWhiskError {
-				return nil, actionGetError(entityName, false, err)
+				return nil, actionGetError(entityName, DO_NOT_FETCH_CODE, err)
 			}
 		} else {
 			annotations = whisk.KeyValueArr.AppendKeyValueArr(annotations, action.Annotations)
@@ -1018,10 +1020,10 @@ func isWebAction(client *whisk.Client, qname QualifiedName) error {
 	client.Namespace = qname.GetNamespace()
 	fullActionName := "/" + qname.GetNamespace() + "/" + qname.GetEntityName()
 
-	action, _, err := client.Actions.Get(qname.GetEntityName(), false)
+	action, _, err := client.Actions.Get(qname.GetEntityName(), DO_NOT_FETCH_CODE)
 
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "client.Actions.Get(%s, %t) error: %s\n", fullActionName, false, err)
+		whisk.Debug(whisk.DbgError, "client.Actions.Get(%s, %t) error: %s\n", fullActionName, DO_NOT_FETCH_CODE, err)
 		whisk.Debug(whisk.DbgError, "Unable to obtain action '%s' for web action validation\n", fullActionName)
 		errMsg := wski18n.T("Unable to get action '{{.name}}': {{.err}}",
 			map[string]interface{}{"name": fullActionName, "err": err})
