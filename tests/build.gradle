@@ -2,14 +2,10 @@ apply plugin: 'scala'
 apply plugin: 'eclipse'
 compileTestScala.options.encoding = 'UTF-8'
 
-evaluationDependsOn(':clitests')
-evaluationDependsOn(':common:scala')
-
-project(':clitests').test.onlyIf = {false}
-compileTestScala.dependsOn(':clitests:compileTestScala')
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 tasks.withType(Test) {
@@ -29,12 +25,8 @@ task testWithoutCredentials(type: Test) {
 
 dependencies {
     compile "org.scala-lang:scala-library:${gradle.scala.version}"
-    compile project(':clitests')
-    compile project(':clitests').sourceSets.test.output
-
-    compile project(':common:scala')
-    compile project(':core:controller')
-    compile project(':core:invoker')
+    compile "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:tests"
+    compile "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:test-sources"
 }
 
 tasks.withType(ScalaCompile) {
