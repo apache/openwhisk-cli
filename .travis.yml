@@ -37,6 +37,8 @@ before_script:
   - ./incubator-openwhisk/tools/travis/setup.sh
 
 script:
+  - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
+  - ./gradlew install
   - cd $TRAVIS_BUILD_DIR
   - ./gradlew --console=plain release
   - ./tools/travis/test_openwhisk.sh
