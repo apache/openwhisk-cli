@@ -68,11 +68,7 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
-
-# Copy the binary generated into the OPENWHISK_HOME/bin, so that the test cases will run based on it.
-mkdir -p $OPENWHISK_HOME/bin
-cp -f $TRAVIS_BUILD_DIR/build/wsk $OPENWHISK_HOME/bin
+$ANSIBLE_CMD openwhisk.yml -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
