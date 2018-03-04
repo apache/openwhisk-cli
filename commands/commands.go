@@ -33,6 +33,7 @@ var Client *whisk.Client
 const DefaultOpenWhiskApiPath string = "/api"
 
 var UserAgent string = "OpenWhisk-CLI"
+var AdditionalHeaders map[string]string
 
 func SetupClientConfig(cmd *cobra.Command, args []string) error {
 	baseURL, err := whisk.GetURLBase(Properties.APIHost, DefaultOpenWhiskApiPath)
@@ -55,15 +56,16 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 	}
 
 	clientConfig := &whisk.Config{
-		Cert:      Properties.Cert,
-		Key:       Properties.Key,
-		AuthToken: Properties.Auth,
-		Namespace: Properties.Namespace,
-		BaseURL:   baseURL,
-		Version:   Properties.APIVersion,
-		Insecure:  Flags.Global.Insecure,
-		Host:      Properties.APIHost,
-		UserAgent: UserAgent + "/1.0 (" + Properties.CLIVersion + ")",
+		Cert:              Properties.Cert,
+		Key:               Properties.Key,
+		AuthToken:         Properties.Auth,
+		Namespace:         Properties.Namespace,
+		BaseURL:           baseURL,
+		Version:           Properties.APIVersion,
+		Insecure:          Flags.Global.Insecure,
+		Host:              Properties.APIHost,
+		UserAgent:         UserAgent + "/1.0 (" + Properties.CLIVersion + ")",
+		AdditionalHeaders: AdditionalHeaders,
 	}
 
 	if len(clientConfig.Host) == 0 {
