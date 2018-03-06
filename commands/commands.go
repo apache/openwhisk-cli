@@ -33,7 +33,7 @@ var Client *whisk.Client
 const DefaultOpenWhiskApiPath string = "/api"
 
 var UserAgent string = "OpenWhisk-CLI"
-var AdditionalHeaders map[string]string
+var AdditionalHeaders http.Header
 
 func SetupClientConfig(cmd *cobra.Command, args []string) error {
 	baseURL, err := whisk.GetURLBase(Properties.APIHost, DefaultOpenWhiskApiPath)
