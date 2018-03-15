@@ -1416,6 +1416,14 @@
     "translation": "treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"
   },
   {
+    "id": "secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action",
+    "translation": "secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"
+  },
+  {
+    "id": "The --web-secure option is only valid when the --web option is enabled.",
+    "translation": "The --web-secure option is only valid when the --web option is enabled."
+  },
+  {
     "id": "Invalid argument '{{.arg}}' for --web flag. Valid input consist of 'yes', 'true', 'raw', 'false', or 'no'.",
     "translation": "Invalid argument '{{.arg}}' for --web flag. Valid input consist of 'yes', 'true', 'raw', 'false', or 'no'."
   },

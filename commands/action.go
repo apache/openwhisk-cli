@@ -19,12 +19,16 @@ package commands
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
+	"time"
 
 	"github.com/apache/incubator-openwhisk-cli/wski18n"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -42,6 +46,7 @@ const (
 	WEB_EXPORT_ANNOT  = "web-export"
 	RAW_HTTP_ANNOT    = "raw-http"
 	FINAL_ANNOT       = "final"
+	WEB_SECURE_ANNOT  = "require-whisk-auth"
 	NODE_JS_EXT       = ".js"
 	PYTHON_EXT        = ".py"
 	JAVA_EXT          = ".jar"
@@ -118,6 +123,10 @@ var actionUpdateCmd = &cobra.Command{
 		}
 
 		if action, err = parseAction(cmd, args, true); err != nil {
+			return actionParseError(cmd, args, err)
+		}
+
+		if action, err = augmentAction(cmd, args, action); err != nil {
 			return actionParseError(cmd, args, err)
 		}
 
@@ -442,13 +451,82 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		return nil, noArtifactError()
 	}
 
-	if cmd.LocalFlags().Changed(WEB_FLAG) {
-		preserveAnnotations := action.Annotations == nil
-		action.Annotations, err = webAction(Flags.action.web, action.Annotations, qualifiedName.GetEntityName(), preserveAnnotations)
+	whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
+	return action, err
+}
+
+func augmentAction(cmd *cobra.Command, args []string, action *whisk.Action) (*whisk.Action, error) {
+	var err error
+	var disableWebAction bool = false
+	var actionExisting *whisk.Action
+
+	var qualifiedName = new(QualifiedName)
+	if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
+		return nil, NewQualifiedNameError(args[0], err)
 	}
 
-	whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
+	// Retain existing annotations iff the --web option is used
+	preserveAnnotations := action.Annotations == nil
 
+	if actionExisting, _, err = Client.Actions.Get(qualifiedName.GetEntityName(), DO_NOT_FETCH_CODE); err != nil {
+		return nil, actionGetError(qualifiedName.GetEntityName(), DO_NOT_FETCH_CODE, err)
+	}
+
+	// Augment the action's annotations with the --web related annotations
+	// FIXME MWD - avoid retrieving existing action TWICE!  once above and once in the webAction() below
+	if cmd.LocalFlags().Changed(WEB_FLAG) {
+		disableWebAction = strings.ToLower(Flags.action.websecure) == "false" || strings.ToLower(Flags.action.websecure) == "no"
+		if action.Annotations, err = webAction(Flags.action.web, actionExisting.Annotations, qualifiedName.GetEntityName(), preserveAnnotations); err != nil {
+			return nil, err
+		}
+	} else if preserveAnnotations {
+		action.Annotations = actionExisting.Annotations
+	}
+
+	// Augment the action's annotations with the --web-secure related annotation
+	// This augmentation is only valid when:
+	//   1. action --web is set to either true or raw (i.e. web-export annotation is true)
+	//   -OR-
+	//   2. existing action web-export annotation is true && action --web is not false/no
+	isWebSecureFlagValidToUse := action.WebAction() || (actionExisting.WebAction() && !disableWebAction)
+
+	// Process the --web-secure flag when set
+	if cmd.LocalFlags().Changed(WEB_SECURE_FLAG) {
+		whisk.Debug(whisk.DbgInfo, "disableWebAction: %v  isWebSecureFlagValidToUse: %v\n", disableWebAction, isWebSecureFlagValidToUse)
+
+		// If the --web-secure is used and the action is not a web action, stop here
+		if !isWebSecureFlagValidToUse {
+			errStr := wski18n.T("The --web-secure option is only valid when the --web option is enabled.")
+			return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+		} else {
+			// Action is web action and --web-secure option was used.  Augment with associated annotation
+			secureSecret := webSecureSecret(Flags.action.websecure)
+
+			// If "--web-secure false" remove any existing related annotation
+			// NOTE: secureSecret will be false when ""--web-secure false"
+			if _, disableSecurity := secureSecret.(bool); disableSecurity {
+				whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
+				action.Annotations = deleteKey(WEB_SECURE_ANNOT, action.Annotations)
+			} else {
+				existingSecret := action.Annotations.GetValue(WEB_SECURE_ANNOT)
+				_, existingSecretIsInt := existingSecret.(json.Number)
+				_, newSecretIsInt := secureSecret.(int64)
+
+				// If "--web-secure true" is specified repeatedly, do not overwrite the existing secret with a different value
+				if existingSecretIsInt && newSecretIsInt {
+					whisk.Debug(whisk.DbgInfo, "Retaining existing secret number\n")
+				} else {
+					if existingSecret != nil {
+						whisk.Debug(whisk.DbgInfo, "Replacing existing secret %v with new secret %v\n", reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
+					}
+					whisk.Debug(whisk.DbgInfo, "Setting %v annotation\n", WEB_SECURE_ANNOT)
+					action.Annotations = action.Annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
+				}
+			}
+		}
+	}
+
+	whisk.Debug(whisk.DbgInfo, "Augmented action struct: %#v\n", action)
 	return action, err
 }
 
@@ -681,6 +759,22 @@ func deleteWebAnnotationKeys(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteKey(FINAL_ANNOT, annotations)
 
 	return annotations
+}
+
+//
+// Generate a secret according to the --web-secure setting
+//  true:   return a random int64
+//  false:  return false, meaning no secret was returned
+//  string: return the same string
+func webSecureSecret(webSecureMode string) interface{} {
+	switch strings.ToLower(webSecureMode) {
+	case "true":
+		return genWebActionSecureKey()
+	case "false":
+		return false
+	default:
+		return webSecureMode
+	}
 }
 
 func getLimits(memorySet bool, logSizeSet bool, timeoutSet bool, memory int, logSize int, timeout int) *whisk.Limits {
@@ -1012,8 +1106,14 @@ func printSavedActionCodeSuccess(name string) {
 			}))
 }
 
+// Generate a random int64 number to be used as a web action's
+func genWebActionSecureKey() int64 {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	return r.Int63()
+}
+
 // Check if the specified action is a web-action
-func isWebAction(client *whisk.Client, qname QualifiedName) error {
+func isWebAction(client *whisk.Client, qname QualifiedName) (*whisk.Action, error) {
 	var err error = nil
 
 	savedNs := client.Namespace
@@ -1040,7 +1140,7 @@ func isWebAction(client *whisk.Client, qname QualifiedName) error {
 
 	client.Namespace = savedNs
 
-	return err
+	return action, err
 }
 
 func init() {
@@ -1058,6 +1158,7 @@ func init() {
 	actionCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", nil, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
+	actionCreateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
 
 	actionUpdateCmd.Flags().BoolVar(&Flags.action.native, "native", false, wski18n.T("treat ACTION as native action (zip file provides a compatible executable to run)"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.docker, "docker", "", wski18n.T("use provided docker image (a path on DockerHub) to run the action"))
@@ -1073,6 +1174,7 @@ func init() {
 	actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
+	actionUpdateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
 
 	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
