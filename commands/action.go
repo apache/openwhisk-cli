@@ -529,8 +529,7 @@ func augmentWebSecureArg(cmd *cobra.Command, args []string, action *whisk.Action
 
 		// If the --web-secure is used and the action is not a web action, stop here
 		if !isWebSecureFlagValidToUse {
-			errStr := wski18n.T("The --web-secure option is only valid when the --web option is enabled.")
-			return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+			return nil, webSecureUsageError()
 		} else {
 			// OK.  Action is web action and --web-secure option was used.  Augment with associated annotation
 			secureSecret := webSecureSecret(Flags.action.websecure)
@@ -981,6 +980,11 @@ func webInputError(arg string) error {
 			"arg": arg,
 		})
 
+	return nonNestedError(errMsg)
+}
+
+func webSecureUsageError() error {
+	errMsg := wski18n.T("The --web-secure option is only valid when the --web option is enabled.")
 	return nonNestedError(errMsg)
 }
 
