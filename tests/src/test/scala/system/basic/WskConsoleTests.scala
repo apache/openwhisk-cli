@@ -121,4 +121,14 @@ abstract class WskConsoleTests extends TestHelpers with WskTestHelpers {
     }
   }
 
+  it should "invoke an action and poll activations and verify that action names are quoted." in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val name = "helloRunActivationPoll"
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, Some(TestCLIUtils.getTestActionFilename("hello.js")))
+      }
+      val activationId = wsk.action.invoke(name)
+      val pollResults = wsk.activation.console(duration = 5.second, actionName = Some(name))
+      pollResults.stdout should include (s"""Activation: '${name}'""")
+  }
 }
