@@ -469,7 +469,11 @@ func augmentAction(cmd *cobra.Command, args []string, action *whisk.Action, upda
 
 	if update {
 		if existingAction, _, err = Client.Actions.Get(action.Name, DO_NOT_FETCH_CODE); err != nil {
-			return nil, actionGetError(action.Name, DO_NOT_FETCH_CODE, err)
+			whiskErr, isWhiskError := err.(*whisk.WskError)
+
+			if (isWhiskError && whiskErr.ExitCode != whisk.EXIT_CODE_NOT_FOUND) || !isWhiskError {
+				return nil, actionGetError(action.Name, DO_NOT_FETCH_CODE, err)
+			}
 		}
 	}
 
