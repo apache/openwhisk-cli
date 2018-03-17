@@ -498,20 +498,17 @@ func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, exis
 	var augmentedAction *whisk.Action = new(whisk.Action)
 	*augmentedAction = *action
 
-	whisk.Debug(whisk.DbgInfo, "augmentWebArg: action struct: %#v\n", action)
-	whisk.Debug(whisk.DbgInfo, "augmentWebArg: existing action struct: %#v\n", existingAction)
-
 	if cmd.LocalFlags().Changed(WEB_FLAG) {
 		if existingAction == nil {
 			augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations)
 		} else {
 			if augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations); err == nil {
-			    // Always carry forward any existing --web-secure annotation value
-			    // Although it can be overwritten if --web-secure is set
-			    webSecureAnnotations := getWebSecureAnnotations(existingAction)
-			    if len(webSecureAnnotations) > 0 {
-		            augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
-		        }
+				// Always carry forward any existing --web-secure annotation value
+				// Although it can be overwritten if --web-secure is set
+				webSecureAnnotations := getWebSecureAnnotations(existingAction)
+				if len(webSecureAnnotations) > 0 {
+					augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
+				}
 			}
 		}
 		if err != nil {
@@ -532,12 +529,9 @@ func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, exis
 func augmentWebSecureArg(cmd *cobra.Command, args []string, originalAction *whisk.Action, action *whisk.Action, existingAction *whisk.Action) (*whisk.Action, error) {
 	preserveAnnotations := action.Annotations == nil
 	var augmentedAction *whisk.Action = new(whisk.Action)
-   	*augmentedAction = *action
+	*augmentedAction = *action
 	disableWebAction := strings.ToLower(Flags.action.web) == "false" || strings.ToLower(Flags.action.web) == "no"
 	isWebSecureFlagValidToUse := action.WebAction() || (existingAction != nil && existingAction.WebAction() && !disableWebAction)
-
-    whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: originalAction: %#v\n", originalAction)
-    whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: Augmented action struct: %#v\n", augmentedAction)
 
 	// Process the --web-secure flag when set
 	if cmd.LocalFlags().Changed(WEB_SECURE_FLAG) {
@@ -554,16 +548,14 @@ func augmentWebSecureArg(cmd *cobra.Command, args []string, originalAction *whis
 		//   all  -> if original command line had at least one annotation specified
 		//   some -> if original command line had NO annotations, carry forward web/websecure annotation values
 		if existingAction != nil {
-		    if preserveAnnotations {
-    			augmentedAction.Annotations = action.Annotations.AppendKeyValueArr(existingAction.Annotations)
-		    } else {
-	            augmentedAction.Annotations = action.Annotations.AppendKeyValueArr(getWebActionAnnotations(existingAction))
-            	whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: Augmented action struct: %#v\n", augmentedAction)
-	            augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(getWebSecureAnnotations(existingAction))
-		    }
+			if preserveAnnotations {
+				augmentedAction.Annotations = action.Annotations.AppendKeyValueArr(existingAction.Annotations)
+			} else {
+				augmentedAction.Annotations = action.Annotations.AppendKeyValueArr(getWebActionAnnotations(existingAction))
+				augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(getWebSecureAnnotations(existingAction))
+			}
 		}
-    	whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: Augmented action struct: %#v\n", augmentedAction)
-   		augmentedAction.Annotations = updateWebSecureAnnotation(Flags.action.websecure, augmentedAction.Annotations)
+		augmentedAction.Annotations = updateWebSecureAnnotation(Flags.action.websecure, augmentedAction.Annotations)
 	}
 
 	whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: Augmented action struct: %#v\n", augmentedAction)
@@ -802,38 +794,38 @@ func deleteWebAnnotationKeys(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 }
 
 func getWebActionAnnotations(action *whisk.Action) whisk.KeyValueArr {
-    var webKvArr = make(whisk.KeyValueArr, 3, 3)
-    var j = 0
+	var webKvArr = make(whisk.KeyValueArr, 3, 3)
+	var j = 0
 
-    var i = action.Annotations.FindKeyValue(WEB_EXPORT_ANNOT)
-    if i > -1 {
-        webKvArr[j] = action.Annotations[i]
-        j++
-    }
-    i = action.Annotations.FindKeyValue(RAW_HTTP_ANNOT)
-    if i > -1 {
-        webKvArr[j] = action.Annotations[i]
-        j++
-    }
-    i = action.Annotations.FindKeyValue(FINAL_ANNOT)
-    if i > -1 {
-        webKvArr[j] = action.Annotations[i]
-        j++
-    }
-    return webKvArr[0:j]
+	var i = action.Annotations.FindKeyValue(WEB_EXPORT_ANNOT)
+	if i > -1 {
+		webKvArr[j] = action.Annotations[i]
+		j++
+	}
+	i = action.Annotations.FindKeyValue(RAW_HTTP_ANNOT)
+	if i > -1 {
+		webKvArr[j] = action.Annotations[i]
+		j++
+	}
+	i = action.Annotations.FindKeyValue(FINAL_ANNOT)
+	if i > -1 {
+		webKvArr[j] = action.Annotations[i]
+		j++
+	}
+	return webKvArr[0:j]
 }
 
 func getWebSecureAnnotations(action *whisk.Action) whisk.KeyValueArr {
-    var webKvArr = make(whisk.KeyValueArr, 1, 1)
-    var j = 0
+	var webKvArr = make(whisk.KeyValueArr, 1, 1)
+	var j = 0
 
-    var i = action.Annotations.FindKeyValue(WEB_SECURE_ANNOT)
-    if i > -1 {
-        webKvArr[j] = action.Annotations[i]
-        j++
-    }
+	var i = action.Annotations.FindKeyValue(WEB_SECURE_ANNOT)
+	if i > -1 {
+		webKvArr[j] = action.Annotations[i]
+		j++
+	}
 
-    return webKvArr[0:j]
+	return webKvArr[0:j]
 }
 
 /*
@@ -843,23 +835,23 @@ func getWebSecureAnnotations(action *whisk.Action) whisk.KeyValueArr {
  * If the current web security setting is "false", remove any existing setting
  */
 func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) whisk.KeyValueArr {
-	secureSecret := webSecureSecret(websecure)  // will be false when "--web-secure false"
+	secureSecret := webSecureSecret(websecure) // will be false when "--web-secure false"
 	existingSecret := annotations.GetValue(WEB_SECURE_ANNOT)
 	_, disableSecurity := secureSecret.(bool)
 	_, newSecretIsInt := secureSecret.(int64)
 	var existingSecretIsInt bool = false
 	if existingSecret != nil {
-	    _, existingSecretIsInt = existingSecret.(json.Number)
-    }
+		_, existingSecretIsInt = existingSecret.(json.Number)
+	}
 
 	if existingSecretIsInt && newSecretIsInt {
 		whisk.Debug(whisk.DbgInfo, "Retaining existing secret number\n")
-    } else if existingSecret != nil && disableSecurity {
+	} else if existingSecret != nil && disableSecurity {
 		whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
 		annotations = deleteKey(WEB_SECURE_ANNOT, annotations)
 	} else {
 		whisk.Debug(whisk.DbgInfo, "Setting %v annotation; prior secret %v new secret %v\n",
-		    WEB_SECURE_ANNOT, reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
+			WEB_SECURE_ANNOT, reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
 		annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
 	}
 
