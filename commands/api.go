@@ -200,9 +200,9 @@ var apiCreateCmd = &cobra.Command{
 				return whiskErr
 			}
 
-    		if webactionSecret = action.Annotations.GetValue(WEB_SECURE_ANNOT); webactionSecret != nil {
-	    		whisk.Debug(whisk.DbgInfo, "web action is secured\n")
-		    }
+			if webactionSecret = action.Annotations.GetValue(WEB_SECURE_ANNOT); webactionSecret != nil {
+				whisk.Debug(whisk.DbgInfo, "web action is secured\n")
+			}
 		}
 
 		apiCreateReq := new(whisk.ApiCreateRequest)
@@ -217,8 +217,8 @@ var apiCreateCmd = &cobra.Command{
 		}
 		apiCreateReqOptions.ResponseType = Flags.api.resptype
 
-        if webactionSecret != nil {
-		    apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
+		if webactionSecret != nil {
+			apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
 		}
 
 		whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponseType: %s",
