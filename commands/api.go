@@ -160,6 +160,7 @@ var apiCreateCmd = &cobra.Command{
 		var err error
 		var qname = new(QualifiedName)
 		var action *whisk.Action
+		var webactionSecret interface{}
 
 		if len(args) == 0 && Flags.api.configfile == "" {
 			whisk.Debug(whisk.DbgError, "No swagger file and no arguments\n")
@@ -198,6 +199,10 @@ var apiCreateCmd = &cobra.Command{
 				whiskErr := whisk.MakeWskError(err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 				return whiskErr
 			}
+
+    		if webactionSecret = action.Annotations.GetValue(WEB_SECURE_ANNOT); webactionSecret != nil {
+	    		whisk.Debug(whisk.DbgInfo, "web action is secured\n")
+		    }
 		}
 
 		apiCreateReq := new(whisk.ApiCreateRequest)
@@ -212,9 +217,8 @@ var apiCreateCmd = &cobra.Command{
 		}
 		apiCreateReqOptions.ResponseType = Flags.api.resptype
 
-		if apiSecret := action.Annotations.GetValue(WEB_SECURE_ANNOT); apiSecret != nil {
-			whisk.Debug(whisk.DbgInfo, "web action is secured\n")
-			apiCreateReq.ApiDoc.Action.SecureKey = apiSecret
+        if webactionSecret != nil {
+		    apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
 		}
 
 		whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponseType: %s",
