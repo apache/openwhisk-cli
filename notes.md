@@ -156,7 +156,7 @@ client changes:
 Get namespace contents:
 
 wsk namespace get --> GET /v1/namespaces/_
-wsk namespace get wilsonth@us.ibm.com --> GET /v1/namespaces/_/wilsonth--
+wsk namespace get namespace --> GET /v1/namespaces/_/user--
 
 Get list of namespaces available
 
