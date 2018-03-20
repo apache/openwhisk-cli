@@ -55,7 +55,7 @@ script:
   - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
   - ./gradlew install
   - cd $TRAVIS_BUILD_DIR
-  - ./gradlew --console=plain release
+  - ./gradlew --console=plain releaseBinaries
   - ./tools/travis/test_openwhisk.sh
 
 after_success:
