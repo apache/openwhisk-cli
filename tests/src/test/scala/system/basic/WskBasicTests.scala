@@ -558,9 +558,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
           JsObject("description" -> JsString("Parameter description 1"), "name" -> JsString("paramName1")),
           JsObject("description" -> JsString("Parameter description 2"), "name" -> JsString("paramName2"))))).elements
 
-    for (expectedItem <- expectedAnnotations) {
-      receivedAnnotations should contain(expectedItem)
-    }
+    receivedAnnotations should contain theSameElementsAs expectedAnnotations
   }
 
   it should "create a trigger with a name that contains spaces" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
