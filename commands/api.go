@@ -43,7 +43,8 @@ const (
 	formatOptionYaml = "yaml"
 	formatOptionJson = "json"
 
-	pathParamRegex = `/\{([^/]+)}/|/\{([^/]+)}$`
+	pathParamRegex        = `\/\{([^\/]+)\}\/|\/\{([^\/]+)\}$|\{([^\/]+)}\/`
+	pathSegmentParamRegex = `^\/\{([^\}\{]+)\}\/$`
 )
 
 var apiCmd = &cobra.Command{
@@ -761,20 +762,26 @@ func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVe
 
 func generatePathParameters(relativePath string) []whisk.ApiParameter {
 	pathParams := []whisk.ApiParameter{}
-	regexObj, err := regexp.Compile(pathParamRegex)
+
+	regexObj, err := regexp.Compile(pathSegmentParamRegex)
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "Failed to match path '%s' to regular expressions `%s`\n", relativePath, pathParamRegex)
+		whisk.Debug(whisk.DbgError, "Failed to match path '%s' to regular expressions `%s`\n", relativePath, pathSegmentParamRegex)
 	}
-	matches := regexObj.FindAllString(relativePath, -1)
-	if matches != nil {
-		for _, paramName := range matches {
-			//The next 3 lines clean up the paramName, as the matches are something like `/{param}`
-			openIdx := strings.IndexRune(paramName, '{')
-			closeIdx := strings.IndexRune(paramName, '}')
-			paramName = string([]rune(paramName)[openIdx+1 : closeIdx])
-			param := whisk.ApiParameter{Name: paramName, In: "path", Required: true, Type: "string",
-				Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": paramName})}
-			pathParams = append(pathParams, param)
+
+	segments := strings.Split(relativePath, "/")
+	for _, segment := range segments {
+		segment = fmt.Sprintf("/%s/", segment)
+		matchedItems := regexObj.FindAllStringSubmatch(segment, -1)
+		for _, matchedParam := range matchedItems {
+			for idx, paramName := range matchedParam {
+				whisk.Debug(whisk.DbgInfo, "Path parameter submatch '%v'; idx %v\n", paramName, idx)
+				if idx > 0 && len(paramName) > 0 {
+					whisk.Debug(whisk.DbgInfo, "Creating api parameter for '%s'\n", paramName)
+					param := whisk.ApiParameter{Name: paramName, In: "path", Required: true, Type: "string",
+						Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": paramName})}
+					pathParams = append(pathParams, param)
+				}
+			}
 		}
 	}
 

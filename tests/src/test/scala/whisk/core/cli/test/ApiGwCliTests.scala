@@ -193,10 +193,12 @@ class ApiGwCliTests extends ApiGwTests {
     wskprops) { (wp, assetHelper) =>
     val testName = "CLI_APIGWTEST_PATH_PARAMS2"
     val testBasePath = "/" + testName + "_bp"
-    val testRelPath = "/path/{with}/some/{path}"
+    val testRelPath = "/path/{with}/some/{double}/{extra}/{path}"
     val testUrlName1 = "scooby"
     val testUrlName2 = "doo"
-    val testRelPathGet = s"/path/${testUrlName1}/some/$testUrlName2"
+    val testUrlName3 = "shaggy"
+    val testUrlName4 = "velma"
+    val testRelPathGet = s"/path/$testUrlName1/some/$testUrlName3/$testUrlName4/$testUrlName2"
     val testUrlOp = "get"
     val testApiName = testName + " API Name"
     val actionName = testName + "_action"
@@ -219,6 +221,7 @@ class ApiGwCliTests extends ApiGwTests {
       )
       verifyApiCreated(rr)
       val swaggerApiUrl = getSwaggerUrl(rr).replace("{with}", testUrlName1).replace("{path}", testUrlName2)
+          .replace("{double}", testUrlName3).replace("{extra}", testUrlName4)
 
       //Validate the api created contained parameters and they were correct
       rr = apiGet(basepathOrApiName = Some(testApiName))
@@ -227,9 +230,11 @@ class ApiGwCliTests extends ApiGwTests {
       rr.stdout should include regex (""""cors":\s*\{\s*\n\s*"enabled":\s*true""")
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
       val params = getParametersFromJson(rr, testRelPath)
-      params.size should be(2)
+      params.size should be(4)
       validateParameter(params(0), "with", "path", true, "string", "Default description for 'with'")
-      validateParameter(params(1), "path", "path", true, "string", "Default description for 'path'")
+      validateParameter(params(1), "double", "path", true, "string", "Default description for 'double'")
+      validateParameter(params(2), "extra", "path", true, "string", "Default description for 'extra'")
+      validateParameter(params(3), "path", "path", true, "string", "Default description for 'path'")
 
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
