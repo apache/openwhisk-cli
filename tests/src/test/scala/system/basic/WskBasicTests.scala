@@ -549,13 +549,18 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
     result.fields("name") shouldBe name.toJson
     result.fields("namespace") shouldBe ns.toJson
-    result.fields("annotations") shouldBe JsArray(
+    val receivedAnnotations = result.fields("annotations").convertTo[JsArray].elements
+    val expectedAnnotations = JsArray(
       JsObject("key" -> JsString("description"), "value" -> JsString("Trigger description")),
       JsObject(
         "key" -> JsString("parameters"),
         "value" -> JsArray(
           JsObject("description" -> JsString("Parameter description 1"), "name" -> JsString("paramName1")),
-          JsObject("description" -> JsString("Parameter description 2"), "name" -> JsString("paramName2")))))
+          JsObject("description" -> JsString("Parameter description 2"), "name" -> JsString("paramName2"))))).elements
+
+    for (expectedItem <- expectedAnnotations) {
+      receivedAnnotations should contain(expectedItem)
+    }
   }
 
   it should "create a trigger with a name that contains spaces" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
