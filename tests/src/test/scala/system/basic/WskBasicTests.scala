@@ -947,7 +947,7 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
       getJSONFromResponse(result.stdout, true).fields("name").convertTo[String] shouldBe triggerName
       getJSONFromResponse(result.stdout, true).fields("version").convertTo[String] shouldBe "0.0.1"
       getJSONFromResponse(result.stdout, true).fields("publish") shouldBe false.toJson
-      getJSONFromResponse(result.stdout, true).fields("subject").convertTo[String] shouldBe ns
+      getJSONFromResponse(result.stdout, true).fields("subject").convertTo[String].length should not be (0)
       getJSONFromResponse(result.stdout, true).fields("activationId").convertTo[String] shouldBe activation.activationId
       getJSONFromResponse(result.stdout, true).fields("start") should not be JsObject()
       getJSONFromResponse(result.stdout, true).fields("end") shouldBe 0.toJson
