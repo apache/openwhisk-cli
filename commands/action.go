@@ -494,19 +494,17 @@ func augmentAction(cmd *cobra.Command, args []string, action *whisk.Action, upda
 func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, augmentedAction *whisk.Action, existingAction *whisk.Action) (*whisk.Action, error) {
 	var err error
 	preserveAnnotations := action.Annotations == nil
-//	var augmentedAction *whisk.Action = new(whisk.Action)
-//	*augmentedAction = *action
 
 	if cmd.LocalFlags().Changed(WEB_FLAG) {
 		augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction)
-	    if existingAction != nil && err == nil {
+		if existingAction != nil && err == nil {
 			// Always carry forward any existing --web-secure annotation value
 			// Although it can be overwritten later if --web-secure is set
 			webSecureAnnotations := getWebSecureAnnotations(existingAction)
 			if len(webSecureAnnotations) > 0 {
-			    augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
-    		}
-	    }
+				augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
+			}
+		}
 	}
 
 	if err != nil {
@@ -515,26 +513,6 @@ func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, augm
 
 	whisk.Debug(whisk.DbgInfo, "augmentWebArg: Augmented action struct: %#v\n", augmentedAction)
 	return augmentedAction, nil
-//
-//		if existingAction == nil {
-//			augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction)
-//		} else {
-//			if augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction); err == nil {
-//				// Always carry forward any existing --web-secure annotation value
-//				// Although it can be overwritten if --web-secure is set
-//				webSecureAnnotations := getWebSecureAnnotations(existingAction)
-//				if len(webSecureAnnotations) > 0 {
-//					augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
-//				}
-//			}
-//		}
-//		if err != nil {
-//			return nil, err
-//		}
-//	}
-//
-//	whisk.Debug(whisk.DbgInfo, "augmentWebArg: Augmented action struct: %#v\n", augmentedAction)
-//	return augmentedAction, nil
 }
 
 /*
