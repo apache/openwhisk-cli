@@ -1110,3 +1110,12 @@ func isApplicationError(err error) bool {
 
 	return applicationError
 }
+
+func contains(arr []string, element string) bool {
+	for _, e := range arr {
+		if e == element {
+			return true
+		}
+	}
+	return false
+}

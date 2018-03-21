@@ -43,7 +43,8 @@ const (
 	formatOptionYaml = "yaml"
 	formatOptionJson = "json"
 
-	pathParamRegex = `/\{([^/]+)}/|/\{([^/]+)}$`
+	pathParamRegex        = `\/\{([^\/]+)\}\/|\/\{([^\/]+)\}$|\{([^\/]+)}\/`
+	pathSegmentParamRegex = `^\/\{([^\/]+)\}\/$`
 )
 
 var apiCmd = &cobra.Command{
@@ -96,20 +97,34 @@ func isValidRelpath(relpath string) (error, bool) {
 	return nil, true
 }
 
-func hasPathParameters(path string) (bool, error) {
-	matched, err := regexp.MatchString(pathParamRegex, path)
-	hasBracket := strings.ContainsRune(path, '{') || strings.ContainsRune(path, '}')
+func getPathParameterNames(path string) ([]string, error) {
+	var pathParameters []string
+
+	regexObj, err := regexp.Compile(pathSegmentParamRegex)
 	if err != nil {
-		whisk.Debug(whisk.DbgInfo, "Unable to compile Regex '%s' to test against path '%s'\n", pathParamRegex, path)
+		whisk.Debug(whisk.DbgError, "Failed to match path '%s' to regular expressions `%s`\n", path, pathSegmentParamRegex)
+	} else {
+		segments := strings.Split(path, "/")
+		for _, segment := range segments {
+			segment = fmt.Sprintf("/%s/", segment)
+			matchedItems := regexObj.FindAllStringSubmatch(segment, -1)
+			for _, matchedParam := range matchedItems {
+				for idx, paramName := range matchedParam {
+					whisk.Debug(whisk.DbgInfo, "Path parameter submatch '%v'; idx %v\n", paramName, idx)
+					if idx > 0 && len(paramName) > 0 {
+						pathParameters = append(pathParameters, paramName)
+					}
+				}
+			}
+		}
 	}
-	if hasBracket && !matched {
-		errMsg := wski18n.T("Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.",
-			map[string]interface{}{"path": path})
-		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
-			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-		return false, whiskErr
-	}
-	return matched, nil
+
+	return pathParameters, err
+}
+
+func hasPathParameters(path string) (bool, error) {
+	pathParams, err := getPathParameterNames(path)
+	return len(pathParams) > 0, err
 }
 
 func isBasepathParameterized(basepath string) (error, bool) {
@@ -770,26 +785,27 @@ func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVe
 	return maxNameSize
 }
 
-func generatePathParameters(relativePath string) []whisk.ApiParameter {
+func generatePathParameters(relativePath string) ([]whisk.ApiParameter, error) {
 	pathParams := []whisk.ApiParameter{}
-	regexObj, err := regexp.Compile(pathParamRegex)
-	if err != nil {
-		whisk.Debug(whisk.DbgError, "Failed to match path '%s' to regular expressions `%s`\n", relativePath, pathParamRegex)
-	}
-	matches := regexObj.FindAllString(relativePath, -1)
-	if matches != nil {
-		for _, paramName := range matches {
-			//The next 3 lines clean up the paramName, as the matches are something like `/{param}`
-			openIdx := strings.IndexRune(paramName, '{')
-			closeIdx := strings.IndexRune(paramName, '}')
-			paramName = string([]rune(paramName)[openIdx+1 : closeIdx])
-			param := whisk.ApiParameter{Name: paramName, In: "path", Required: true, Type: "string",
-				Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": paramName})}
+
+	pathParamNames, err := getPathParameterNames(relativePath)
+	if len(pathParamNames) > 0 && err == nil {
+		// Only create unique swagger entries
+		var uniqueParamNames []string
+		for _, name := range pathParamNames {
+			if !contains(uniqueParamNames, name) {
+				uniqueParamNames = append(uniqueParamNames, name)
+			}
+		}
+		for _, uniqueName := range uniqueParamNames {
+			whisk.Debug(whisk.DbgInfo, "Creating api parameter for '%s'\n", uniqueName)
+			param := whisk.ApiParameter{Name: uniqueName, In: "path", Required: true, Type: "string",
+				Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": uniqueName})}
 			pathParams = append(pathParams, param)
 		}
 	}
 
-	return pathParams
+	return pathParams, err
 }
 
 /*
@@ -907,10 +923,10 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 	if !basepathArgIsApiName {
 		api.Id = "API:" + api.Namespace + ":" + api.GatewayBasePath
 	}
-	api.PathParameters = generatePathParameters(api.GatewayRelPath)
+	api.PathParameters, err = generatePathParameters(api.GatewayRelPath)
 
 	whisk.Debug(whisk.DbgInfo, "Parsed api struct: %#v\n", api)
-	return api, qName, nil
+	return api, qName, err
 }
 
 func parseSwaggerApi() (*whisk.Api, error) {

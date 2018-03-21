@@ -37,60 +37,6 @@ class ApiGwCliTests extends ApiGwTests {
   override lazy val createCode = SUCCESS_EXIT
   behavior of "Cli Wsk api creation with path parameters no swagger"
 
-  it should "fail to create an API if the relative path contains invalid path parameters" in withAssetCleaner(wskprops) {(wp, assetHelper) =>
-    val actionName = "APIGWTEST_BAD_RELATIVE_PATH_ACTION"
-    val basePath = "/mybase/path"
-    val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
-        action.create(actionName, Some(file), web = Some("true"))
-    }
-    var relPath = "/bad/{path/value"
-    var rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/bad/path}/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/bad/{path/va}lue"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/ba}d/{path/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/ba}d/{p{at}h/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-  }
-
   it should "fail to create an API if the base path contains path parameters" in withAssetCleaner(wskprops) {(wp, assetHelper) =>
     val actionName = "APIGWTEST_BAD_BASE_PATH_ACTION"
     val basePath = "/mybase/{path}"
@@ -193,10 +139,12 @@ class ApiGwCliTests extends ApiGwTests {
     wskprops) { (wp, assetHelper) =>
     val testName = "CLI_APIGWTEST_PATH_PARAMS2"
     val testBasePath = "/" + testName + "_bp"
-    val testRelPath = "/path/{with}/some/{path}"
+    val testRelPath = "/path/{with}/some/{double}/{extra}/{extra}/{path}"
     val testUrlName1 = "scooby"
     val testUrlName2 = "doo"
-    val testRelPathGet = s"/path/${testUrlName1}/some/$testUrlName2"
+    val testUrlName3 = "shaggy"
+    val testUrlName4 = "velma"
+    val testRelPathGet = s"/path/$testUrlName1/some/$testUrlName3/$testUrlName4/$testUrlName4/$testUrlName2"
     val testUrlOp = "get"
     val testApiName = testName + " API Name"
     val actionName = testName + "_action"
@@ -219,6 +167,7 @@ class ApiGwCliTests extends ApiGwTests {
       )
       verifyApiCreated(rr)
       val swaggerApiUrl = getSwaggerUrl(rr).replace("{with}", testUrlName1).replace("{path}", testUrlName2)
+          .replace("{double}", testUrlName3).replace("{extra}", testUrlName4)
 
       //Validate the api created contained parameters and they were correct
       rr = apiGet(basepathOrApiName = Some(testApiName))
@@ -227,9 +176,13 @@ class ApiGwCliTests extends ApiGwTests {
       rr.stdout should include regex (""""cors":\s*\{\s*\n\s*"enabled":\s*true""")
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
       val params = getParametersFromJson(rr, testRelPath)
-      params.size should be(2)
+
+      // should have 4, not 5 parameter definitions (i.e. don't define "extra" twice
+      params.size should be(4)
       validateParameter(params(0), "with", "path", true, "string", "Default description for 'with'")
-      validateParameter(params(1), "path", "path", true, "string", "Default description for 'path'")
+      validateParameter(params(1), "double", "path", true, "string", "Default description for 'double'")
+      validateParameter(params(2), "extra", "path", true, "string", "Default description for 'extra'")
+      validateParameter(params(3), "path", "path", true, "string", "Default description for 'path'")
 
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
