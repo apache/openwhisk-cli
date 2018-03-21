@@ -61,7 +61,6 @@ class OpenWhiskPlatform {
         The 'zipFileName' property is the root file name to use for archives.
      */
     static String zipFileName
-    static String packageVersion
 
     /*
         Create a platform for the local platform
@@ -122,9 +121,8 @@ OpenWhiskPlatform.zipFileName =
     System.env['zip_file_name'] ?:
         (rootProject.findProperty('zipFileName') ?: 'OpenWhisk_CLI')
 
-OpenWhiskPlatform.packageVersion =
-        System.env['packageVersion'] ?:
-                (rootProject.findProperty('packageVersion') ?: 'latest')
+project.ext.packageVersion =
+        rootProject.findProperty('packageVersion') ?: 'latest'
 
 String buildFileName = System.env['build_file_name'] ?:
         (rootProject.findProperty('buildFileName') ?: 'wsk')
@@ -219,7 +217,7 @@ task individualArchives(
             type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: compile) {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
-                baseName = "${p.zipFileName}-${p.packageVersion}-${p.owOs}-${p.goArch}"
+                baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
                 from "./build/${p.goOs}-${p.goArch}/"
                 include "${buildFileName}*"
             }
@@ -251,11 +249,11 @@ task index() {
 task releaseBinaries(type: Tar, dependsOn: [individualArchives, index]) {
     compression = Compression.GZIP
     destinationDir = file('./release')
-    baseName = "${OpenWhiskPlatform.zipFileName}-${OpenWhiskPlatform.packageVersion}-all"
+    baseName = "${OpenWhiskPlatform.zipFileName}-${packageVersion}-all"
     from('./build/content.json') { into('.') }
     rootProject.platforms.each() { p ->
         from('./release/') {
-            include("${p.zipFileName}-${p.packageVersion}-${p.owOs}-${p.goArch}.*")
+            include("${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}.*")
             into p.archiveDirName
             rename { p.archiveFileName }
         }
