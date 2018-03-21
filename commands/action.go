@@ -478,8 +478,7 @@ func augmentAction(cmd *cobra.Command, args []string, action *whisk.Action, upda
 	}
 
 	// Augment the action's annotations with the --web related annotations
-	// FIXME MWD - avoid retrieving existing action TWICE!  once above and once in the webAction() below
-	if augmentedAction, err = augmentWebArg(cmd, args, augmentedAction, existingAction); err != nil {
+	if augmentedAction, err = augmentWebArg(cmd, args, action, augmentedAction, existingAction); err != nil {
 		return nil, err
 	}
 
@@ -492,32 +491,50 @@ func augmentAction(cmd *cobra.Command, args []string, action *whisk.Action, upda
 	return augmentedAction, err
 }
 
-func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, existingAction *whisk.Action) (*whisk.Action, error) {
+func augmentWebArg(cmd *cobra.Command, args []string, action *whisk.Action, augmentedAction *whisk.Action, existingAction *whisk.Action) (*whisk.Action, error) {
 	var err error
 	preserveAnnotations := action.Annotations == nil
-	var augmentedAction *whisk.Action = new(whisk.Action)
-	*augmentedAction = *action
+//	var augmentedAction *whisk.Action = new(whisk.Action)
+//	*augmentedAction = *action
 
 	if cmd.LocalFlags().Changed(WEB_FLAG) {
-		if existingAction == nil {
-			augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations)
-		} else {
-			if augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations); err == nil {
-				// Always carry forward any existing --web-secure annotation value
-				// Although it can be overwritten if --web-secure is set
-				webSecureAnnotations := getWebSecureAnnotations(existingAction)
-				if len(webSecureAnnotations) > 0 {
-					augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
-				}
-			}
-		}
-		if err != nil {
-			return nil, err
-		}
+		augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction)
+	    if existingAction != nil && err == nil {
+			// Always carry forward any existing --web-secure annotation value
+			// Although it can be overwritten later if --web-secure is set
+			webSecureAnnotations := getWebSecureAnnotations(existingAction)
+			if len(webSecureAnnotations) > 0 {
+			    augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
+    		}
+	    }
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	whisk.Debug(whisk.DbgInfo, "augmentWebArg: Augmented action struct: %#v\n", augmentedAction)
 	return augmentedAction, nil
+//
+//		if existingAction == nil {
+//			augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction)
+//		} else {
+//			if augmentedAction.Annotations, err = webAction(Flags.action.web, action.Annotations, action.Name, preserveAnnotations, existingAction); err == nil {
+//				// Always carry forward any existing --web-secure annotation value
+//				// Although it can be overwritten if --web-secure is set
+//				webSecureAnnotations := getWebSecureAnnotations(existingAction)
+//				if len(webSecureAnnotations) > 0 {
+//					augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(webSecureAnnotations)
+//				}
+//			}
+//		}
+//		if err != nil {
+//			return nil, err
+//		}
+//	}
+//
+//	whisk.Debug(whisk.DbgInfo, "augmentWebArg: Augmented action struct: %#v\n", augmentedAction)
+//	return augmentedAction, nil
 }
 
 /*
@@ -714,18 +731,18 @@ func saveCode(action whisk.Action, filename string) (err error) {
 	return nil
 }
 
-func webAction(webMode string, annotations whisk.KeyValueArr, entityName string, preserveAnnotations bool) (whisk.KeyValueArr, error) {
+func webAction(webMode string, annotations whisk.KeyValueArr, entityName string, preserveAnnotations bool, existingAction *whisk.Action) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webMode) {
 	case "yes":
 		fallthrough
 	case "true":
-		return webActionAnnotations(preserveAnnotations, annotations, entityName, addWebAnnotations)
+		return webActionAnnotations(preserveAnnotations, annotations, entityName, addWebAnnotations, existingAction)
 	case "no":
 		fallthrough
 	case "false":
-		return webActionAnnotations(preserveAnnotations, annotations, entityName, deleteWebAnnotations)
+		return webActionAnnotations(preserveAnnotations, annotations, entityName, deleteWebAnnotations, existingAction)
 	case "raw":
-		return webActionAnnotations(preserveAnnotations, annotations, entityName, addRawAnnotations)
+		return webActionAnnotations(preserveAnnotations, annotations, entityName, addRawAnnotations, existingAction)
 	default:
 		return nil, webInputError(webMode)
 	}
@@ -737,20 +754,11 @@ func webActionAnnotations(
 	preserveAnnotations bool,
 	annotations whisk.KeyValueArr,
 	entityName string,
-	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
-	var action *whisk.Action
-	var err error
+	webActionAnnotationMethod WebActionAnnotationMethod,
+	existingAction *whisk.Action) (whisk.KeyValueArr, error) {
 
-	if preserveAnnotations {
-		if action, _, err = Client.Actions.Get(entityName, DO_NOT_FETCH_CODE); err != nil {
-			whiskErr, isWhiskError := err.(*whisk.WskError)
-
-			if (isWhiskError && whiskErr.ExitCode != whisk.EXIT_CODE_NOT_FOUND) || !isWhiskError {
-				return nil, actionGetError(entityName, DO_NOT_FETCH_CODE, err)
-			}
-		} else {
-			annotations = whisk.KeyValueArr.AppendKeyValueArr(annotations, action.Annotations)
-		}
+	if preserveAnnotations && existingAction != nil {
+		annotations = whisk.KeyValueArr.AppendKeyValueArr(annotations, existingAction.Annotations)
 	}
 
 	annotations = webActionAnnotationMethod(annotations)
