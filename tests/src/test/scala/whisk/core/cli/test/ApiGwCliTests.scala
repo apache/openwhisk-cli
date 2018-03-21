@@ -37,60 +37,6 @@ class ApiGwCliTests extends ApiGwTests {
   override lazy val createCode = SUCCESS_EXIT
   behavior of "Cli Wsk api creation with path parameters no swagger"
 
-  it should "fail to create an API if the relative path contains invalid path parameters" in withAssetCleaner(wskprops) {(wp, assetHelper) =>
-    val actionName = "APIGWTEST_BAD_RELATIVE_PATH_ACTION"
-    val basePath = "/mybase/path"
-    val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
-        action.create(actionName, Some(file), web = Some("true"))
-    }
-    var relPath = "/bad/{path/value"
-    var rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/bad/path}/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/bad/{path/va}lue"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/ba}d/{path/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-
-    relPath = "/ba}d/{p{at}h/value"
-    rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"Relative path '${relPath}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.")
-  }
-
   it should "fail to create an API if the base path contains path parameters" in withAssetCleaner(wskprops) {(wp, assetHelper) =>
     val actionName = "APIGWTEST_BAD_BASE_PATH_ACTION"
     val basePath = "/mybase/{path}"

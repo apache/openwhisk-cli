@@ -44,7 +44,7 @@ const (
 	formatOptionJson = "json"
 
 	pathParamRegex        = `\/\{([^\/]+)\}\/|\/\{([^\/]+)\}$|\{([^\/]+)}\/`
-	pathSegmentParamRegex = `^\/\{([^\}\{]+)\}\/$`
+	pathSegmentParamRegex = `^\/\{([^\/]+)\}\/$`
 )
 
 var apiCmd = &cobra.Command{
