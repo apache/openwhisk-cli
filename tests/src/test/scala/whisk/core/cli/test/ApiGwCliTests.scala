@@ -193,12 +193,12 @@ class ApiGwCliTests extends ApiGwTests {
     wskprops) { (wp, assetHelper) =>
     val testName = "CLI_APIGWTEST_PATH_PARAMS2"
     val testBasePath = "/" + testName + "_bp"
-    val testRelPath = "/path/{with}/some/{double}/{extra}/{path}"
+    val testRelPath = "/path/{with}/some/{double}/{extra}/{extra}/{path}"
     val testUrlName1 = "scooby"
     val testUrlName2 = "doo"
     val testUrlName3 = "shaggy"
     val testUrlName4 = "velma"
-    val testRelPathGet = s"/path/$testUrlName1/some/$testUrlName3/$testUrlName4/$testUrlName2"
+    val testRelPathGet = s"/path/$testUrlName1/some/$testUrlName3/$testUrlName4/$testUrlName4/$testUrlName2"
     val testUrlOp = "get"
     val testApiName = testName + " API Name"
     val actionName = testName + "_action"
@@ -230,6 +230,8 @@ class ApiGwCliTests extends ApiGwTests {
       rr.stdout should include regex (""""cors":\s*\{\s*\n\s*"enabled":\s*true""")
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
       val params = getParametersFromJson(rr, testRelPath)
+
+      // should have 4, not 5 parameter definitions (i.e. don't define "extra" twice
       params.size should be(4)
       validateParameter(params(0), "with", "path", true, "string", "Default description for 'with'")
       validateParameter(params(1), "double", "path", true, "string", "Default description for 'double'")
