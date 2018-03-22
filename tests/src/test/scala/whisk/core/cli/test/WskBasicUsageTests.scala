@@ -93,10 +93,10 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "allow a 3 part Fully Qualified Name (FQN) without a leading '/'" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val guestNamespace = wsk.namespace.whois()
-    val packageName = "packageName3ptFQN"
-    val actionName = "actionName3ptFQN"
-    val triggerName = "triggerName3ptFQN"
-    val ruleName = "ruleName3ptFQN"
+    val packageName = WskCliTestHelpers.withTimestamp("packageName3ptFQN")
+    val actionName = WskCliTestHelpers.withTimestamp("actionName3ptFQN")
+    val triggerName = WskCliTestHelpers.withTimestamp("triggerName3ptFQN")
+    val ruleName = WskCliTestHelpers.withTimestamp("ruleName3ptFQN")
     val fullQualifiedName = s"${guestNamespace}/${packageName}/${actionName}"
     // Used for action and rule creation below
     assetHelper.withCleaner(wsk.pkg, packageName) { (pkg, _) =>
@@ -1014,11 +1014,11 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "get an action URL" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
-      val actionName = "action name@_-."
-      val packageName = "package name@_-."
+      val actionName = WskCliTestHelpers.withTimestamp("action name@_-.")
+      val packageName = WskCliTestHelpers.withTimestamp("package name@_-.")
       val defaultPackageName = "default"
-      val webActionName = "web action name@_-."
-      val nonExistentActionName = "non-existence action"
+      val webActionName = WskCliTestHelpers.withTimestamp("web action name@_-.")
+      val nonExistentActionName = WskCliTestHelpers.withTimestamp("non-existence action")
       val packagedAction = s"$packageName/$actionName"
       val packagedWebAction = s"$packageName/$webActionName"
       val namespace = wsk.namespace.whois()
@@ -1662,7 +1662,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "invoke a feed action with the correct lifecyle event when creating, retrieving and deleting a feed trigger" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val actionName = "echo"
+    val actionName = WskCliTestHelpers.withTimestamp("echo")
     val triggerName = "feedTest"
 
     assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
@@ -1794,8 +1794,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "create, and list a rule with a long name" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val ruleName = "x" * 70
-    val triggerName = "listRulesTrigger"
-    val actionName = "listRulesAction";
+    val triggerName = WskCliTestHelpers.withTimestamp("listRulesTrigger")
+    val actionName = WskCliTestHelpers.withTimestamp("listRulesAction");
     assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, name) =>
       trigger.create(name)
     }
@@ -1813,7 +1813,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "return a list of alphabetized actions" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     // Declare 4 actions, create them out of alphabetical order
-    val actionName = "actionAlphaTest"
+    val actionName = WskCliTestHelpers.withTimestamp("actionAlphaTest")
     for (i <- 1 to 3) {
       val name = s"$actionName$i"
       assetHelper.withCleaner(wsk.action, name) { (action, name) =>
@@ -1840,8 +1840,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "return an alphabetized list with default package actions on top" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     // Declare 4 actions, create them out of alphabetical order
-    val actionName = "actionPackageAlphaTest"
-    val packageName = "packageAlphaTest"
+    val actionName = WskCliTestHelpers.withTimestamp("actionPackageAlphaTest")
+    val packageName = WskCliTestHelpers.withTimestamp("packageAlphaTest")
     assetHelper.withCleaner(wsk.action, actionName) { (action, actionName) =>
       action.create(actionName, defaultAction)
     }
@@ -1933,8 +1933,8 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "return a list of alphabetized rules" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       // Declare a trigger and an action for the purposes of creating rules
-      val triggerName = "listRulesTrigger"
-      val actionName = "listRulesAction"
+      val triggerName = WskCliTestHelpers.withTimestamp("listRulesTrigger")
+      val actionName = WskCliTestHelpers.withTimestamp("listRulesAction")
 
       assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, name) =>
         trigger.create(name)
