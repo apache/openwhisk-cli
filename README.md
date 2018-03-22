@@ -111,8 +111,8 @@ The build library understands most representations of most Operating Systems.
 Tests can be run using the Gradle script as well:
 
 ```
-$ ./gradlew goTests -PgoTags=unit
-$ ./gradlew goTests -PgoTags=native
+$ ./gradlew goTest -PgoTags=unit
+$ ./gradlew goTest -PgoTags=native
 ```
 
 Integration tests are best left to the Travis build as they depend on a fully

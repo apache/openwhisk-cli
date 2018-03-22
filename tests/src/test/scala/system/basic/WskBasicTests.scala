@@ -39,17 +39,20 @@ import spray.json.pimpAny
 
 import whisk.http.Messages
 
+object WskCliTestHelpers {
+  /**
+    * Append the current timestamp in ms
+    */
+  def WskCliTestHelpers.withTimestamp(text: String) = s"${text}-${System.currentTimeMillis}"
+
+}
+
 @RunWith(classOf[JUnitRunner])
 class WskBasicTests extends TestHelpers with WskTestHelpers {
 
   implicit val wskprops = WskProps()
   val wsk = new Wsk
   val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.js"))
-
-  /**
-   * Append the current timestamp in ms
-   */
-  def withTimestamp(text: String) = s"${text}-${System.currentTimeMillis}"
 
   behavior of "Wsk CLI"
 
@@ -470,9 +473,9 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   behavior of "Wsk Trigger CLI"
 
   it should "create, update, get, fire and list trigger" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val ruleName = withTimestamp("r1toa1")
-    val triggerName = withTimestamp("t1tor1")
-    val actionName = withTimestamp("a1")
+    val ruleName = WskCliTestHelpers.withTimestamp("r1toa1")
+    val triggerName = WskCliTestHelpers.withTimestamp("t1tor1")
+    val actionName = WskCliTestHelpers.withTimestamp("a1")
     val params = Map("a" -> "A".toJson)
     val ns = wsk.namespace.whois()
 
@@ -572,9 +575,9 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "create, and fire a trigger using a parameter file" in withAssetCleaner(wskprops) {
-    val ruleName = withTimestamp("r1toa1")
-    val triggerName = withTimestamp("paramFileTrigger")
-    val actionName = withTimestamp("a1")
+    val ruleName = WskCliTestHelpers.withTimestamp("r1toa1")
+    val triggerName = WskCliTestHelpers.withTimestamp("paramFileTrigger")
+    val actionName = WskCliTestHelpers.withTimestamp("a1")
     val argInput = Some(TestUtils.getTestActionFilename("validInput2.json"))
 
     (wp, assetHelper) =>
@@ -640,9 +643,9 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "create, and fire a trigger to ensure result is empty" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val ruleName = withTimestamp("r1toa1")
-    val triggerName = withTimestamp("emptyResultTrigger")
-    val actionName = withTimestamp("a1")
+    val ruleName = WskCliTestHelpers.withTimestamp("r1toa1")
+    val triggerName = WskCliTestHelpers.withTimestamp("emptyResultTrigger")
+    val actionName = WskCliTestHelpers.withTimestamp("a1")
 
     assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
       trigger.create(triggerName)
@@ -694,11 +697,11 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
   it should "create and fire a trigger with a rule whose action has been deleted" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
-      val ruleName1 = withTimestamp("r1toa1")
-      val ruleName2 = withTimestamp("r2toa2")
-      val triggerName = withTimestamp("t1tor1r2")
-      val actionName1 = withTimestamp("a1")
-      val actionName2 = withTimestamp("a2")
+      val ruleName1 = WskCliTestHelpers.withTimestamp("r1toa1")
+      val ruleName2 = WskCliTestHelpers.withTimestamp("r2toa2")
+      val triggerName = WskCliTestHelpers.withTimestamp("t1tor1r2")
+      val actionName1 = WskCliTestHelpers.withTimestamp("a1")
+      val actionName2 = WskCliTestHelpers.withTimestamp("a2")
       val ns = wsk.namespace.whois()
 
       assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
@@ -926,9 +929,9 @@ class WskBasicTests extends TestHelpers with WskTestHelpers {
 
   it should "create a trigger, and fire a trigger to get its individual fields from an activation" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val ruleName = withTimestamp("r1toa1")
-    val triggerName = withTimestamp("activationFields")
-    val actionName = withTimestamp("a1")
+    val ruleName = WskCliTestHelpers.withTimestamp("r1toa1")
+    val triggerName = WskCliTestHelpers.withTimestamp("activationFields")
+    val actionName = WskCliTestHelpers.withTimestamp("a1")
 
     assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
       trigger.create(triggerName)

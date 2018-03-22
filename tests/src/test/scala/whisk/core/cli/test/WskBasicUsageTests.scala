@@ -27,6 +27,7 @@ import scala.language.postfixOps
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
+import system.basic.WskCliTestHelpers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import common.TestHelpers
@@ -57,11 +58,6 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
   val wsk = new Wsk
   val defaultAction = Some(TestCLIUtils.getTestActionFilename("hello.js"))
   val usrAgentHeaderRegEx = """\bUser-Agent\b": \[\s+"OpenWhisk\-CLI/1.\d+.*"""
-
-  /**
-    * Append the current timestamp in ms
-    */
-  def withTimestamp(text: String) = s"$text-${System.currentTimeMillis}"
 
   behavior of "Wsk CLI usage"
 
@@ -769,7 +765,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "reject action create and update when --web-secure used on a non-web action" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val name = withTimestamp("nonwebaction")
+    val name = WskCliTestHelpers.withTimestamp("nonwebaction")
     val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val errorMsg =
       s"The --web-secure option is only valid when the --web option is enabled."
@@ -808,7 +804,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "generate a require-whisk-annotation --web-secure used on a web action" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val name = withTimestamp("webaction")
+    val name = WskCliTestHelpers.withTimestamp("webaction")
     val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val secretStr = "my-secret"
 
@@ -886,7 +882,7 @@ class WskBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "remove existing require-whisk-annotation when --web-secure is false" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
-    val name = withTimestamp("webaction")
+    val name = WskCliTestHelpers.withTimestamp("webaction")
     val file = Some(TestCLIUtils.getTestActionFilename("echo.js"))
     val secretStr = "my-secret"
 
