@@ -43,7 +43,7 @@ object WskCliTestHelpers {
   /**
     * Append the current timestamp in ms
     */
-  def WskCliTestHelpers.withTimestamp(text: String) = s"${text}-${System.currentTimeMillis}"
+  def withTimestamp(text: String) = s"${text}-${System.currentTimeMillis}"
 
 }
 
