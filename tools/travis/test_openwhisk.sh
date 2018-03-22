@@ -7,7 +7,7 @@ set -e
 #  the release.  If you're running manually, this command should get you to
 #  the same place:
 #
-#    ./gradlew release
+#    ./gradlew releaseBinaries
 #
 #  Also at this point, you should already have incubator-openwhisk pulled down
 #  from gradle in the parent directory, using a command such as:
