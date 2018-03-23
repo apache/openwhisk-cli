@@ -1,11 +1,3 @@
-def owPath = System.getenv("OPENWHISK_HOME") ?: '../incubator-openwhisk'
-def owDirectory = new File(owPath)
-
-if (!owDirectory.exists()) {
-    throw new GradleScriptException(
-        "Environment variable OPENWHISK_HOME must point to a valid OpenWhisk build", null)
-}
-
 include 'tests'
 
 rootProject.name = 'openwhisk-cli'
@@ -18,5 +10,3 @@ gradle.ext.scala = [
     version: '2.11.8',
     compileFlags: ['-feature', '-unchecked', '-deprecation', '-Xfatal-warnings', '-Ywarn-unused-import']
 ]
-
-gradle.ext.owPath = owPath
