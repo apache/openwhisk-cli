@@ -66,7 +66,8 @@ after_success:
       git config --global user.name "Travis CI";
       export GIT_TAG="latest";
       git tag -d $GIT_TAG;
-      git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+      git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli :refs/tags/$GIT_TAG;
+      GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
       git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
     fi
 
