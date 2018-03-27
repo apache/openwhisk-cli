@@ -35,6 +35,13 @@ env:
 git:
   depth: 3
 
+notifications:
+  email: false
+  webhooks:
+    urls:
+      # travis2slack webhook to enable DMs on openwhisk-team.slack.com to PR authors with TravisCI results
+      secure: "nv1E5INzU77zNDxNj/aNI9nutdSq4Fv2o9JUSmb0C0/OAs/0iXHGL1UVSdyIjQ6RozOmd2rped5/n9pgqPDk4FaYfyVv+80k6KNdm47Yx99kOMrMyLjOV4HyYp4SmNmZVoLoYndDyyozL7NRs2fdZgk5xfnWoHSix364PVFA+gJtVFgF2vSq1cEXDLaRb21WoGpWjMQvojHiXWSdO811BpiEFruPdhfUFkU3UdzqNmz/0zW6Aj0mJTYSh+6a6j2QIN7D9tfzMNA/00g1d6VwXRokLamQFkd40hOX8Mx5h6hxdHjFSY0tdSvzCcY2jqqLZegVi9/Sm/aEM4z0VVj2/XqosASw+RB5O1R1ekOqsobf9Ru3DhLDj+frWYbLfQwJ54kQxki8bsbmxNWiK+PhKvJfq2ACTkKmGw76t6C1RJHUV2Q6o04riFlqe7T7bxKU3E6fL2fsI7zMOkjIW5MOT+iAeqzi5q8d1TDEj00Ppdi0O6v+dWzpwGXFvslClLDY5pa3BNh590kQ/CW1O6gCpQ0RIaKNvrEW0xV0rpafMThwWuO07n28KNVz/nntYAHRBIS7Pzdq1JOrvRhsCkOGiAdcQ00OmhprEBahXOGGXXqGRo0XvsaEGvcNe7yAbQ/LYtuTM0PUs54tEHSj9tbLV4ZRuL+qYNrn8gZIXtiuO54="
+
 before_install:
   - export DEPLOY_BUILD_READY=false
 
