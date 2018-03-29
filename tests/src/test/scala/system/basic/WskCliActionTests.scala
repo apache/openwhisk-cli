@@ -28,6 +28,13 @@ import common.Wsk
 class WskCliActionTests extends WskActionTests {
   override val wsk = new Wsk
 
+  it should "create an action with an empty file" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+    val name = "empty"
+    assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+      action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
+    }
+  }
+
   it should "not be able to use --kind and --docker at the same time when running action create" in {
     val file = TestCLIUtils.getTestActionFilename(s"echo.js")
     val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
