@@ -27,26 +27,14 @@ import common.Wsk
 @RunWith(classOf[JUnitRunner])
 class WskCliActionTests extends WskActionTests {
   override val wsk = new Wsk
+  override val cli = true
 
-  it should "create an action with an empty file" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val name = "empty"
-    assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestCLIUtils.getTestActionFilename("empty.js")))
+  it should "not be able to use --kind and --docker at the same time when running action create or update" in {
+    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+    Seq(false, true).foreach { updateValue =>
+      val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
+      kind = Some("nodejs:6"), docker = Some("mydockerimagename"), update = updateValue)
+      out.stderr should include("Cannot specify both --kind and --docker at the same time")
     }
   }
-
-  it should "not be able to use --kind and --docker at the same time when running action create" in {
-    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
-    val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
-        kind = Some("nodejs:6"), docker = Some("mydockerimagename"))
-    out.stderr should include("Cannot specify both --kind and --docker at the same time")
-  }
-
-  it should "not be able to use --kind and --docker at the same time when running action update" in {
-    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
-    val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
-      kind = Some("nodejs:6"), docker = Some("mydockerimagename"), update = true)
-    out.stderr should include("Cannot specify both --kind and --docker at the same time")
-  }
-
 }
