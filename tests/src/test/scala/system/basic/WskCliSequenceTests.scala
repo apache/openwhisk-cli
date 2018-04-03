@@ -21,6 +21,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.Wsk
+import common.WhiskProperties
+import whisk.core.WhiskConfig
 
 /**
  * Tests sequence execution
@@ -29,5 +31,5 @@ import common.Wsk
 @RunWith(classOf[JUnitRunner])
 class WskCliSequenceTests extends WskSequenceTests {
   override val wsk: common.Wsk = new Wsk
-  override val cli = true
+  override val whiskConfig = new WhiskConfig(Map(WhiskProperties.getProperty("limits.actions.sequence.maxLength") -> null))
 }
