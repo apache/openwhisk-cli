@@ -27,7 +27,7 @@ import common.Wsk
 @RunWith(classOf[JUnitRunner])
 class WskCliActionTests extends WskActionTests {
   override val wsk = new Wsk
-  override val cli = true
+  //override val cli = true
 
   it should "not be able to use --kind and --docker at the same time when running action create or update" in {
     val file = TestCLIUtils.getTestActionFilename(s"echo.js")
