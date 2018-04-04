@@ -17,11 +17,13 @@
 
 package system.basic
 
+import java.io.File
+
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.Wsk
-import common.WhiskProperties
+
 import whisk.core.WhiskConfig
 
 /**
@@ -31,5 +33,10 @@ import whisk.core.WhiskConfig
 @RunWith(classOf[JUnitRunner])
 class WskCliSequenceTests extends WskSequenceTests {
   override val wsk: common.Wsk = new Wsk
-  override val whiskConfig = new WhiskConfig(Map(WhiskProperties.getProperty("limits.actions.sequence.maxLength") -> null))
+  var OPENWHISK_HOME = System.getenv("OPENWHISK_HOME") 
+  if(OPENWHISK_HOME == null || OPENWHISK_HOME.isEmpty()) {
+  	OPENWHISK_HOME = "../../../../../../../incubator-openwhisk"
+  }
+  val propertiesFile = new File("${OPENWHISK_HOME}/whisk.properties")
+  override val whiskConfig = new WhiskConfig(Map(WhiskConfig.actionSequenceMaxLimit -> null), propertiesFile = propertiesFile)
 }
