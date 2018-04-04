@@ -37,6 +37,6 @@ class WskCliSequenceTests extends WskSequenceTests {
   if(OPENWHISK_HOME == null || OPENWHISK_HOME.isEmpty()) {
   	OPENWHISK_HOME = "../../../../../../../incubator-openwhisk"
   }
-  val propertiesFile = new File("${OPENWHISK_HOME}/whisk.properties")
+  val propertiesFile = new File(s"$OPENWHISK_HOME/whisk.properties")
   override val whiskConfig = new WhiskConfig(Map(WhiskConfig.actionSequenceMaxLimit -> null), propertiesFile = propertiesFile)
 }
