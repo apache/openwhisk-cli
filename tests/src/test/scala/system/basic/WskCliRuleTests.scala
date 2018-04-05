@@ -25,5 +25,4 @@ import common.Wsk
 @RunWith(classOf[JUnitRunner])
 class WskCliRuleTests extends WskRuleTests {
   override val wsk: Wsk = new Wsk
-  override val cli = true
 }
