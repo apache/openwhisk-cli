@@ -17,23 +17,12 @@
 
 package system.basic
 
+import common.Wsk
+
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-import common.TestCLIUtils
-import common.TestUtils.NOT_ALLOWED
-import common.Wsk
-
 @RunWith(classOf[JUnitRunner])
-class WskCliActionTests extends WskActionTests {
-  override val wsk = new Wsk
-
-  it should "not be able to use --kind and --docker at the same time when running action create or update" in {
-    val file = TestCLIUtils.getTestActionFilename(s"echo.js")
-    Seq(false, true).foreach { updateValue =>
-      val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
-      kind = Some("nodejs:6"), docker = Some("mydockerimagename"), update = updateValue)
-      out.stderr should include("Cannot specify both --kind and --docker at the same time")
-    }
-  }
+class WskCliBasicNode6Tests extends WskBasicNode6Tests {
+  override val wsk: Wsk = new Wsk
 }
