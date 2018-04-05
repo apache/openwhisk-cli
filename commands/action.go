@@ -65,6 +65,7 @@ const (
 	DO_NOT_FETCH_CODE = false
 	ACTION_UPDATE     = true
 	ACTION_CREATE     = false
+	MAX_JS_INT        = 1<<53 - 1
 )
 
 var actionCmd = &cobra.Command{
@@ -1194,10 +1195,12 @@ func printSavedActionCodeSuccess(name string) {
 			}))
 }
 
-// Generate a random int64 number to be used as a web action's
+// Generate a random number to be used as a web action's require-whisk-auth secret
 func genWebActionSecureKey() int64 {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
-	return r.Int63()
+
+	// Truncate integer for API GW interoperability
+	return r.Int63() & MAX_JS_INT
 }
 
 // Check if the specified action is a web-action
