@@ -22,7 +22,7 @@ import org.scalatest.junit.JUnitRunner
 
 import common.JsHelpers
 import common.StreamLogging
-import common.TestCLIUtils
+import common.TestUtils
 import common.TestUtils.ANY_ERROR_EXIT
 import common.TestUtils.DONTCARE_EXIT
 import common.TestUtils.SUCCESS_EXIT
@@ -271,7 +271,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must NOT be a "web-action" action for this test
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = SUCCESS_EXIT)
 
       val rr = apiCreate(
@@ -299,7 +299,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
   it should "list api alphabetically by Base/Rel/Verb" in {
     val baseName = "/BaseTestPathApiList"
     val actionName = "actionName"
-    val file = TestCLIUtils.getTestActionFilename(s"echo-web-http.js")
+    val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
     try {
       // Create Action for apis
       var action =
@@ -346,7 +346,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
     val responseType = "http"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = SUCCESS_EXIT, web = Some("true"))
 
       var rr = apiCreate(
@@ -377,7 +377,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
     val responseType = "http"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = SUCCESS_EXIT, web = Some("true"))
 
       var rr = apiCreate(
@@ -407,7 +407,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
     val testurlop = "get"
     val testapiname = testbasepath
     val actionName = "webhttpecho"
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"local.api.yaml")
+    val swaggerPath = TestUtils.getTestApiGwFilename(s"local.api.yaml")
     try {
       var rr = apiCreate(swagger = Some(swaggerPath))
       println("api create stdout: " + rr.stdout)
@@ -425,7 +425,7 @@ class WskApiGwTests extends BaseApiGwTests with WskActorSystem with JsHelpers wi
   it should "reject creation of an API from invalid YAML formatted API configuration file" in {
     val testName = "CLI_APIGWTEST22"
     val testbasepath = "/" + testName + "_bp"
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"local.api.bad.yaml")
+    val swaggerPath = TestUtils.getTestApiGwFilename(s"local.api.bad.yaml")
     try {
       val rr = apiCreate(swagger = Some(swaggerPath), expectedExitCode = ANY_ERROR_EXIT)
       println("api create stdout: " + rr.stdout)
