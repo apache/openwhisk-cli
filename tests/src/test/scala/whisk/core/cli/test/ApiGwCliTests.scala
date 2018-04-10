@@ -32,7 +32,7 @@ import scala.util.parsing.json.JSON
   * Tests for basic CLI usage. Some of these tests require a deployed backend.
   */
 @RunWith(classOf[JUnitRunner])
-class ApiGwCliTests extends ApiGwTests {
+class ApiGwCliTests extends ApiGwCliBasicTests {
   override lazy val wsk: common.Wsk = new Wsk
   override lazy val createCode = SUCCESS_EXIT
   behavior of "Cli Wsk api creation with path parameters no swagger"
