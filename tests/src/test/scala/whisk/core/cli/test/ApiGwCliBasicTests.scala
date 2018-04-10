@@ -33,7 +33,7 @@ import com.jayway.restassured.config.SSLConfig
 import common.TestUtils._
 import common.TestUtils
 import common.WhiskProperties
-import common.{TestCLIUtils, WhiskProperties, WskProps}
+import common.{TestUtils, WhiskProperties, WskProps}
 
 import scala.concurrent.duration.DurationInt
 import scala.util.parsing.json.JSON
@@ -402,7 +402,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     try {
       println("cli namespace: " + clinamespace)
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -438,7 +438,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       println("cli namespace: " + clinamespace)
 
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -470,7 +470,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -498,7 +498,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -526,7 +526,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -555,7 +555,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val newEndpoint = "/newEndpoint"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -596,7 +596,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val testurlop = "get"
     val testapiname = testName + " API Name"
     val actionName = testName + "_action"
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename("testswaggerdoc1")
+    val swaggerPath = TestUtils.getTestApiGwFilename("testswaggerdoc1")
     try {
       var rr = apiCreate(swagger = Some(swaggerPath))
       verifyApiCreated(rr)
@@ -623,7 +623,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val newEndpoint = "/newEndpoint"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -696,7 +696,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       println("cli namespace: " + clinamespace)
 
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -724,7 +724,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val testurlop = "get"
     val testapiname = testName + " API Name"
     val actionName = testName + "_action"
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"testswaggerdocinvalid")
+    val swaggerPath = TestUtils.getTestApiGwFilename(s"testswaggerdocinvalid")
     try {
       val rr = apiCreate(swagger = Some(swaggerPath), expectedExitCode = ANY_ERROR_EXIT)
       println("api create stdout: " + rr.stdout)
@@ -745,7 +745,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -783,7 +783,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -823,7 +823,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val testurlop2 = "post"
     val testapiname = testName + " API Name"
     val actionName = "test1a"
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"testswaggerdoc2")
+    val swaggerPath = TestUtils.getTestApiGwFilename(s"testswaggerdoc2")
     try {
       var rr = apiCreate(swagger = Some(swaggerPath))
       println("api create stdout: " + rr.stdout)
@@ -849,7 +849,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val actionName = testName + "_action"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -894,7 +894,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val responseType = "http"
     try {
       // Create the action for the API.  It must be a "web-action" action.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
@@ -927,7 +927,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val testbasepath = "/NoActions"
     val testrelpath = "/"
     val testops: Seq[String] = Seq("put", "delete", "get", "head", "options", "patch", "post")
-    val swaggerPath = TestCLIUtils.getTestApiGwFilename(s"endpoints.without.action.swagger.json")
+    val swaggerPath = TestUtils.getTestApiGwFilename(s"endpoints.without.action.swagger.json")
 
     try {
       var rr = apiCreate(swagger = Some(swaggerPath))
@@ -964,7 +964,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
 
     try {
       // Create the action for the API.
-      val file = TestCLIUtils.getTestActionFilename(s"echo.js")
+      val file = TestUtils.getTestActionFilename(s"echo.js")
       wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       // Set an invalid auth key
