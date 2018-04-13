@@ -441,10 +441,10 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   it should "create, and invoke an action that times out to ensure the proper response is received" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val name = "sleepAction"
-    val params = Map("payload" -> "100000".toJson)
+    val params = Map("sleepTimeInMs" -> "100000".toJson)
     val allowedActionDuration = 120 seconds
     val res = assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("timeout.js")), timeout = Some(allowedActionDuration))
+      action.create(name, Some(TestUtils.getTestActionFilename("sleep.js")), timeout = Some(allowedActionDuration))
       action.invoke(name, parameters = params, result = true, expectedExitCode = ACCEPTED)
     }
 
