@@ -1,4 +1,3 @@
-
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -179,7 +178,7 @@
    APPENDIX: How to apply the Apache License to your work.
 
       To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "[]"
+      boilerplate notice, with the fields enclosed by brackets "{}"
       replaced with your own identifying information. (Don't include
       the brackets!)  The text should be enclosed in the appropriate
       comment syntax for the file format. We also recommend that a
@@ -187,7 +186,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2016-2018 The Apache Software Foundation
+   Copyright {yyyy} {name of copyright owner}
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -200,83 +199,3 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-========================================================================
-Apache License 2.0
-========================================================================
-
-This distribution has binary dependencies on the following components under an Apache License 2.0 (http://opensource.org/licenses/Apache-2.0).
-Jibber Jabber bcc4c83 (cloudfoundry/jibber_jabber - https://github.com/cloudfoundry/jibber_jabber)
-  License included at licenses/LICENSE-jibberjabber.txt, or https://github.com/cloudfoundry-attic/jibber_jabber/blob/master/LICENSE
-  Copyright (c) 2014 Pivotal
-
-Mousetrap 76626ae (inconshreveable/mousetrap - https://github.com/inconshreveable/mousetrap)
-  License included at licenses/LICENSE-mousetrap.txt, or https://github.com/inconshreveable/mousetrap/blob/master/LICENSE
-  Copyright 2014 Alan Shreve
-
-OpenWhisk Client Go e4b5f82 (apache/incubator-openwhisk-client-go - https://github.com/apache/incubator-openwhisk-client-go)
-  License included at licenses/LICENSE-openwhiskclientgo.txt, or https://github.com/apache/incubator-openwhisk-client-go/blob/master/LICENSE.txt
-  Copyright 2015-2016 IBM Corporation
-
-YAML support for the Go language cd8b52f (go-yaml/yaml - https://github.com/go-yaml/yaml/tree/v2.2.1)
-  License included at licenses/LICENSE-goyaml.txt, or https://github.com/go-yaml/yaml/blob/v2.2.1/LICENSE
-
-Cobra 1238ba1 (spf13/cobra - https://github.com/spf13/cobra)
-  License included at licenses/LICENSE-cobra.txt, or https://github.com/spf13/cobra/blob/master/LICENSE.txt
-
-
-========================================================================
-MIT License
-========================================================================
-
-This distribution has binary dependencies on the following components available under an MIT license (http://opensource.org/licenses/MIT).
-Color 87d4004 (fatih/color - https://github.com/fatih/color)
-  License included at licenses/LICENSE-color.txt, or https://github.com/fatih/color/blob/master/LICENSE.md
-  Copyright (c) 2013 Fatih Arslan
-
-Go Prettyjson f75235b (hokaccha/go-prettyjson - https://github.com/hokaccha/go-prettyjson)
-  License included at licenses/LICENSE-goprettyjson.txt
-
-Go Colorable d228849 (mattn/go-colorable - https://github.com/mattn/go-colorable)
-  License included at licenses/LICENSE-gocolorable.txt, or https://github.com/mattn/go-colorable/blob/master/LICENSE
-  Copyright (c) 2016 Yasuhiro Matsumoto
-
-Go Isatty 66b8e73 (mattn/go-isatty - https://github.com/mattn/go-isatty)
-  License included at licenses/LICENSE-goisatty.txt, or https://github.com/mattn/go-isatty/blob/master/LICENSE
-  Copyright (c) Yasuhiro MATSUMOTO <mattn.jp@gmail.com>
-
-Go Homedir 1111e45 (mitchellh/go-homedir - https://github.com/mitchellh/go-homedir)
-  License included at licenses/LICENSE-gohomedir.txt, or https://github.com/mitchellh/go-homedir/blob/master/LICENSE
-  Copyright (c) 2013 Mitchell Hashimoto
-
-YAML marshaling and unmarshaling support for Go 0ca9ea5 (ghodss/yaml - https://github.com/ghodss/yaml)
-  License included at licenses/LICENSE-yaml.txt, or https://github.com/ghodss/yaml/blob/master/LICENSE
-  Copyright (c) 2014 Sam Ghods
-
-Go I18n 37e5c2d (nicksnyder/go-i18n - https://github.com/nicksnyder/go-i18n)
-  License included at licenses/LICENSE-goi18n.txt, or https://github.com/nicksnyder/go-i18n/blob/master/LICENSE
-  Copyright (c) 2014 Nick Snyder https://github.com/nicksnyder
-
-
-=======================================================================
-BSD 3-Clause "New" or "Revised" License
-=======================================================================
-
-This distribution has binary dependencies on the following components available under a BSD 3 Clause License (https://opensource.org/licenses/BSD-3-Clause).
-Go 1.8 (https://golang.org/)
-  License included at licenses/LICENSE-go.txt, or Copyright (c) 2009 The Go Authors. All rights reserved.
-  Copyright (c) 2009 The Go Authors. All rights reserved.
-
-Go Querystring 9235644 (google/go-querystring - https://github.com/google/go-querystring)
-  License included at licenses/LICENSE-goquerystring.txt, or https://github.com/google/go-querystring/blob/master/LICENSE
-  Copyright (c) 2013 Google. All rights reserved.
-
-Pflag 3678644 (spf13/pflag - https://github.com/spf13/pflag)
-  License included at licenses/LICENSE-pflag.txt, or https://github.com/spf13/pflag/blob/master/LICENSE
-  Copyright (c) 2012 Alex Ogier. All rights reserved.
-  Copyright (c) 2012 The Go Authors. All rights reserved.
-
-Sys 7f918dd (golang/sys - https://github.com/golang/sys)
-  License included at licenses/LICENSE-sys.txt, or https://github.com/golang/sys/blob/master/LICENSE
-  Copyright (c) 2009 The Go Authors. All rights reserved.
