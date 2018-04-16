@@ -34,7 +34,7 @@ import common.WskProps
 import common.WskTestHelpers
 import spray.json._
 import spray.json.DefaultJsonProtocol._
-import spray.json.pimpAny
+import spray.json._
 
 import whisk.http.Messages
 
