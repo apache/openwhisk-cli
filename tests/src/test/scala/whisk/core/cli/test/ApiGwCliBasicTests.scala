@@ -36,10 +36,12 @@ import common.WhiskProperties
 import common.{TestUtils, WhiskProperties, WskProps}
 
 import scala.concurrent.duration.DurationInt
-import scala.util.parsing.json.JSON
 import scala.util.matching.Regex
 
 import org.apache.commons.io.FileUtils
+
+import spray.json._
+import spray.json.DefaultJsonProtocol._
 
 /**
  * Tests for testing the CLI "api" subcommand.  Most of these tests require a deployed backend.
@@ -203,9 +205,8 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     tmpFileName
   }
 
-  def getParametersFromJson(rr: RunResult, pathName: String): List[Map[String, Any]] = {
-    val parsed = JSON.parseFull(rr.stdout).asInstanceOf[Option[Map[String, Map[String, Map[String, Map[String, List[Map[String, String]]]]]]]]
-    parsed.get("paths").get(pathName).get("get").get("parameters").get
+  def getParametersFromJson(json: JsObject, pathName: String): Vector[JsValue] = {
+    json.fields("paths").asJsObject.fields(pathName).asJsObject.fields("get").asJsObject.fields("parameters").convertTo[JsArray].elements
   }
 
   def getSslConfig(): RestAssuredConfig = {
@@ -213,12 +214,12 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     new RestAssuredConfig().sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
   }
 
-  def validateParameter(parameter: Map[String, Any], name: String, in: String, required: Boolean, pType: String, description: String): Unit = {
-    parameter.get("name").get should be(name)
-    parameter.get("in").get should be(in)
-    parameter.get("required") should be(Some(required))
-    parameter.get("type").get should be(pType)
-    parameter.get("description").get should be(description)
+  def validateParameter(parameter: JsObject, name: String, in: String, required: Boolean, pType: String, description: String): Unit = {
+    parameter.fields("name") should be(name.toJson)
+    parameter.fields("in") should be(in.toJson)
+    parameter.fields("required") should be(required.toJson)
+    parameter.fields("type") should be(pType.toJson)
+    parameter.fields("description") should be(description.toJson)
   }
 
   behavior of "Wsk api"
@@ -228,7 +229,6 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
   it should "create the API when swagger file contains path parameters" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val actionName = "cli_apigwtest_path_param_swagger_action"
-    var exception: Throwable = null
     val apiName = "/guest/v1"
     val reqPath = "\\$\\(request.path\\)"
     val testRelPath = "/api2/greeting2/{name}"
@@ -262,7 +262,6 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       verifyApiDeleted(rr)
 
       //Create the api using the swagger file.
-
       rr = apiCreate(swagger = Some(swaggerFile.getAbsolutePath()), expectedExitCode = SUCCESS_EXIT)
       verifyApiCreated(rr)
       val swaggerApiUrl = getSwaggerUrl(rr).replace("{name}", testUrlName)
@@ -270,9 +269,10 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       //Lets validate that the swagger we get from the create contains the correct info.
       rr = apiGet(basepathOrApiName = Some(apiName))
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
-      val params = getParametersFromJson(rr, testRelPath)
+
+      val params = getParametersFromJson(rr.stdout.parseJson.asJsObject, testRelPath)
       params.size should be(1)
-      validateParameter(params(0), "name", "path", true, "string", "Default description for 'name'")
+      validateParameter(params(0).asJsObject, "name", "path", true, "string", "Default description for 'name'")
 
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
@@ -282,16 +282,12 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
         response.statusCode should be(200)
         response
       }, 6, Some(2.second))
-      val jsonReponse = JSON.parseFull(response.asString()).asInstanceOf[Option[Map[String, String]]].get
-      jsonReponse.get("__ow_path").get should not be ("")
-      jsonReponse.get("__ow_path").get should include (testRelPathGet)
+      val jsonResponse = response.body.asString.parseJson.asJsObject
 
-    } catch {
-      case unknown: Throwable => exception = unknown
+      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
     } finally {
       apiDelete(basepathOrApiName = apiName)
     }
-    assert(exception == null)
   }
 
   it should "reject an api commands with an invalid path parameter" in {

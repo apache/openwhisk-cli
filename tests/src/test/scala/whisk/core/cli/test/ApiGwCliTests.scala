@@ -26,7 +26,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.concurrent.duration.DurationInt
-import scala.util.parsing.json.JSON
+
+import spray.json._
 
 /**
   * Tests for basic CLI usage. Some of these tests require a deployed backend.
@@ -84,7 +85,6 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
     val testUrlOp = "get"
     val testApiName = testName + " API Name"
     val actionName = testName + "_action"
-    var exception: Throwable = null
     val reqPath = "\\$\\(request.path\\)"
 
     // Create the action for the API.  It must be a "web-action" action.
@@ -111,10 +111,10 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       rr.stdout should include(s"${actionName}")
       rr.stdout should include regex (""""cors":\s*\{\s*\n\s*"enabled":\s*true""")
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
-      val params = getParametersFromJson(rr, testRelPath)
+      val params = getParametersFromJson(rr.stdout.parseJson.asJsObject, testRelPath)
       params.size should be(2)
-      validateParameter(params(0), "with", "path", true, "string", "Default description for 'with'")
-      validateParameter(params(1), "path", "path", true, "string", "Default description for 'path'")
+      validateParameter(params(0).asJsObject, "with", "path", true, "string", "Default description for 'with'")
+      validateParameter(params(1).asJsObject, "path", "path", true, "string", "Default description for 'path'")
 
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
@@ -124,15 +124,12 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
         response.statusCode should be(200)
         response
       }, 6, Some(2.second))
-      val jsonReponse = JSON.parseFull(response.asString()).asInstanceOf[Option[Map[String, String]]].get
-      jsonReponse.get("__ow_path").get should not be ("")
-      jsonReponse.get("__ow_path").get should include (testRelPathGet)
-    } catch {
-      case unknown: Throwable => exception = unknown
+      val jsonResponse = response.body.asString.parseJson.asJsObject
+
+      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
     } finally {
       apiDelete(basepathOrApiName = testBasePath)
     }
-    assert(exception == null)
   }
 
   it should "create api with path parameters and pass them into the action bound to the api" in withAssetCleaner(
@@ -148,7 +145,6 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
     val testUrlOp = "get"
     val testApiName = testName + " API Name"
     val actionName = testName + "_action"
-    var exception: Throwable = null
     val reqPath = "\\$\\(request.path\\)"
     // Create the action for the API.  It must be a "web-action" action.
     val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
@@ -175,14 +171,14 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       rr.stdout should include(s"${actionName}")
       rr.stdout should include regex (""""cors":\s*\{\s*\n\s*"enabled":\s*true""")
       rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
-      val params = getParametersFromJson(rr, testRelPath)
+      val params = getParametersFromJson(rr.stdout.parseJson.asJsObject, testRelPath)
 
       // should have 4, not 5 parameter definitions (i.e. don't define "extra" twice
       params.size should be(4)
-      validateParameter(params(0), "with", "path", true, "string", "Default description for 'with'")
-      validateParameter(params(1), "double", "path", true, "string", "Default description for 'double'")
-      validateParameter(params(2), "extra", "path", true, "string", "Default description for 'extra'")
-      validateParameter(params(3), "path", "path", true, "string", "Default description for 'path'")
+      validateParameter(params(0).asJsObject, "with", "path", true, "string", "Default description for 'with'")
+      validateParameter(params(1).asJsObject, "double", "path", true, "string", "Default description for 'double'")
+      validateParameter(params(2).asJsObject, "extra", "path", true, "string", "Default description for 'extra'")
+      validateParameter(params(3).asJsObject, "path", "path", true, "string", "Default description for 'path'")
 
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
@@ -192,14 +188,11 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
         response.statusCode should be(200)
         response
       }, 6, Some(2.second))
-      val jsonReponse = JSON.parseFull(response.asString()).asInstanceOf[Option[Map[String, String]]].get
-      jsonReponse.get("__ow_path").get should not be ("")
-      jsonReponse.get("__ow_path").get should include (testRelPathGet)
-    } catch {
-      case unknown: Throwable => exception = unknown
+      val jsonResponse = response.body.asString.parseJson.asJsObject
+
+      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
     } finally {
       apiDelete(basepathOrApiName = testBasePath)
     }
-    assert(exception == null)
   }
 }
