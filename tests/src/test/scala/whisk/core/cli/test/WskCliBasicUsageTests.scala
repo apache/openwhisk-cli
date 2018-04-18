@@ -57,6 +57,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   val wsk = new Wsk
   val defaultAction = Some(TestUtils.getTestActionFilename("hello.js"))
   val usrAgentHeaderRegEx = """\bUser-Agent\b": \[\s+"OpenWhisk\-CLI/1.\d+.*"""
+  // certain environments may return router IP address instead of api_host string causing a failure
+  // Set apiHostCheck to false to avoid apihost check
+  val apiHostCheck = true
 
   behavior of "Wsk CLI usage"
 
@@ -555,7 +558,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     withActivation(wsk.activation, run) { activation =>
       activation.response.status shouldBe "success"
       val fields = activation.response.result.get.convertTo[Map[String, String]]
-      fields("api_host") shouldBe WhiskProperties.getApiHostForAction
+      if (apiHostCheck) {
+        fields("api_host") shouldBe WhiskProperties.getApiHostForAction
+      }
       fields("api_key") shouldBe wskprops.authKey
       fields("namespace") shouldBe namespace
       fields("action_name") shouldBe s"/$namespace/$name"
