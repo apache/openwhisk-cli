@@ -44,12 +44,13 @@ export OPENWHISK_HOME
 #  Run scancode using the ASF Release configuration
 #
 UTILDIR="$( cd "${OPENWHISK_HOME:-$HOMEDIR/incubator-openwhisk-utilities}" && pwd )"
-export UTILDIR
-$(UTILDIR)/scancode/scanCode.py --config $(UTILDIR)/scancode/ASF-Release.cfg $TRAVIS_BUILD_DIR
+cd $UTILDIR
+scancode/scanCode.py --config scancode/ASF-Release.cfg $TRAVIS_BUILD_DIR
 
 #
 #  Run Golint
 #
+cd $TRAVIS_BUILD_DIR
 ./gradlew --console=plain goLint
 
 #
