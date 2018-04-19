@@ -43,7 +43,8 @@ export OPENWHISK_HOME
 #
 #  Run scancode using the ASF Release configuration
 #
-UTILDIR="$( cd "${OPENWHISK_HOME:-$HOMEDIR/incubator-openwhisk-utilities}" && pwd )"
+UTILDIR="$( cd "${UTILDIR:-$HOMEDIR/incubator-openwhisk-utilities}" && pwd )"
+export UTILDIR
 cd $UTILDIR
 scancode/scanCode.py --config scancode/ASF-Release.cfg $TRAVIS_BUILD_DIR
 
