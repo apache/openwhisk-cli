@@ -2433,7 +2433,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val limits = JsObject(
         "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
         "memory" -> memory.getOrElse(stdMemory).toMB.toInt.toJson,
-        "logs" -> logs.getOrElse(STD_LOGSIZE).toMB.toInt.toJson
+        "logs" -> logs.getOrElse(stdLogSize).toMB.toInt.toJson
       )
 
       val name = "ActionLimitTests" + Instant.now.toEpochMilli
@@ -2474,7 +2474,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     for {
       time <- Seq(None, Some(MIN_DURATION), Some(MAX_DURATION))
       mem <- Seq(None, Some(minMemory), Some(maxMemory))
-      log <- Seq(None, Some(MIN_LOGSIZE), Some(MAX_LOGSIZE))
+      log <- Seq(None, Some(minLogSize), Some(maxLogSize))
     } testLimit(time, mem, log)
 
     // Assert that invalid permutation are rejected
