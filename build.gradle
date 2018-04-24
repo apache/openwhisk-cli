@@ -176,6 +176,7 @@ task getGoLint(type: com.github.blindpirate.gogradle.Go) {
     go 'get -u github.com/golang/lint/golint'
 }
 
+
 task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
     // WARNING:  The single quotes are intentional!  The gogradle plugin will
     //           parse the command with the GString engine at execution time.
