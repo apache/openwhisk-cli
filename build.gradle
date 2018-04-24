@@ -173,7 +173,9 @@ resolveBuildDependencies.dependsOn(goI18n)
        The get step is needed to be sure a golint binary is available to run.
  */
 task getGoLint(type: com.github.blindpirate.gogradle.Go) {
-    go 'get -u github.com/golang/lint/golint'
+    run 'mkdir -p $GOPATH/src/golang.org/x/'
+    run 'git clone --depth 1 https://github.com/golang/lint.git $GOPATH/src/golang.org/x/lint'
+    go 'get -u golang.org/x/lint/golint'
 }
 
 task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
