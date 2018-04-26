@@ -158,20 +158,20 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       }
 
       val stderr = wsk.pkg.create(name, expectedExitCode = CONFLICT).stderr
-      stderr should include regex (s"""Unable to create package '$name': resource already exists \\(code \\d+\\)""")
+      stderr should include regex (s"""Unable to create package '$name': resource already exists \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject delete of package that does not exist" in {
     val name = "nonexistentPackage"
     val stderr = wsk.pkg.delete(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to delete package '$name'. The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to delete package '$name'. The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject get of package that does not exist" in {
     val name = "nonexistentPackage"
     val ns = wsk.namespace.whois()
     val stderr = wsk.pkg.get(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get package '$name': ${Messages.resourceDoesntExist(s"${ns}/${name}")} \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get package '$name': ${Messages.resourceDoesntExist(s"${ns}/${name}")} \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   behavior of "Wsk Action CLI"
@@ -214,25 +214,25 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       }
 
       val stderr = wsk.action.create(name, file, expectedExitCode = CONFLICT).stderr
-      stderr should include regex (s"""Unable to create action '$name': resource already exists \\(code \\d+\\)""")
+      stderr should include regex (s"""Unable to create action '$name': resource already exists \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject delete of action that does not exist" in {
     val name = "nonexistentAction"
     val stderr = wsk.action.delete(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to delete action '$name'. The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to delete action '$name'. The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject invocation of action that does not exist" in {
     val name = "nonexistentAction"
     val stderr = wsk.action.invoke(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to invoke action '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to invoke action '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject get of an action that does not exist" in {
     val name = "nonexistentAction"
     val stderr = wsk.action.get(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get action '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get action '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "create, and invoke an action that utilizes a docker container" in withAssetCleaner(wskprops) {
@@ -664,25 +664,25 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       }
 
       val stderr = wsk.trigger.create(name, expectedExitCode = CONFLICT).stderr
-      stderr should include regex (s"""Unable to create trigger '$name': resource already exists \\(code \\d+\\)""")
+      stderr should include regex (s"""Unable to create trigger '$name': resource already exists \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject delete of trigger that does not exist" in {
     val name = "nonexistentTrigger"
     val stderr = wsk.trigger.delete(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get trigger '$name'. The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get trigger '$name'. The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject get of trigger that does not exist" in {
     val name = "nonexistentTrigger"
     val stderr = wsk.trigger.get(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get trigger '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get trigger '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject firing of a trigger that does not exist" in {
     val name = "nonexistentTrigger"
     val stderr = wsk.trigger.fire(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to fire trigger '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to fire trigger '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "create and fire a trigger with a rule whose action has been deleted" in withAssetCleaner(wskprops) {
@@ -868,37 +868,37 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
 
       val stderr =
         wsk.rule.create(ruleName, trigger = triggerName, action = actionName, expectedExitCode = CONFLICT).stderr
-      stderr should include regex (s"""Unable to create rule '$ruleName': resource already exists \\(code \\d+\\)""")
+      stderr should include regex (s"""Unable to create rule '$ruleName': resource already exists \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject delete of rule that does not exist" in {
     val name = "nonexistentRule"
     val stderr = wsk.rule.delete(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to delete rule '$name'. The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to delete rule '$name'. The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject enable of rule that does not exist" in {
     val name = "nonexistentRule"
     val stderr = wsk.rule.enable(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to enable rule '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to enable rule '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject disable of rule that does not exist" in {
     val name = "nonexistentRule"
     val stderr = wsk.rule.disable(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to disable rule '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to disable rule '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject status of rule that does not exist" in {
     val name = "nonexistentRule"
     val stderr = wsk.rule.state(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get status of rule '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get status of rule '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject get of rule that does not exist" in {
     val name = "nonexistentRule"
     val stderr = wsk.rule.get(name, expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get rule '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get rule '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   behavior of "Wsk Namespace CLI"
@@ -955,19 +955,19 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   it should "reject get of activation that does not exist" in {
     val name = "0" * 32
     val stderr = wsk.activation.get(Some(name), expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get activation '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get activation '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject logs of activation that does not exist" in {
     val name = "0" * 32
     val stderr = wsk.activation.logs(Some(name), expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get logs for activation '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get logs for activation '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject result of activation that does not exist" in {
     val name = "0" * 32
     val stderr = wsk.activation.result(Some(name), expectedExitCode = NOT_FOUND).stderr
-    stderr should include regex (s"""Unable to get result for activation '$name': The requested resource does not exist. \\(code \\d+\\)""")
+    stderr should include regex (s"""Unable to get result for activation '$name': The requested resource does not exist. \\(code [0-9a-zA-Z_-]+\\)""")
   }
 
   it should "reject activation request when using activation ID with --last Flag" in withAssetCleaner(wskprops) {
