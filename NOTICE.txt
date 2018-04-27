@@ -5,38 +5,6 @@ This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
 ========================================================================
-BSD 3-Clause "New" or "Revised" License
-========================================================================
-
-The following components are provided under the BSD 3-Clause "New" or "Revised" License. See project link for details.
-
-
-     (BSD 3-Clause "New" or "Revised" License) go-querystring (google/go-querystring - https://github.com/google/go-querystring)
-     (BSD 3-Clause "New" or "Revised" License) pflag (spf13/pflag - https://github.com/spf13/pflag)
-     (BSD 3-Clause "New" or "Revised" License) sys (golang/sys - https://github.com/golang/sys)
-
-========================================================================
-MIT License
-========================================================================
-
-The following components are provided under the MIT License. See project link for details.
-
-     (MIT License) color (fatih/color - https://github.com/fatih/color)
-     (MIT License) go-colorable (mattn/go-colorable - https://github.com/mattn/go-colorable)
-     (MIT License) go-isatty (mattn/go-isatty - https://github.com/mattn/go-isatty)
-     (MIT License) go-homedir (mitchellh/go-homedir - https://github.com/mitchellh/go-homedir)
-     (MIT License) go-i18n (nicksnyder/go-i18n - https://github.com/nicksnyder/go-i18n)
-     (MIT) go-prettyjson (hokaccha/go-prettyjson - https://github.com/hokaccha/go-prettyjson)
-
-========================================================================
-Both MIT License and BSD 3-Clause "New" or "Revised" License
-========================================================================
-
-The following components are provided under both the MIT License and the BSD 3-Clause "New" or "Revised" License. See project link for details.
-
-     (MIT License) (BSD 3-Clause "New" or "Revised" License) yaml (ghodss/yaml - https://github.com/ghodss/yaml)
-
-========================================================================
 NOTICE files
 ========================================================================
 
