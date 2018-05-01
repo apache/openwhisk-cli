@@ -392,13 +392,15 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
-        val cmd = Seq("activation", "logs", "--strip", activation.activationId)
-        val run = wsk.cli(cmd ++ wskprops.overrides ++ auth,
-                          expectedExitCode = SUCCESS_EXIT)
-        run.stdout should {
-          be("this is stdout\nthis is stderr\n") or
-            be("this is stderr\nthis is stdout\n")
-        }
+        retry({
+          val cmd = Seq("activation", "logs", "--strip", activation.activationId)
+          val run = wsk.cli(cmd ++ wskprops.overrides ++ auth,
+                            expectedExitCode = SUCCESS_EXIT)
+          run.stdout should {
+            be("this is stdout\nthis is stderr\n") or
+              be("this is stderr\nthis is stdout\n")
+          }
+        }, 10, Some(1.second))
       }
   }
 
