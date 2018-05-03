@@ -283,7 +283,7 @@ func printFullActivationList(activations []whisk.Activation) {
 func printActivationLogs(logs []string) {
 	for _, log := range logs {
 		if Flags.activation.strip {
-			fmt.Printf("%s\n", log[39:])
+			fmt.Printf("%s\n", log[strings.Index(log, ": ")+2:])
 		} else {
 			fmt.Printf("%s\n", log)
 		}
