@@ -27,10 +27,10 @@ dependencies {
         build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk','version':'e452b524cd745f71c913c5acccf72a8daba6dc71','transitive':false])
         // END - Imported from Godeps
         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
-        test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
-        test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
+        //test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
+        //test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
         test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
-        test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
+        //test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
     }
 }
 
