@@ -283,7 +283,14 @@ func printFullActivationList(activations []whisk.Activation) {
 func printActivationLogs(logs []string) {
 	for _, log := range logs {
 		if Flags.activation.strip {
-			fmt.Printf("%s\n", log[strings.Index(log, ": ")+2:])
+			regex := regexp.MustCompile("[a-zA-Z0-9\\s]+(stdout|stderr):\\s(.*)")
+			match := regex.FindStringSubmatch(log)
+
+			if len(match) > 2 && len(match[2]) > 0 {
+				fmt.Printf("%s\n", match[2])
+			} else {
+				fmt.Printf("%s\n", log)
+			}
 		} else {
 			fmt.Printf("%s\n", log)
 		}
