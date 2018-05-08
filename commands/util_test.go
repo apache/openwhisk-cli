@@ -25,33 +25,22 @@ import (
 )
 
 func TestStripTimestamp(t *testing.T) {
-	logs := []string{"2018-05-02T19:33:32.829992819Z stdout: this is stdout stderr: this is still stdout",
-		"2018-05-02T19:33:32.829992819Z stderr: this is stderr stdout: this is still stderr",
-		"2018-05-02T19:33:32.89Z stdout: this is stdout",
-		"2018-05-02T19:33:32.89Z stderr: this is stderr",
-		"anything stdout: this is stdout",
-		"anything stderr: this is stderr",
-		"stdout: this is stdout",
-		"stderr: this is stderr",
-		"this is stdout",
-		"this is stderr",
-		"something",
-		""}
-	expectedLogs := []string{"this is stdout stderr: this is still stdout",
-		"this is stderr stdout: this is still stderr",
-		"this is stdout",
-		"this is stderr",
-		"this is stdout",
-		"this is stderr",
-		"this is stdout",
-		"this is stderr",
-		"this is stdout",
-		"this is stderr",
-		"something",
-		""}
+	logs := map[string]string{
+		"2018-05-02T19:33:32.829992819Z stdout: this is stdout stderr: this is still stdout": "this is stdout stderr: this is still stdout",
+		"2018-05-02T19:33:32.829992819Z stderr: this is stderr stdout: this is still stderr": "this is stderr stdout: this is still stderr",
+		"2018-05-02T19:33:32.89Z stdout: this is stdout":                                     "this is stdout",
+		"2018-05-02T19:33:32.89Z stderr: this is stderr":                                     "this is stderr",
+		"anything stdout: this is stdout":                                                    "this is stdout",
+		"anything stderr: this is stderr":                                                    "this is stderr",
+		"stdout: this is stdout":                                                             "this is stdout",
+		"stderr: this is stderr":                                                             "this is stderr",
+		"this is stdout":                                                                     "this is stdout",
+		"this is stderr":                                                                     "this is stderr",
+		"something":                                                                          "something",
+		"":                                                                                   ""}
 	assert := assert.New(t)
 
-	for i := 0; i < len(logs); i++ {
-		assert.Equal(stripTimestamp(logs[i]), expectedLogs[i])
+	for log, expected := range logs {
+		assert.Equal(stripTimestamp(log), expected)
 	}
 }
