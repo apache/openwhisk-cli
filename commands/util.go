@@ -282,7 +282,7 @@ func printFullActivationList(activations []whisk.Activation) {
 
 func printStrippedActivationLogs(logs []string) {
 	for _, log := range logs {
-		regex := regexp.MustCompile("[a-zA-Z0-9\\s]+(stdout|stderr):\\s(.*)")
+		regex := regexp.MustCompile("[a-zA-Z0-9\\s]*(stdout|stderr):\\s(.*)")
 		match := regex.FindStringSubmatch(log)
 
 		if len(match) > 2 && len(match[2]) > 0 {
