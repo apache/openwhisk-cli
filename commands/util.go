@@ -225,6 +225,19 @@ func makeDefaultHeader(collection interface{}) string {
 	return defaultHeader
 }
 
+func stripTimestamp(log string) (strippedLog string) {
+	regex := regexp.MustCompile("[a-zA-Z0-9\\s]*(stdout|stderr):\\s(.*)")
+	match := regex.FindStringSubmatch(log)
+
+	if len(match) > 2 && len(match[2]) > 0 {
+		strippedLog = match[2]
+	} else {
+		strippedLog = log
+	}
+
+	return strippedLog
+}
+
 func printFullList(collection interface{}) {
 	switch collection := collection.(type) {
 	case []whisk.Action:
@@ -280,14 +293,15 @@ func printFullActivationList(activations []whisk.Activation) {
 	}
 }
 
+func printStrippedActivationLogs(logs []string) {
+	for _, log := range logs {
+		fmt.Printf("%s\n", stripTimestamp(log))
+	}
+}
+
 func printActivationLogs(logs []string) {
 	for _, log := range logs {
-		if Flags.activation.strip {
-			fmt.Printf("%s\n", log[39:])
-		} else {
-			fmt.Printf("%s\n", log)
-		}
-
+		fmt.Printf("%s\n", log)
 	}
 }
 

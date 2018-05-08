@@ -202,7 +202,12 @@ var activationLogsCmd = &cobra.Command{
 			return werr
 		}
 
-		printActivationLogs(activation.Logs)
+		if !Flags.activation.strip {
+			printActivationLogs(activation.Logs)
+		} else {
+			printStrippedActivationLogs(activation.Logs)
+		}
+
 		return nil
 	},
 }
