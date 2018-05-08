@@ -19,7 +19,12 @@
 
 package commands
 
-func ActivationLogsStripTest() {
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestStripTimestamp(t *testing.T) {
 	logs := []string{"2018-05-02T19:33:32.829992819Z stdout: this is stdout stderr: this is still stdout",
 		"2018-05-02T19:33:32.829992819Z stderr: this is stderr stdout: this is still stderr",
 		"2018-05-02T19:33:32.89Z stdout: this is stdout",
@@ -30,18 +35,23 @@ func ActivationLogsStripTest() {
 		"stderr: this is stderr",
 		"this is stdout",
 		"this is stderr",
+		"something",
 		""}
-	printStrippedActivationLogs(logs)
-	// Output:
-	// this is stdout stderr: this is still stdout
-	// this is stderr stdout: this is still stderr
-	// this is stdout
-	// this is stderr
-	// this is stdout
-	// this is stderr
-	// this is stdout
-	// this is stderr
-	// this is stdout
-	// this is stderr
-	//
+	expectedLogs := []string{"this is stdout stderr: this is still stdout",
+		"this is stderr stdout: this is still stderr",
+		"this is stdout",
+		"this is stderr",
+		"this is stdout",
+		"this is stderr",
+		"this is stdout",
+		"this is stderr",
+		"this is stdout",
+		"this is stderr",
+		"something",
+		""}
+	assert := assert.New(t)
+
+	for i := 0; i < len(logs); i++ {
+		assert.Equal(stripTimestamp(logs[i]), expectedLogs[i])
+	}
 }
