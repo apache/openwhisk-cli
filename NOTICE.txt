@@ -3,29 +3,3 @@ Copyright 2016-2018 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
-
-========================================================================
-NOTICE files
-========================================================================
-
-The following NOTICEs are pertain to software distributed with this project.
-
-
-// ------------------------------------------------------------------
-// NOTICE file corresponding to the section 4d of The Apache License,
-// Version 2.0, in this case for
-// ------------------------------------------------------------------
-
-// ---------------------------------------------------
-// NOTICE file of apache/incubator-openwhisk-client-go
-// ---------------------------------------------------
-Apache OpenWhisk Client Go
-Copyright 2016-2018 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-// ----------------------------
-// NOTICE file of go-yaml/yaml
-// ----------------------------
-Copyright 2011-2016 Canonical Ltd.
