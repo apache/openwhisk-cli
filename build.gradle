@@ -124,6 +124,12 @@ OpenWhiskPlatform.zipFileName =
 project.ext.packageVersion =
         rootProject.findProperty('packageVersion') ?: 'latest'
 
+project.ext.cliBuildLocation =
+        rootProject.findProperty('cliBuildLocation') ?: './build'
+
+project.ext.cliReleaseLocation =
+        rootProject.findProperty('cliReleaseLocation') ?: './release'
+
 String buildFileName = System.env['build_file_name'] ?:
         (rootProject.findProperty('buildFileName') ?: 'wsk')
 
@@ -192,7 +198,7 @@ goBuild {
     //           parse the command with the GString engine at execution time.
     go(['build',
       '-ldflags', "-X main.CLI_BUILD_TIME=${now}" as String,
-      '-o', './build/${GOOS}-${GOARCH}/'+buildFileName+'${GOEXE}',
+      '-o', cliBuildLocation+'/${GOOS}-${GOARCH}/'+buildFileName+'${GOEXE}',
       golang.packagePath ] as List<String>)
 }
 
@@ -201,8 +207,8 @@ gofmt {
 }
 
 task compile(type: Copy, dependsOn: goBuild) {
-    destinationDir = file('./build')
-    from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
+    destinationDir = file(cliBuildLocation)
+    from("${cliBuildLocation}/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
 }
 
 task build(type: DefaultTask, dependsOn: compile)
@@ -216,9 +222,9 @@ task individualArchives(
         task("release${p.goOs.capitalize()}${p.goArch.capitalize()}",
             type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: compile) {
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
-                destinationDir = file('./release')
+                destinationDir = file(cliReleaseLocation)
                 baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
-                from "./build/${p.goOs}-${p.goArch}/"
+                from "${cliBuildLocation}/${p.goOs}-${p.goArch}/"
                 include "${buildFileName}*"
                 from "./"
                 include "LICENSE.txt", "NOTICE.txt", "README.md"
@@ -244,18 +250,18 @@ task index() {
     }
 
     doLast {
-        mkdir('./build')
-        file('./build/content.json').text = groovy.json.JsonOutput.toJson(["cli": content])
+        mkdir(cliBuildLocation)
+        file("${cliBuildLocation}/content.json").text = groovy.json.JsonOutput.toJson(["cli": content])
     }
 }
 
 task releaseBinaries(type: Tar, dependsOn: [individualArchives, index]) {
     compression = Compression.GZIP
-    destinationDir = file('./release')
+    destinationDir = file(cliReleaseLocation)
     baseName = "${OpenWhiskPlatform.zipFileName}-${packageVersion}-all"
-    from('./build/content.json') { into('.') }
+    from("${cliBuildLocation}/content.json") { into('.') }
     rootProject.platforms.each() { p ->
-        from('./release/') {
+        from(cliReleaseLocation) {
             include("${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}.*")
             into p.archiveDirName
             rename { p.archiveFileName }
@@ -264,5 +270,5 @@ task releaseBinaries(type: Tar, dependsOn: [individualArchives, index]) {
 }
 
 task clean(type: Delete, dependsOn: goClean) {
-    delete './build', './release'
+    delete cliBuildLocation, cliReleaseLocation
 }
