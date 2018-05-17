@@ -400,7 +400,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
             be("this is stdout\nthis is stderr\n") or
               be("this is stderr\nthis is stdout\n")
           }
-        }, 10, Some(1.second))
+        }, 120, Some(1.second))
       }
   }
 
