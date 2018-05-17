@@ -109,8 +109,9 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     rr.stdout should include(testbasepath + testrelpath)
   }
 
-  def verifyApiGet(rr: RunResult): Unit = {
+  def verifyApiGet(rr: RunResult, apihost:String): Unit = {
     rr.stdout should include regex (s""""operationId":\\s+"getPathWithSub_pathsInIt"""")
+    rr.stdout should include regex (s""""target-url":\\s+"https://$apihost""")
   }
 
   def verifyApiFullList(rr: RunResult,
@@ -447,7 +448,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       rr = apiList(basepathOrApiName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
       verifyApiFullList(rr, clinamespace, actionName, testurlop, testbasepath, testrelpath, testapiname)
       rr = apiGet(basepathOrApiName = Some(testbasepath))
-      verifyApiGet(rr)
+      verifyApiGet(rr, wskprops.apihost)
       val deleteresult = apiDelete(basepathOrApiName = testbasepath)
       verifyApiDeleted(deleteresult)
     } finally {
@@ -455,6 +456,43 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
     }
   }
+
+  it should "verify successful creation and deletion of a new API when apihost specifies the protocol" in {
+    val testName = "CLI_APIGWTEST2"
+    val testbasepath = "/" + testName + "_bp"
+    val testrelpath = "/path/with/sub_paths/in/it"
+    val testnewrelpath = "/path_new"
+    val testurlop = "get"
+    val testapiname = testName + " API Name"
+    val actionName = testName + "_action"
+    try {
+      println("cli namespace: " + clinamespace)
+
+      // Create the action for the API.  It must be a "web-action" action.
+      val file = TestUtils.getTestActionFilename(s"echo.js")
+      wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
+
+      val explicitProtocol = if (wskprops.apihost.startsWith("http")) "" else "https://"
+      val wskpropsOverride = WskProps(apihost = explicitProtocol + wskprops.apihost)
+      var rr = apiCreate(
+        basepath = Some(testbasepath),
+        relpath = Some(testrelpath),
+        operation = Some(testurlop),
+        action = Some(actionName),
+        apiname = Some(testapiname))(wskpropsOverride)
+      verifyApiCreated(rr)
+      rr = apiList(basepathOrApiName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
+      verifyApiFullList(rr, clinamespace, actionName, testurlop, testbasepath, testrelpath, testapiname)
+      rr = apiGet(basepathOrApiName = Some(testbasepath))
+      verifyApiGet(rr, wskprops.apihost)
+      val deleteresult = apiDelete(basepathOrApiName = testbasepath)
+      verifyApiDeleted(deleteresult)
+    } finally {
+      wsk.action.delete(name = actionName, expectedExitCode = DONTCARE_EXIT)
+      apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
+    }
+  }
+
 
   it should "verify get API name " in {
     val testName = "CLI_APIGWTEST3"
