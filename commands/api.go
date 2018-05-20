@@ -184,7 +184,7 @@ var apiCreateCmd = &cobra.Command{
 				whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 			return whiskErr
 		} else if len(args) == 0 && Flags.api.configfile != "" {
-			api, err = parseSwaggerApi()
+			api, err = parseSwaggerApi(Flags.api.configfile, Client.Config.Namespace)
 			if err != nil {
 				whisk.Debug(whisk.DbgError, "parseSwaggerApi() error: %s\n", err)
 				errMsg := wski18n.T("Unable to parse swagger file: {{.err}}", map[string]interface{}{"err": err})
@@ -929,9 +929,9 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 	return api, qName, err
 }
 
-func parseSwaggerApi() (*whisk.Api, error) {
+func parseSwaggerApi(configfile string, namespace string) (*whisk.Api, error) {
 	// Test is for completeness, but this situation should only arise due to an internal error
-	if len(Flags.api.configfile) == 0 {
+	if len(configfile) == 0 {
 		whisk.Debug(whisk.DbgError, "No swagger file is specified\n")
 		errMsg := wski18n.T("A configuration file was not specified.")
 		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
@@ -939,18 +939,18 @@ func parseSwaggerApi() (*whisk.Api, error) {
 		return nil, whiskErr
 	}
 
-	swagger, err := ReadFile(Flags.api.configfile)
+	swagger, err := ReadFile(configfile)
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", Flags.api.configfile, err)
+		whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", configfile, err)
 		errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
-			map[string]interface{}{"name": Flags.api.configfile, "err": err})
+			map[string]interface{}{"name": configfile, "err": err})
 		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 		return nil, whiskErr
 	}
 
 	// Check if this swagger is in JSON or YAML format
-	isYaml := strings.HasSuffix(Flags.api.configfile, yamlFileExtension) || strings.HasSuffix(Flags.api.configfile, ymlFileExtension)
+	isYaml := strings.HasSuffix(configfile, yamlFileExtension) || strings.HasSuffix(configfile, ymlFileExtension)
 	if isYaml {
 		whisk.Debug(whisk.DbgInfo, "Converting YAML formated API configuration into JSON\n")
 		jsonbytes, err := yaml.YAMLToJSON([]byte(swagger))
@@ -968,22 +968,24 @@ func parseSwaggerApi() (*whisk.Api, error) {
 	swaggerObj := new(whisk.ApiSwagger)
 	err = json.Unmarshal([]byte(swagger), swaggerObj)
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "JSON parse of '%s' error: %s\n", Flags.api.configfile, err)
+		whisk.Debug(whisk.DbgError, "JSON parse of '%s' error: %s\n", configfile, err)
 		errMsg := wski18n.T("Error parsing swagger file '{{.name}}': {{.err}}",
-			map[string]interface{}{"name": Flags.api.configfile, "err": err})
+			map[string]interface{}{"name": configfile, "err": err})
 		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 		return nil, whiskErr
 	}
+
 	if swaggerObj.BasePath == "" || swaggerObj.SwaggerName == "" || swaggerObj.Info == nil || swaggerObj.Paths == nil {
-		whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", Flags.api.configfile, err)
+		whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", configfile, err)
 		errMsg := wski18n.T("Swagger file is invalid (missing basePath, info, paths, or swagger fields)")
 		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 		return nil, whiskErr
 	}
+
 	if _, ok := isValidBasepath(swaggerObj.BasePath); !ok {
-		whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", Flags.api.configfile, err)
+		whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", configfile, err)
 		errMsg := wski18n.T("Swagger file basePath must start with a leading slash (/)")
 		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
@@ -991,7 +993,7 @@ func parseSwaggerApi() (*whisk.Api, error) {
 	}
 
 	api := new(whisk.Api)
-	api.Namespace = Client.Config.Namespace
+	api.Namespace = namespace
 	api.Swagger = swagger
 
 	return api, nil
