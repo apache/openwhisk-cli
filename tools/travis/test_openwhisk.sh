@@ -73,7 +73,8 @@ cd $TRAVIS_BUILD_DIR
 #
 #  Run Unit and native tests
 #
-./gradlew --console=plain --info goTest -PgoTags=unit,native
+./gradlew --console=plain --info goTest -PgoTags=unit
+./gradlew --console=plain --info goTest -PgoTags=native
 
 #
 #  Set up the OpenWhisk environment for integration testing
