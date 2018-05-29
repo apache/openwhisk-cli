@@ -241,11 +241,13 @@ task individualArchives(
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file(cliReleaseLocation)
                 baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
-                from "${cliBuildLocation}/${p.goOs}-${p.goArch}/"
-                include "${buildFileName}*"
-                from "./"
-                include "LICENSE.txt", "NOTICE.txt", "README.md"
-                exclude "wski18n"
+                from("${cliBuildLocation}/${p.goOs}-${p.goArch}/") {
+                    include "${buildFileName}*"
+                }
+                from("./") {
+                    include "LICENSE.txt", "NOTICE.txt", "README.md"
+                    exclude "wski18n"
+                }
             }
     })
 
