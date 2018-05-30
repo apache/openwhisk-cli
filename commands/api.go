@@ -913,7 +913,11 @@ func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, er
 	} else {
 		urlActionPackage = "default"
 	}
-	api.Action.BackendUrl = "https://" + Client.Config.Host + "/api/v1/web/" + qName.GetNamespace() + "/" + urlActionPackage + "/" + qName.GetEntity() + ".http"
+	backendUrl := Client.Config.Host + "/api/v1/web/" + qName.GetNamespace() + "/" + urlActionPackage + "/" + qName.GetEntity() + ".http"
+	if !strings.HasPrefix(backendUrl, "http") {
+		backendUrl = "https://" + backendUrl
+	}
+	api.Action.BackendUrl = backendUrl
 	api.Action.BackendMethod = api.GatewayMethod
 	api.Action.Name = qName.GetEntityName()
 	api.Action.Namespace = qName.GetNamespace()
