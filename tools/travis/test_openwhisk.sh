@@ -62,7 +62,7 @@ export OPENWHISK_HOME
 UTILDIR="$( cd "${UTILDIR:-$HOMEDIR/incubator-openwhisk-utilities}" && pwd )"
 export UTILDIR
 cd $UTILDIR
-scancode/scanCode.py --config scancode/ASF-Release-v2.cfg $TRAVIS_BUILD_DIR
+scancode/scanCode.py --config scancode/ASF-Release.cfg $TRAVIS_BUILD_DIR
 
 #
 #  Run Golint
