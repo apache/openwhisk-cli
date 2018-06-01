@@ -23,6 +23,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class WskCliBasicSwift311Tests extends WskBasicSwift3Tests {
+class WskCliBasicSwift311Tests extends WskBasicSwiftTests {
   override val wsk = new Wsk
 }

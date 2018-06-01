@@ -18,3 +18,11 @@ incubator-openwhisk-cli.iml
 wski18n/i18n_resources.go
 bin/
 tests/build/
+
+# Eclipse
+bin/
+**/.project
+.settings/
+.classpath
+.cache-main
+.cache-tests
