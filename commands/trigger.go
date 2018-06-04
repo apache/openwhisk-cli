@@ -117,7 +117,8 @@ var triggerFireCmd = &cobra.Command{
 
 		// TODO get rid of these global modifiers
 		Client.Namespace = qualifiedName.GetNamespace()
-		trigResp, _, err := Client.Triggers.Fire(qualifiedName.GetEntityName(), parameters)
+
+		trigResp, resp, err := Client.Triggers.Fire(qualifiedName.GetEntityName(), parameters)
 		if err != nil {
 			whisk.Debug(whisk.DbgError, "Client.Triggers.Fire(%s, %#v) failed: %s\n", qualifiedName.GetEntityName(), parameters, err)
 			errStr := wski18n.T("Unable to fire trigger '{{.name}}': {{.err}}",
@@ -127,6 +128,16 @@ var triggerFireCmd = &cobra.Command{
 			return werr
 		}
 
+		if resp.StatusCode == 204 {
+			fmt.Fprintf(color.Output,
+				wski18n.T("trigger /{{.namespace}}/{{.name}} did not fire as it is not associated with an active rule(s)\n",
+					map[string]interface{}{
+						"namespace": boldString(qualifiedName.GetNamespace()),
+						"name":      boldString(qualifiedName.GetEntityName())}))
+
+			return nil
+		}
+
 		fmt.Fprintf(color.Output,
 			wski18n.T("{{.ok}} triggered /{{.namespace}}/{{.name}} with id {{.id}}\n",
 				map[string]interface{}{
@@ -134,6 +145,7 @@ var triggerFireCmd = &cobra.Command{
 					"namespace": boldString(qualifiedName.GetNamespace()),
 					"name":      boldString(qualifiedName.GetEntityName()),
 					"id":        boldString(trigResp.ActivationId)}))
+
 		return nil
 	},
 }

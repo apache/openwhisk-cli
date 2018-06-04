@@ -626,6 +626,10 @@
     "translation": "{{.ok}} triggered /{{.namespace}}/{{.name}} with id {{.id}}\n"
   },
   {
+    "id": "trigger /{{.namespace}}/{{.name}} did not fire as it is not associated with an active rule(s)\n",
+    "translation": "trigger /{{.namespace}}/{{.name}} did not fire as it is not associated with an active rule(s)\n"
+  },
+  {
     "id": "create new trigger",
     "translation": "create new trigger"
   },
