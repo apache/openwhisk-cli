@@ -20,6 +20,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/apache/incubator-openwhisk-cli/wski18n"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -128,9 +129,9 @@ var triggerFireCmd = &cobra.Command{
 			return werr
 		}
 
-		if resp.StatusCode == 204 {
+		if resp.StatusCode == http.StatusNoContent {
 			fmt.Fprintf(color.Output,
-				wski18n.T("trigger /{{.namespace}}/{{.name}} did not fire as it is not associated with an active rule(s)\n",
+				wski18n.T("trigger /{{.namespace}}/{{.name}} did not fire as it is not associated with an active rule\n",
 					map[string]interface{}{
 						"namespace": boldString(qualifiedName.GetNamespace()),
 						"name":      boldString(qualifiedName.GetEntityName())}))

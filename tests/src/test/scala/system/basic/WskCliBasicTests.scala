@@ -757,10 +757,8 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
         trigger.create(triggerName)
       }
 
-      val rr = wsk.trigger.fire(triggerName)
-      val ns = wsk.namespace.whois()
-
-      rr.stdout should include regex(s"trigger /.*/$triggerName did not fire as it is not associated with an active rule\\(s\\)")
+      wsk.trigger.fire(triggerName)
+        .stdout should include regex(s"trigger /.*/$triggerName did not fire as it is not associated with an active rule")
   }
 
   behavior of "Wsk Rule CLI"
