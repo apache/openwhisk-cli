@@ -21,24 +21,6 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
 
-# Disclaimer
-
-This project is currently on an experimental stage. We periodically synchronize
-the source code and test cases of this repository with the [CLI
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
-and the [test
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tests) in
-OpenWhisk. The framework of test cases is under construction for this
-repository. Please contribute to the [CLI
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
-in OpenWhisk for any CLI changes, before we officially announce the separation
-of OpenWhisk CLI from OpenWhisk.
-
-The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that
-provides a consistent interface to interact with OpenWhisk services. With this
-tool to download and configure, you are able to manage OpenWhisk services from
-the command line and automate them through scripts.
-
 # Where to download the binary of OpenWhisk CLI
 
 The OpenWhisk CLI is available on the release page: [click here to
@@ -189,3 +171,23 @@ Travis CI as the continuous delivery service for Linux and Mac. OpenWhisk CLI is
 a Go project. Currently Travis CI supports the environments of Linux and Mac,
 but it is not available for Windows. We will add support of AppVeyor CI in
 future to run the test cases and build the binary for Windows.
+
+# Disclaimer
+
+Apache OpenWhisk Command Line Interface(CLI) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
+
+This project is currently on an experimental stage. We periodically synchronize
+the source code and test cases of this repository with the [CLI
+folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
+and the [test
+folder](https://github.com/apache/incubator-openwhisk/tree/master/tests) in
+OpenWhisk. The framework of test cases is under construction for this
+repository. Please contribute to the [CLI
+folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
+in OpenWhisk for any CLI changes, before we officially announce the separation
+of OpenWhisk CLI from OpenWhisk.
+
+The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that
+provides a consistent interface to interact with OpenWhisk services. With this
+tool to download and configure, you are able to manage OpenWhisk services from
+the command line and automate them through scripts.
