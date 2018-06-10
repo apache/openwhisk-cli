@@ -155,9 +155,8 @@ var actionInvokeCmd = &cobra.Command{
 	PreRunE:       SetupClientConfig,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
-		var parameters interface{}
 		var qualifiedName = new(QualifiedName)
-		var paramArgs []string
+		var parameters interface{}
 
 		if whiskErr := CheckArgs(
 			args,
@@ -172,26 +171,49 @@ var actionInvokeCmd = &cobra.Command{
 			return NewQualifiedNameError(args[0], err)
 		}
 
-		Client.Namespace = qualifiedName.GetNamespace()
-		paramArgs = Flags.common.param
-
-		if len(paramArgs) > 0 {
-			if parameters, err = getJSONFromStrings(paramArgs, false); err != nil {
-				return getJSONFromStringsParamError(paramArgs, false, err)
-			}
+		if parameters, err = getParameters(Flags.common.param); err != nil {
+			return err
 		}
+
 		if Flags.action.result {
 			Flags.common.blocking = true
 		}
 
-		res, _, err := Client.Actions.Invoke(
-			qualifiedName.GetEntityName(),
+		res, err := invokeAction(
+			*qualifiedName,
 			parameters,
 			Flags.common.blocking,
 			Flags.action.result)
 
 		return handleInvocationResponse(*qualifiedName, parameters, res, err)
 	},
+}
+
+func getParameters(params []string) (interface{}, error) {
+	var parameters interface{}
+	var err error
+
+	if len(params) > 0 {
+		if parameters, err = getJSONFromStrings(params, false); err != nil {
+			return nil, getJSONFromStringsParamError(params, false, err)
+		}
+	}
+	return parameters, nil
+}
+
+func invokeAction(
+	qualifiedName QualifiedName,
+	parameters interface{},
+	blocking bool,
+	result bool) (map[string]interface{}, error) {
+	// TODO remove all global modifiers
+	Client.Namespace = qualifiedName.GetNamespace()
+	res, _, err := Client.Actions.Invoke(
+		qualifiedName.GetEntityName(),
+		parameters,
+		blocking,
+		result)
+	return res, err
 }
 
 func handleInvocationResponse(
