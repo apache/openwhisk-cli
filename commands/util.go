@@ -27,6 +27,8 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 
 	"github.com/fatih/color"
+	"github.com/mattn/go-colorable"
+
 	//prettyjson "github.com/hokaccha/go-prettyjson"  // See prettyjson comment below
 	"archive/tar"
 	"archive/zip"
@@ -1132,4 +1134,55 @@ func contains(arr []string, element string) bool {
 		}
 	}
 	return false
+}
+
+func ExitOnError(err error) {
+	if err == nil {
+		return
+	}
+
+	whisk.Debug(whisk.DbgInfo, "err object type: %s\n", reflect.TypeOf(err).String())
+
+	T := wski18n.T
+	var exitCode int = 0
+	var displayUsage bool = false
+	var displayMsg bool = false
+	var msgDisplayed bool = true
+	var displayPrefix bool = true
+
+	werr, isWskError := err.(*whisk.WskError) // Is the err a WskError?
+	if isWskError {
+		whisk.Debug(whisk.DbgError, "Got a *whisk.WskError error: %#v\n", werr)
+		displayUsage = werr.DisplayUsage
+		displayMsg = werr.DisplayMsg
+		msgDisplayed = werr.MsgDisplayed
+		displayPrefix = werr.DisplayPrefix
+		exitCode = werr.ExitCode
+	} else {
+		whisk.Debug(whisk.DbgError, "Got some other error: %s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+
+		displayUsage = false // Cobra already displayed the usage message
+		exitCode = 1
+	}
+
+	outputStream := colorable.NewColorableStderr()
+
+	// If the err msg should be displayed to the console and it has not already been
+	// displayed, display it now.
+	if displayMsg && !msgDisplayed && displayPrefix && exitCode != 0 {
+		fmt.Fprintf(outputStream, "%s%s\n", color.RedString(T("error: ")), err)
+	} else if displayMsg && !msgDisplayed && !displayPrefix && exitCode != 0 {
+		fmt.Fprintf(outputStream, "%s\n", err)
+	} else if displayMsg && !msgDisplayed && exitCode == 0 {
+		fmt.Fprintf(outputStream, "%s\n", err)
+	}
+
+	// Displays usage
+	if displayUsage {
+		fmt.Fprintf(outputStream, T("Run '{{.Name}} --help' for usage.\n",
+			map[string]interface{}{"Name": WskCmd.CommandPath()}))
+	}
+
+	os.Exit(exitCode)
 }
