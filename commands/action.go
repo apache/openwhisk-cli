@@ -171,10 +171,7 @@ var actionInvokeCmd = &cobra.Command{
 			return NewQualifiedNameError(args[0], err)
 		}
 
-		if parameters, err = getParameters(Flags.common.param); err != nil {
-			return err
-		}
-
+		parameters = getParameters(Flags.common.param, false, false)
 		blocking := Flags.common.blocking || Flags.action.result
 		resultOnly := Flags.action.result
 		header := !resultOnly
@@ -186,18 +183,6 @@ var actionInvokeCmd = &cobra.Command{
 			resultOnly)
 		return handleInvocationResponse(*qualifiedName, blocking, header, res, err)
 	},
-}
-
-func getParameters(params []string) (interface{}, error) {
-	var parameters interface{}
-	var err error
-
-	if len(params) > 0 {
-		if parameters, err = getJSONFromStrings(params, false); err != nil {
-			return nil, getJSONFromStringsParamError(params, false, err)
-		}
-	}
-	return parameters, nil
 }
 
 func invokeAction(

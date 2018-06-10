@@ -53,6 +53,45 @@ func csvToQualifiedActions(artifacts string) []string {
 	return res
 }
 
+/**
+ * Processes command line to retrieve pairs of key-value pairs, where the value must be valid JSON.
+ *
+ * Parameters and annotations are handled the same way. The flag here is only for generating an error messages
+ * specific to one or the other.
+ *
+ * NOTE: this function will exit in case of a processing error since it indicates a problem parsing parameters.
+ *
+ * @return either an array or a JSON object (map) formatted representation of the key-value pairs.
+ */
+func getParameters(params []string, keyValueFormat bool, annotation bool) interface{} {
+	var parameters interface{}
+	var err error
+
+	if !annotation {
+		whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", params)
+	} else {
+		whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", params)
+	}
+
+	parameters, err = getJSONFromStrings(params, keyValueFormat)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %s) failed: %s\n", params, keyValueFormat, err)
+		var errStr string
+
+		if !annotation {
+			errStr = wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
+				map[string]interface{}{"param": fmt.Sprintf("%#v", params), "err": err})
+		} else {
+			errStr = wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
+				map[string]interface{}{"annotation": fmt.Sprintf("%#v", params), "err": err})
+		}
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		ExitOnError(werr)
+	}
+
+	return parameters
+}
+
 func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
 	var data map[string]interface{}
 	var res interface{}
@@ -68,6 +107,10 @@ func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, err
 		}
 
 		whisk.Debug(whisk.DbgInfo, "Created map '%v' from '%v'\n", data, content[i])
+	}
+
+	if data == nil {
+		data = make(map[string]interface{})
 	}
 
 	if keyValueFormat {
