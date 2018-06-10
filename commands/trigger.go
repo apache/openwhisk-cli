@@ -515,17 +515,29 @@ var triggerListCmd = &cobra.Command{
 	},
 }
 
-func configureFeed(triggerName string, FullFeedName string) error {
-	feedArgs := []string{FullFeedName}
-	Flags.common.blocking = true
-	err := actionInvokeCmd.RunE(nil, feedArgs)
+func configureFeed(triggerName string, feedName string) error {
+	var fullFeedName *QualifiedName
+	var parameters interface{}
+	var err error
+
+	if fullFeedName, err = NewQualifiedName(feedName); err != nil {
+		return NewQualifiedNameError(feedName, err)
+	}
+
+	if parameters, err = getParameters(Flags.common.param); err != nil {
+		return err
+	}
+
+	res, err := invokeAction(*fullFeedName, parameters, true, false)
+	err = handleInvocationResponse(*fullFeedName, true, false, res, err)
+
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", FullFeedName, err)
+		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", feedName, err)
 		errStr := wski18n.T("Unable to invoke trigger '{{.trigname}}' feed action '{{.feedname}}'; feed is not configured: {{.err}}",
-			map[string]interface{}{"trigname": triggerName, "feedname": FullFeedName, "err": err})
+			map[string]interface{}{"trigname": triggerName, "feedname": feedName, "err": err})
 		err = whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 	} else {
-		whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", FullFeedName)
+		whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", feedName)
 	}
 
 	return err
