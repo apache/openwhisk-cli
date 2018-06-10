@@ -181,7 +181,8 @@ var actionInvokeCmd = &cobra.Command{
 			parameters,
 			blocking,
 			resultOnly)
-		return handleInvocationResponse(*qualifiedName, blocking, header, res, err)
+
+		return printInvocationResponse(*qualifiedName, blocking, header, res, err)
 	},
 }
 
@@ -200,46 +201,47 @@ func invokeAction(
 	return res, err
 }
 
-func handleInvocationResponse(
+func printInvocationResponse(
 	qualifiedName QualifiedName,
 	blocking bool,
 	header bool,
 	result map[string]interface{},
 	err error) error {
 	if err == nil {
-		printInvocationMsg(
-			qualifiedName.GetNamespace(),
-			qualifiedName.GetEntityName(),
-			getValueFromJSONResponse(ACTIVATION_ID, result),
-			blocking,
-			header,
-			result,
-			color.Output)
+		printInvocationMsg(qualifiedName, blocking, header, result, color.Output)
 	} else {
 		if !blocking {
-			return handleInvocationError(err, qualifiedName.GetEntityName(), blocking)
+			return handleInvocationError(err, qualifiedName.GetEntityName())
 		} else {
-			if isBlockingTimeout(err) {
-				printBlockingTimeoutMsg(
-					qualifiedName.GetNamespace(),
-					qualifiedName.GetEntityName(),
-					getValueFromJSONResponse(ACTIVATION_ID, result))
-			} else if isApplicationError(err) {
-				printInvocationMsg(
-					qualifiedName.GetNamespace(),
-					qualifiedName.GetEntityName(),
-					getValueFromJSONResponse(ACTIVATION_ID, result),
-					blocking,
-					header,
-					result,
-					colorable.NewColorableStderr())
-			} else {
-				return handleInvocationError(err, qualifiedName.GetEntityName(), blocking)
-			}
+			return printFailedBlockingInvocationResponse(qualifiedName, header, result, err)
 		}
 	}
 
 	return err
+}
+
+func printFailedBlockingInvocationResponse(
+	qualifiedName QualifiedName,
+	header bool,
+	result map[string]interface{},
+	err error) error {
+	if isBlockingTimeout(err) {
+		printBlockingTimeoutMsg(
+			qualifiedName.GetNamespace(),
+			qualifiedName.GetEntityName(),
+			getValueFromJSONResponse(ACTIVATION_ID, result))
+		return err
+	} else if isApplicationError(err) {
+		printInvocationMsg(
+			qualifiedName,
+			true,
+			header,
+			result,
+			colorable.NewColorableStderr())
+		return err
+	} else {
+		return handleInvocationError(err, qualifiedName.GetEntityName())
+	}
 }
 
 var actionGetCmd = &cobra.Command{
@@ -998,12 +1000,11 @@ func actionGetError(entityName string, fetchCode bool, err error) error {
 	return nestedError(errMsg, err)
 }
 
-func handleInvocationError(err error, entityName string, blocking bool) error {
+func handleInvocationError(err error, entityName string) error {
 	whisk.Debug(
 		whisk.DbgError,
 		"Client.Actions.Invoke(%s, %t) error: %s\n",
 		entityName,
-		blocking,
 		err)
 
 	errMsg := wski18n.T(
@@ -1124,9 +1125,7 @@ func printBlockingTimeoutMsg(namespace string, entityName string, activationID i
 }
 
 func printInvocationMsg(
-	namespace string,
-	entityName string,
-	activationID interface{},
+	qualifiedName QualifiedName,
 	blocking bool,
 	header bool,
 	response map[string]interface{},
@@ -1138,9 +1137,9 @@ func printInvocationMsg(
 				"{{.ok}} invoked /{{.namespace}}/{{.name}} with id {{.id}}\n",
 				map[string]interface{}{
 					"ok":        color.GreenString("ok:"),
-					"namespace": boldString(namespace),
-					"name":      boldString(entityName),
-					"id":        boldString(activationID),
+					"namespace": boldString(qualifiedName.GetNamespace()),
+					"name":      boldString(qualifiedName.GetEntityName()),
+					"id":        boldString(getValueFromJSONResponse(ACTIVATION_ID, response)),
 				}))
 	}
 

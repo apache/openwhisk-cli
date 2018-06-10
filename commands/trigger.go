@@ -524,7 +524,7 @@ func configureFeed(triggerName string, feedName string, parameters interface{}) 
 	}
 
 	res, err := invokeAction(*fullFeedName, parameters, true, false)
-	err = handleInvocationResponse(*fullFeedName, true, false, res, err)
+	err = printInvocationResponse(*fullFeedName, true, false, res, err)
 
 	if err != nil {
 		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", feedName, err)
