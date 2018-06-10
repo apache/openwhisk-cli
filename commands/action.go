@@ -175,17 +175,16 @@ var actionInvokeCmd = &cobra.Command{
 			return err
 		}
 
-		if Flags.action.result {
-			Flags.common.blocking = true
-		}
+		blocking := Flags.common.blocking || Flags.action.result
+		resultOnly := Flags.action.result
+		header := !resultOnly
 
 		res, err := invokeAction(
 			*qualifiedName,
 			parameters,
-			Flags.common.blocking,
-			Flags.action.result)
-
-		return handleInvocationResponse(*qualifiedName, parameters, res, err)
+			blocking,
+			resultOnly)
+		return handleInvocationResponse(*qualifiedName, blocking, header, res, err)
 	},
 }
 
@@ -218,7 +217,8 @@ func invokeAction(
 
 func handleInvocationResponse(
 	qualifiedName QualifiedName,
-	parameters interface{},
+	blocking bool,
+	header bool,
 	result map[string]interface{},
 	err error) error {
 	if err == nil {
@@ -226,11 +226,13 @@ func handleInvocationResponse(
 			qualifiedName.GetNamespace(),
 			qualifiedName.GetEntityName(),
 			getValueFromJSONResponse(ACTIVATION_ID, result),
+			blocking,
+			header,
 			result,
 			color.Output)
 	} else {
-		if !Flags.common.blocking {
-			return handleInvocationError(err, qualifiedName.GetEntityName(), parameters)
+		if !blocking {
+			return handleInvocationError(err, qualifiedName.GetEntityName(), blocking)
 		} else {
 			if isBlockingTimeout(err) {
 				printBlockingTimeoutMsg(
@@ -242,10 +244,12 @@ func handleInvocationResponse(
 					qualifiedName.GetNamespace(),
 					qualifiedName.GetEntityName(),
 					getValueFromJSONResponse(ACTIVATION_ID, result),
+					blocking,
+					header,
 					result,
 					colorable.NewColorableStderr())
 			} else {
-				return handleInvocationError(err, qualifiedName.GetEntityName(), parameters)
+				return handleInvocationError(err, qualifiedName.GetEntityName(), blocking)
 			}
 		}
 	}
@@ -1009,12 +1013,12 @@ func actionGetError(entityName string, fetchCode bool, err error) error {
 	return nestedError(errMsg, err)
 }
 
-func handleInvocationError(err error, entityName string, parameters interface{}) error {
+func handleInvocationError(err error, entityName string, blocking bool) error {
 	whisk.Debug(
 		whisk.DbgError,
-		"Client.Actions.Invoke(%s, %s, %t) error: %s\n",
-		entityName, parameters,
-		Flags.common.blocking,
+		"Client.Actions.Invoke(%s, %t) error: %s\n",
+		entityName,
+		blocking,
 		err)
 
 	errMsg := wski18n.T(
@@ -1138,9 +1142,11 @@ func printInvocationMsg(
 	namespace string,
 	entityName string,
 	activationID interface{},
+	blocking bool,
+	header bool,
 	response map[string]interface{},
 	outputStream io.Writer) {
-	if !Flags.action.result {
+	if header {
 		fmt.Fprintf(
 			outputStream,
 			wski18n.T(
@@ -1153,7 +1159,7 @@ func printInvocationMsg(
 				}))
 	}
 
-	if Flags.common.blocking {
+	if blocking {
 		printJSON(response, outputStream)
 	}
 }
