@@ -42,7 +42,6 @@ var ruleTriggerActionReqMsg = "A rule, trigger and action name are required."
 var activationIdReq = "An activation ID is required."
 var triggerNameReqMsg = "A trigger name is required."
 var optNamespaceMsg = "An optional namespace is the only valid argument."
-var optPayloadMsg = "A payload is optional."
 var noArgsReqMsg = "No arguments are required."
 var invalidArg = "invalidArg"
 var apiCreateReqMsg = "Specify a swagger file or specify an API base path with an API path, an API verb, and an action name."
@@ -282,11 +281,11 @@ func initInvalidArgs() {
 
 		{
 			Cmd: []string{"trigger", "fire"},
-			Err: tooFewArgsMsg + " " + triggerNameReqMsg + " " + optPayloadMsg,
+			Err: tooFewArgsMsg + " " + triggerNameReqMsg,
 		},
 		{
-			Cmd: []string{"trigger", "fire", "triggerName", "triggerPayload", invalidArg},
-			Err: tooManyArgsMsg + invalidArg + ". " + triggerNameReqMsg + " " + optPayloadMsg,
+			Cmd: []string{"trigger", "fire", "triggerName", invalidArg},
+			Err: tooManyArgsMsg + invalidArg + ". " + triggerNameReqMsg,
 		},
 		{
 			Cmd: []string{"trigger", "create"},
