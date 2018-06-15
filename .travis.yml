@@ -66,7 +66,7 @@ script:
   - if [ ! -z "$TRAVIS_TAG" ] ; then
         export BUILD_VERSION=$TRAVIS_TAG;
     fi
-  - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
+#  - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
   - ./tools/travis/test_openwhisk.sh
 
 after_success:
