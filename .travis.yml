@@ -60,13 +60,15 @@ before_script:
 
 script:
   - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
+  - git reset --hard 7bd64743717e12000402600a9079a8579e2da8de
   - ./gradlew install
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_VERSION="latest"
   - if [ ! -z "$TRAVIS_TAG" ] ; then
         export BUILD_VERSION=$TRAVIS_TAG;
     fi
-  - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
+  - ./gradlew compile -PnativeCompile
+#  - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
   - ./tools/travis/test_openwhisk.sh
 
 after_success:
