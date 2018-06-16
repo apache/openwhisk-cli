@@ -55,12 +55,11 @@ before_script:
   - test -z "$(gofmt -s -l $(echo $GO_FILES))"
   - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/apache/incubator-openwhisk-utilities.git
-  - git clone https://github.com/apache/incubator-openwhisk.git
+  - git clone https://github.com/dubee/openwhisk.git incubator-openwhisk
   - ./incubator-openwhisk/tools/travis/setup.sh
 
 script:
   - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
-  - git reset --hard f4d8ce5009381cdf3385a69c383eca2fd01a0282
   - ./gradlew install
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_VERSION="latest"
