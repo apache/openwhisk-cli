@@ -60,7 +60,7 @@ before_script:
 
 script:
   - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
-  - git reset --hard 5aa8fc7fa6a09f219f704d301541b213b9aa07c8
+  - git reset --hard 74216e131c58e9dac4bbb2f1fcd2a44495b9988d
   - ./gradlew install
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_VERSION="latest"
