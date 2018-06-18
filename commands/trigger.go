@@ -193,7 +193,7 @@ var triggerCreateCmd = &cobra.Command{
 
 		// Invoke the specified feed action to configure the trigger feed
 		if feedArgPassed {
-			err := configureFeed(trigger.Name, fullFeedName)
+			err := configureFeed(trigger.Name, fullFeedName, getParameters(Flags.common.param, false, false))
 			if err != nil {
 				whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", trigger.Name, Flags.common.feed,
 					err)
@@ -286,7 +286,7 @@ var triggerUpdateCmd = &cobra.Command{
 			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
 
 			// Invoke the specified feed action to configure the trigger feed
-			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName)
+			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
 			if err != nil {
 				whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), Flags.common.feed,
 					err)
@@ -372,7 +372,7 @@ var triggerGetCmd = &cobra.Command{
 			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
 			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
 
-			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName)
+			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
 			if err != nil {
 				whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), fullFeedName, err)
 			}
@@ -441,7 +441,7 @@ var triggerDeleteCmd = &cobra.Command{
 				Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
 				Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
 
-				err = configureFeed(qualifiedName.GetEntityName(), fullFeedName)
+				err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
 				if err != nil {
 					whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), fullFeedName, err)
 				}
@@ -515,17 +515,24 @@ var triggerListCmd = &cobra.Command{
 	},
 }
 
-func configureFeed(triggerName string, FullFeedName string) error {
-	feedArgs := []string{FullFeedName}
-	Flags.common.blocking = true
-	err := actionInvokeCmd.RunE(nil, feedArgs)
+func configureFeed(triggerName string, feedName string, parameters interface{}) error {
+	var fullFeedName *QualifiedName
+	var err error
+
+	if fullFeedName, err = NewQualifiedName(feedName); err != nil {
+		return NewQualifiedNameError(feedName, err)
+	}
+
+	res, err := invokeAction(*fullFeedName, parameters, true, false)
+	err = printInvocationResponse(*fullFeedName, true, false, res, err)
+
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", FullFeedName, err)
+		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", feedName, err)
 		errStr := wski18n.T("Unable to invoke trigger '{{.trigname}}' feed action '{{.feedname}}'; feed is not configured: {{.err}}",
-			map[string]interface{}{"trigname": triggerName, "feedname": FullFeedName, "err": err})
+			map[string]interface{}{"trigname": triggerName, "feedname": feedName, "err": err})
 		err = whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
 	} else {
-		whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", FullFeedName)
+		whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", feedName)
 	}
 
 	return err

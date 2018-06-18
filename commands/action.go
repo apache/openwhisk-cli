@@ -155,9 +155,8 @@ var actionInvokeCmd = &cobra.Command{
 	PreRunE:       SetupClientConfig,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
-		var parameters interface{}
 		var qualifiedName = new(QualifiedName)
-		var paramArgs []string
+		var parameters interface{}
 
 		if whiskErr := CheckArgs(
 			args,
@@ -172,63 +171,77 @@ var actionInvokeCmd = &cobra.Command{
 			return NewQualifiedNameError(args[0], err)
 		}
 
-		Client.Namespace = qualifiedName.GetNamespace()
-		paramArgs = Flags.common.param
+		parameters = getParameters(Flags.common.param, false, false)
+		blocking := Flags.common.blocking || Flags.action.result
+		resultOnly := Flags.action.result
+		header := !resultOnly
 
-		if len(paramArgs) > 0 {
-			if parameters, err = getJSONFromStrings(paramArgs, false); err != nil {
-				return getJSONFromStringsParamError(paramArgs, false, err)
-			}
-		}
-		if Flags.action.result {
-			Flags.common.blocking = true
-		}
-
-		res, _, err := Client.Actions.Invoke(
-			qualifiedName.GetEntityName(),
+		res, err := invokeAction(
+			*qualifiedName,
 			parameters,
-			Flags.common.blocking,
-			Flags.action.result)
+			blocking,
+			resultOnly)
 
-		return handleInvocationResponse(*qualifiedName, parameters, res, err)
+		return printInvocationResponse(*qualifiedName, blocking, header, res, err)
 	},
 }
 
-func handleInvocationResponse(
+func invokeAction(
 	qualifiedName QualifiedName,
 	parameters interface{},
+	blocking bool,
+	result bool) (map[string]interface{}, error) {
+	// TODO remove all global modifiers
+	Client.Namespace = qualifiedName.GetNamespace()
+	res, _, err := Client.Actions.Invoke(
+		qualifiedName.GetEntityName(),
+		parameters,
+		blocking,
+		result)
+	return res, err
+}
+
+func printInvocationResponse(
+	qualifiedName QualifiedName,
+	blocking bool,
+	header bool,
 	result map[string]interface{},
 	err error) error {
 	if err == nil {
-		printInvocationMsg(
-			qualifiedName.GetNamespace(),
-			qualifiedName.GetEntityName(),
-			getValueFromJSONResponse(ACTIVATION_ID, result),
-			result,
-			color.Output)
+		printInvocationMsg(qualifiedName, blocking, header, result, color.Output)
 	} else {
-		if !Flags.common.blocking {
-			return handleInvocationError(err, qualifiedName.GetEntityName(), parameters)
+		if !blocking {
+			return handleInvocationError(err, qualifiedName.GetEntityName())
 		} else {
-			if isBlockingTimeout(err) {
-				printBlockingTimeoutMsg(
-					qualifiedName.GetNamespace(),
-					qualifiedName.GetEntityName(),
-					getValueFromJSONResponse(ACTIVATION_ID, result))
-			} else if isApplicationError(err) {
-				printInvocationMsg(
-					qualifiedName.GetNamespace(),
-					qualifiedName.GetEntityName(),
-					getValueFromJSONResponse(ACTIVATION_ID, result),
-					result,
-					colorable.NewColorableStderr())
-			} else {
-				return handleInvocationError(err, qualifiedName.GetEntityName(), parameters)
-			}
+			return printFailedBlockingInvocationResponse(qualifiedName, header, result, err)
 		}
 	}
 
 	return err
+}
+
+func printFailedBlockingInvocationResponse(
+	qualifiedName QualifiedName,
+	header bool,
+	result map[string]interface{},
+	err error) error {
+	if isBlockingTimeout(err) {
+		printBlockingTimeoutMsg(
+			qualifiedName.GetNamespace(),
+			qualifiedName.GetEntityName(),
+			getValueFromJSONResponse(ACTIVATION_ID, result))
+		return err
+	} else if isApplicationError(err) {
+		printInvocationMsg(
+			qualifiedName,
+			true,
+			header,
+			result,
+			colorable.NewColorableStderr())
+		return err
+	} else {
+		return handleInvocationError(err, qualifiedName.GetEntityName())
+	}
 }
 
 var actionGetCmd = &cobra.Command{
@@ -987,12 +1000,11 @@ func actionGetError(entityName string, fetchCode bool, err error) error {
 	return nestedError(errMsg, err)
 }
 
-func handleInvocationError(err error, entityName string, parameters interface{}) error {
+func handleInvocationError(err error, entityName string) error {
 	whisk.Debug(
 		whisk.DbgError,
-		"Client.Actions.Invoke(%s, %s, %t) error: %s\n",
-		entityName, parameters,
-		Flags.common.blocking,
+		"Client.Actions.Invoke(%s, %t) error: %s\n",
+		entityName,
 		err)
 
 	errMsg := wski18n.T(
@@ -1113,25 +1125,25 @@ func printBlockingTimeoutMsg(namespace string, entityName string, activationID i
 }
 
 func printInvocationMsg(
-	namespace string,
-	entityName string,
-	activationID interface{},
+	qualifiedName QualifiedName,
+	blocking bool,
+	header bool,
 	response map[string]interface{},
 	outputStream io.Writer) {
-	if !Flags.action.result {
+	if header {
 		fmt.Fprintf(
 			outputStream,
 			wski18n.T(
 				"{{.ok}} invoked /{{.namespace}}/{{.name}} with id {{.id}}\n",
 				map[string]interface{}{
 					"ok":        color.GreenString("ok:"),
-					"namespace": boldString(namespace),
-					"name":      boldString(entityName),
-					"id":        boldString(activationID),
+					"namespace": boldString(qualifiedName.GetNamespace()),
+					"name":      boldString(qualifiedName.GetEntityName()),
+					"id":        boldString(getValueFromJSONResponse(ACTIVATION_ID, response)),
 				}))
 	}
 
-	if Flags.common.blocking {
+	if blocking {
 		printJSON(response, outputStream)
 	}
 }

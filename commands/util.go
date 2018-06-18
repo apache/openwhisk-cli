@@ -27,6 +27,8 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 
 	"github.com/fatih/color"
+	"github.com/mattn/go-colorable"
+
 	//prettyjson "github.com/hokaccha/go-prettyjson"  // See prettyjson comment below
 	"archive/tar"
 	"archive/zip"
@@ -51,6 +53,45 @@ func csvToQualifiedActions(artifacts string) []string {
 	return res
 }
 
+/**
+ * Processes command line to retrieve pairs of key-value pairs, where the value must be valid JSON.
+ *
+ * Parameters and annotations are handled the same way. The flag here is only for generating an error messages
+ * specific to one or the other.
+ *
+ * NOTE: this function will exit in case of a processing error since it indicates a problem parsing parameters.
+ *
+ * @return either an array or a JSON object (map) formatted representation of the key-value pairs.
+ */
+func getParameters(params []string, keyValueFormat bool, annotation bool) interface{} {
+	var parameters interface{}
+	var err error
+
+	if !annotation {
+		whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", params)
+	} else {
+		whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", params)
+	}
+
+	parameters, err = getJSONFromStrings(params, keyValueFormat)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %s) failed: %s\n", params, keyValueFormat, err)
+		var errStr string
+
+		if !annotation {
+			errStr = wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
+				map[string]interface{}{"param": fmt.Sprintf("%#v", params), "err": err})
+		} else {
+			errStr = wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
+				map[string]interface{}{"annotation": fmt.Sprintf("%#v", params), "err": err})
+		}
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		ExitOnError(werr)
+	}
+
+	return parameters
+}
+
 func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
 	var data map[string]interface{}
 	var res interface{}
@@ -66,6 +107,10 @@ func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, err
 		}
 
 		whisk.Debug(whisk.DbgInfo, "Created map '%v' from '%v'\n", data, content[i])
+	}
+
+	if data == nil {
+		data = make(map[string]interface{})
 	}
 
 	if keyValueFormat {
@@ -1132,4 +1177,55 @@ func contains(arr []string, element string) bool {
 		}
 	}
 	return false
+}
+
+func ExitOnError(err error) {
+	if err == nil {
+		return
+	}
+
+	whisk.Debug(whisk.DbgInfo, "err object type: %s\n", reflect.TypeOf(err).String())
+
+	T := wski18n.T
+	var exitCode int = 0
+	var displayUsage bool = false
+	var displayMsg bool = false
+	var msgDisplayed bool = true
+	var displayPrefix bool = true
+
+	werr, isWskError := err.(*whisk.WskError) // Is the err a WskError?
+	if isWskError {
+		whisk.Debug(whisk.DbgError, "Got a *whisk.WskError error: %#v\n", werr)
+		displayUsage = werr.DisplayUsage
+		displayMsg = werr.DisplayMsg
+		msgDisplayed = werr.MsgDisplayed
+		displayPrefix = werr.DisplayPrefix
+		exitCode = werr.ExitCode
+	} else {
+		whisk.Debug(whisk.DbgError, "Got some other error: %s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+
+		displayUsage = false // Cobra already displayed the usage message
+		exitCode = 1
+	}
+
+	outputStream := colorable.NewColorableStderr()
+
+	// If the err msg should be displayed to the console and it has not already been
+	// displayed, display it now.
+	if displayMsg && !msgDisplayed && displayPrefix && exitCode != 0 {
+		fmt.Fprintf(outputStream, "%s%s\n", color.RedString(T("error: ")), err)
+	} else if displayMsg && !msgDisplayed && !displayPrefix && exitCode != 0 {
+		fmt.Fprintf(outputStream, "%s\n", err)
+	} else if displayMsg && !msgDisplayed && exitCode == 0 {
+		fmt.Fprintf(outputStream, "%s\n", err)
+	}
+
+	// Displays usage
+	if displayUsage {
+		fmt.Fprintf(outputStream, T("Run '{{.Name}} --help' for usage.\n",
+			map[string]interface{}{"Name": WskCmd.CommandPath()}))
+	}
+
+	os.Exit(exitCode)
 }
