@@ -46,7 +46,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
     try {
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       wsk.cli(Seq("property", "set", "-i", "--apihost", "xxxx.yyyy"), env = env)
-      val rr = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env, expectedExitCode = ANY_ERROR_EXIT)
+      val rr = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env, expectedExitCode = NETWORK_ERROR_EXIT)
       rr.stdout should include regex ("""whisk API build\s*Unknown""")
       rr.stderr should include regex ("Unable to obtain API build information")
     } finally {
