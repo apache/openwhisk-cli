@@ -687,8 +687,8 @@
     "translation": "Unable to obtain the list of triggers for namespace '{{.name}}': {{.err}}"
   },
   {
-    "id": "Unable to invoke trigger '{{.trigname}}' feed action '{{.feedname}}'; feed is not configured: {{.err}}",
-    "translation": "Unable to invoke trigger '{{.trigname}}' feed action '{{.feedname}}'; feed is not configured: {{.err}}"
+    "id": "FEED_CONFIGURATION_FAILURE",
+    "translation": "Unable to configure feed '{{.feedname}}': {{.err}}"
   },
   {
     "note-to-translators": "DO NOT TRANSLATE THE 'yes' AND 'no'.  THOSE ARE FIXED CLI ARGUMENT VALUES",

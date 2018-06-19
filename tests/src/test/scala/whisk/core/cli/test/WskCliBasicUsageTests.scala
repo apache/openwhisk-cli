@@ -2257,7 +2257,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val activationIdReq = "An activation ID is required."
     val triggerNameReqMsg = "A trigger name is required."
     val optNamespaceMsg = "An optional namespace is the only valid argument."
-    val optPayloadMsg = "A payload is optional."
     val noArgsReqMsg = "No arguments are required."
     val invalidArg = "invalidArg"
     val apiCreateReqMsg =
@@ -2389,9 +2388,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
        s"${tooManyArgsMsg}${invalidArg}. ${optNamespaceMsg}"),
       (Seq("rule", "list", invalidArg), entityNameMsg),
       (Seq("trigger", "fire"),
-       s"${tooFewArgsMsg} ${triggerNameReqMsg} ${optPayloadMsg}"),
-      (Seq("trigger", "fire", "triggerName", "triggerPayload", invalidArg),
-       s"${tooManyArgsMsg}${invalidArg}. ${triggerNameReqMsg} ${optPayloadMsg}"),
+       s"${tooFewArgsMsg} ${triggerNameReqMsg}"),
+      (Seq("trigger", "fire", "triggerName", invalidArg),
+        s"${tooManyArgsMsg}${invalidArg}. ${triggerNameReqMsg}"),
       (Seq("trigger", "create"), s"${tooFewArgsMsg} ${triggerNameReqMsg}"),
       (Seq("trigger", "create", "triggerName", invalidArg),
        s"${tooManyArgsMsg}${invalidArg}."),
