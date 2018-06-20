@@ -21,6 +21,7 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"runtime"
 
 	"github.com/apache/incubator-openwhisk-cli/wski18n"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -64,7 +65,7 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 		Version:           Properties.APIVersion,
 		Insecure:          Flags.Global.Insecure,
 		Host:              Properties.APIHost,
-		UserAgent:         UserAgent + "/1.0 (" + Properties.CLIVersion + ")",
+		UserAgent:         UserAgent + "/1.0 (" + Properties.CLIVersion + ") " + runtime.GOOS + " " + runtime.GOARCH,
 		AdditionalHeaders: AdditionalHeaders,
 	}
 
