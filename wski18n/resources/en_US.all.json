@@ -1568,6 +1568,10 @@
     "translation": "Cannot specify both --kind and --docker at the same time."
   },
   {
+    "id": "A sequence cannot have a memory limit, a log size limit or a timeout limit.",
+    "translation": "A sequence cannot have a memory limit, a log size limit or a timeout limit."
+  },
+  {
     "id": "Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'.",
     "translation": "Relative path '{{.path}}' does not include valid path parameters. Each parameter must be enclosed in curly braces '{}'."
   },
