@@ -173,6 +173,48 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
                       expectedExitCode = MISUSE_EXIT)
   }
 
+  it should "reject create or update of an action sequence that sets a memory limit" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+  val name = "badSeqMemLimit"
+    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val memoryLimit = 512 MB
+
+    wsk.action.create(name, file, kind = Some("sequence"), memory = Some(memoryLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+    assetHelper.withCleaner(wsk.action, name) { (action, name) =>
+      action.create(name, file)
+    }
+    wsk.action.create(name, file, update = true, kind = Some("sequence"), memory = Some(memoryLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+  }
+
+  it should "reject create or update of an action sequence that sets a timeout limit" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+  val name = "badSeqTimeoutLimit"
+    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val timeLimit = 60 seconds
+
+    wsk.action.create(name, file, kind = Some("sequence"), timeout = Some(timeLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+    assetHelper.withCleaner(wsk.action, name) { (action, name) =>
+      action.create(name, file)
+    }
+    wsk.action.create(name, file, update = true, kind = Some("sequence"), timeout = Some(timeLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+  }
+
+  it should "reject create or update of an action sequence that sets a log size limit" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+  val name = "badSeqLogsizeLimit"
+    val file = Some(TestUtils.getTestActionFilename("hello.js"))
+    val logLimit = 1 MB
+
+    wsk.action.create(name, file, kind = Some("sequence"), logsize = Some(logLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+    assetHelper.withCleaner(wsk.action, name) { (action, name) =>
+      action.create(name, file)
+    }
+    wsk.action.create(name, file, update = true, kind = Some("sequence"), logsize = Some(logLimit), expectedExitCode = NOT_ALLOWED)
+    .stderr should include("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+  }
+
   it should "reject action update for sequence with no components" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val name = "updateMissingComponents"

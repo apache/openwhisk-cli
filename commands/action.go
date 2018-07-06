@@ -437,6 +437,11 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	}
 
+	if (Flags.action.sequence && (cmd.LocalFlags().Changed(MEMORY_FLAG) || cmd.LocalFlags().Changed(LOG_SIZE_FLAG) || cmd.LocalFlags().Changed(TIMEOUT_FLAG))) {
+	    errStr := wski18n.T("A sequence cannot have a memory limit, a log size limit or a timeout limit.")
+    	return nil, whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+	}
+
 	if Flags.action.copy {
 		var copiedQualifiedName = new(QualifiedName)
 
