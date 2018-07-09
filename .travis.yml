@@ -51,6 +51,7 @@ install:
 
 before_script:
   - cd $TRAVIS_BUILD_DIR
+  - ./gradlew checkTestScalafmt
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
   - test -z "$(gofmt -s -l $(echo $GO_FILES))"
   - cd $TRAVIS_BUILD_DIR/..
