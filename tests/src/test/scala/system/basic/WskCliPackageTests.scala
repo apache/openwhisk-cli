@@ -24,5 +24,5 @@ import common.Wsk
 
 @RunWith(classOf[JUnitRunner])
 class WskCliPackageTests extends WskPackageTests {
-  override val wsk: Wsk = new Wsk
+  override val wsk = new Wsk
 }

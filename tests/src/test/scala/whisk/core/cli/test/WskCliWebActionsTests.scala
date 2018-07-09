@@ -24,5 +24,5 @@ import common.Wsk
 
 @RunWith(classOf[JUnitRunner])
 class WskCliWebActionsTests extends WskWebActionsTests {
-  override lazy val wsk: common.Wsk = new Wsk
+  override val wsk = new Wsk
 }
