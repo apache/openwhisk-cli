@@ -26,5 +26,5 @@ import common.Wsk
  */
 @RunWith(classOf[JUnitRunner])
 class WskCliConsoleTests extends WskConsoleTests {
-  override val wsk: Wsk = new Wsk
+  override val wsk = new Wsk
 }

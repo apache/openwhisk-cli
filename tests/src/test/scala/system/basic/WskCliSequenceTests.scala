@@ -32,11 +32,12 @@ import whisk.core.WhiskConfig
 
 @RunWith(classOf[JUnitRunner])
 class WskCliSequenceTests extends WskSequenceTests {
-  override val wsk: common.Wsk = new Wsk
+  override val wsk = new Wsk
   val owHome = System.getenv("OPENWHISK_HOME") match {
     case home: String if !home.isEmpty => home
-    case _ => "../../../../../../incubator-openwhisk"
+    case _                             => "../../../../../../incubator-openwhisk"
   }
   val propertiesFile = new File(s"$owHome/whisk.properties")
-  override val whiskConfig = new WhiskConfig(Map(WhiskConfig.actionSequenceMaxLimit -> null), propertiesFile = propertiesFile)
+  override val whiskConfig =
+    new WhiskConfig(Map(WhiskConfig.actionSequenceMaxLimit -> null), propertiesFile = propertiesFile)
 }
