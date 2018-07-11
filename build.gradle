@@ -32,17 +32,6 @@ plugins {
 subprojects {
   apply plugin: 'scalafmt'
   scalafmt.configFilePath = gradle.scalafmt.config
-
-  afterEvaluate {
-    if (project.plugins.hasPlugin('application')
-            && project.plugins.hasPlugin('scala')) {
-      startScripts {
-        doLast {
-          unixScript.text = configureUnixClasspath(unixScript)
-        }
-      }
-    }
-  }
 }
 
 def configureUnixClasspath(File script) {
