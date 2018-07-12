@@ -483,7 +483,8 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
     }
 
     val trigger = wsk.trigger.get(triggerName)
-    getJSONFromResponse(trigger.stdout, true).fields("parameters") shouldBe JsArray(JsObject("key" -> JsString("a"), "value" -> JsString("A")))
+    getJSONFromResponse(trigger.stdout, true).fields("parameters") shouldBe JsArray(
+      JsObject("key" -> JsString("a"), "value" -> JsString("A")))
     getJSONFromResponse(trigger.stdout, true).fields("publish") shouldBe false.toJson
     getJSONFromResponse(trigger.stdout, true).fields("version") shouldBe "0.0.2".toJson
 
@@ -614,10 +615,14 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       wsk.trigger
         .get(triggerName, fieldFilter = Some("namespace"))
         .stdout should include regex (s"""(?i)$successMsg namespace\n"$ns"""")
-      wsk.trigger.get(triggerName, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$triggerName"""")
-      wsk.trigger.get(triggerName, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
-      wsk.trigger.get(triggerName, fieldFilter = Some("publish")).stdout should include(s"""$successMsg publish\nfalse""")
-      wsk.trigger.get(triggerName, fieldFilter = Some("annotations")).stdout should include(s"""$successMsg annotations\n[]""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("name")).stdout should include(
+        s"""$successMsg name\n"$triggerName"""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("version")).stdout should include(
+        s"""$successMsg version\n"0.0.1"""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("publish")).stdout should include(
+        s"""$successMsg publish\nfalse""")
+      wsk.trigger.get(triggerName, fieldFilter = Some("annotations")).stdout should include(
+        s"""$successMsg annotations\n[]""")
       wsk.trigger
         .get(triggerName, fieldFilter = Some("parameters"))
         .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")

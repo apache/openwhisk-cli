@@ -31,8 +31,13 @@ class WskCliActionTests extends WskActionTests {
   it should "not be able to use --kind and --docker at the same time when running action create or update" in {
     val file = TestUtils.getTestActionFilename(s"echo.js")
     Seq(false, true).foreach { updateValue =>
-      val out = wsk.action.create(name = "kindAndDockerAction", artifact = Some(file), expectedExitCode = NOT_ALLOWED,
-      kind = Some("nodejs:6"), docker = Some("mydockerimagename"), update = updateValue)
+      val out = wsk.action.create(
+        name = "kindAndDockerAction",
+        artifact = Some(file),
+        expectedExitCode = NOT_ALLOWED,
+        kind = Some("nodejs:6"),
+        docker = Some("mydockerimagename"),
+        update = updateValue)
       out.stderr should include("Cannot specify both --kind and --docker at the same time")
     }
   }

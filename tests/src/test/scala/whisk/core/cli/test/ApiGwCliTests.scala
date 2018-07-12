@@ -30,52 +30,51 @@ import scala.concurrent.duration.DurationInt
 import spray.json._
 
 /**
-  * Tests for basic CLI usage. Some of these tests require a deployed backend.
-  */
+ * Tests for basic CLI usage. Some of these tests require a deployed backend.
+ */
 @RunWith(classOf[JUnitRunner])
 class ApiGwCliTests extends ApiGwCliBasicTests {
   override lazy val wsk: common.Wsk = new Wsk
   override lazy val createCode = SUCCESS_EXIT
   behavior of "Cli Wsk api creation with path parameters no swagger"
 
-  it should "fail to create an API if the base path contains path parameters" in withAssetCleaner(wskprops) {(wp, assetHelper) =>
-    val actionName = "APIGWTEST_BAD_BASE_PATH_ACTION"
-    val basePath = "/mybase/{path}"
-    val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
+  it should "fail to create an API if the base path contains path parameters" in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val actionName = "APIGWTEST_BAD_BASE_PATH_ACTION"
+      val basePath = "/mybase/{path}"
+      val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
+      assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) { (action, _) =>
         action.create(actionName, Some(file), web = Some("true"))
-    }
-    val relPath = "/bad/{path}/value"
-    val rr = apiCreate(basepath = Some(basePath),
-      relpath = Some(relPath),
-      operation = Some("GET"),
-      action = Some(actionName),
-      expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"The base path '${basePath}' cannot have parameters. Only the relative path supports path parameters.")
+      }
+      val relPath = "/bad/{path}/value"
+      val rr = apiCreate(
+        basepath = Some(basePath),
+        relpath = Some(relPath),
+        operation = Some("GET"),
+        action = Some(actionName),
+        expectedExitCode = ANY_ERROR_EXIT)
+      rr.stderr should include(
+        s"The base path '${basePath}' cannot have parameters. Only the relative path supports path parameters.")
   }
 
   it should "fail to create an Api if path parameters are specified but http response type is not given" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val actionName = "CLI_APIGWTEST_PATH_param_fail1_action"
     val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
-        action.create(actionName, Some(file), web = Some("true"))
+    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) { (action, _) =>
+      action.create(actionName, Some(file), web = Some("true"))
     }
     val relPath = "/bad/{path}/value"
-    val rr = apiCreate(basepath = Some("/mybase"),
-                       relpath = Some(relPath),
-                       operation = Some("GET"),
-                       action = Some(actionName),
-                       expectedExitCode = ANY_ERROR_EXIT)
-    rr.stderr should include(
-      s"A response type of 'http' is required when using path parameters.")
+    val rr = apiCreate(
+      basepath = Some("/mybase"),
+      relpath = Some(relPath),
+      operation = Some("GET"),
+      action = Some(actionName),
+      expectedExitCode = ANY_ERROR_EXIT)
+    rr.stderr should include(s"A response type of 'http' is required when using path parameters.")
   }
 
-  it should "create api with path parameters for the verb" in withAssetCleaner(
-    wskprops) { (wp, assetHelper) =>
+  it should "create api with path parameters for the verb" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val testName = "CLI_APIGWTEST_PATH_PARAMS1"
     val testBasePath = s"/${testName}_bp"
     val testUrlName1 = "scooby"
@@ -89,9 +88,8 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
 
     // Create the action for the API.  It must be a "web-action" action.
     val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
-        action.create(actionName, Some(file), web = Some("true"))
+    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) { (action, _) =>
+      action.create(actionName, Some(file), web = Some("true"))
     }
     try {
       var rr = apiCreate(
@@ -100,8 +98,7 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
         operation = Some(testUrlOp),
         action = Some(actionName),
         apiname = Some(testApiName),
-        responsetype = Some("http")
-      )
+        responsetype = Some("http"))
       verifyApiCreated(rr)
       val swaggerApiUrl = getSwaggerUrl(rr).replace("{with}", testUrlName1).replace("{path}", testUrlName2)
 
@@ -126,7 +123,7 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       }, 6, Some(2.second))
       val jsonResponse = response.body.asString.parseJson.asJsObject
 
-      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
+      jsonResponse.fields("__ow_path").toString should include(testRelPathGet)
     } finally {
       apiDelete(basepathOrApiName = testBasePath)
     }
@@ -148,9 +145,8 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
     val reqPath = "\\$\\(request.path\\)"
     // Create the action for the API.  It must be a "web-action" action.
     val file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
-        action.create(actionName, Some(file), web = Some("true"))
+    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) { (action, _) =>
+      action.create(actionName, Some(file), web = Some("true"))
     }
     try {
       var rr = apiCreate(
@@ -159,11 +155,13 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
         operation = Some(testUrlOp),
         action = Some(actionName),
         apiname = Some(testApiName),
-        responsetype = Some("http")
-      )
+        responsetype = Some("http"))
       verifyApiCreated(rr)
-      val swaggerApiUrl = getSwaggerUrl(rr).replace("{with}", testUrlName1).replace("{path}", testUrlName2)
-          .replace("{double}", testUrlName3).replace("{extra}", testUrlName4)
+      val swaggerApiUrl = getSwaggerUrl(rr)
+        .replace("{with}", testUrlName1)
+        .replace("{path}", testUrlName2)
+        .replace("{double}", testUrlName3)
+        .replace("{extra}", testUrlName4)
 
       //Validate the api created contained parameters and they were correct
       rr = apiGet(basepathOrApiName = Some(testApiName))
@@ -190,7 +188,7 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       }, 6, Some(2.second))
       val jsonResponse = response.body.asString.parseJson.asJsObject
 
-      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
+      jsonResponse.fields("__ow_path").toString should include(testRelPathGet)
     } finally {
       apiDelete(basepathOrApiName = testBasePath)
     }

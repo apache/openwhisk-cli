@@ -15,8 +15,23 @@
  * limitations under the License.
  */
 
+ /* - Scalafmt Toolage -*/
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "cz.alenkacz:gradle-scalafmt:${gradle.scalafmt.version}"
+  }
+}
+
 plugins {
     id 'com.github.blindpirate.gogradle' version '0.8.1'
+}
+
+subprojects {
+  apply plugin: 'scalafmt'
+  scalafmt.configFilePath = gradle.scalafmt.config
 }
 
 golang {

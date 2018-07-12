@@ -109,7 +109,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     rr.stdout should include(testbasepath + testrelpath)
   }
 
-  def verifyApiGet(rr: RunResult, apihost:String): Unit = {
+  def verifyApiGet(rr: RunResult, apihost: String): Unit = {
     rr.stdout should include regex (s""""operationId":\\s+"getPathWithSub_pathsInIt"""")
     rr.stdout should include regex (s""""target-url":\\s+"https://$apihost""")
   }
@@ -187,7 +187,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     return swaggerfile
   }
 
-  def getSwaggerUrl(rr: RunResult) : String = {
+  def getSwaggerUrl(rr: RunResult): String = {
     rr.stdout.split("\n")(1)
   }
 
@@ -207,15 +207,30 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
   }
 
   def getParametersFromJson(json: JsObject, pathName: String): Vector[JsValue] = {
-    json.fields("paths").asJsObject.fields(pathName).asJsObject.fields("get").asJsObject.fields("parameters").convertTo[JsArray].elements
+    json
+      .fields("paths")
+      .asJsObject
+      .fields(pathName)
+      .asJsObject
+      .fields("get")
+      .asJsObject
+      .fields("parameters")
+      .convertTo[JsArray]
+      .elements
   }
 
   def getSslConfig(): RestAssuredConfig = {
     // force RestAssured to allow all hosts in SSL certificates
-    new RestAssuredConfig().sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
+    new RestAssuredConfig()
+      .sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
   }
 
-  def validateParameter(parameter: JsObject, name: String, in: String, required: Boolean, pType: String, description: String): Unit = {
+  def validateParameter(parameter: JsObject,
+                        name: String,
+                        in: String,
+                        required: Boolean,
+                        pType: String,
+                        description: String): Unit = {
     parameter.fields("name") should be(name.toJson)
     parameter.fields("in") should be(in.toJson)
     parameter.fields("required") should be(required.toJson)
@@ -227,68 +242,66 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
 
   behavior of "Cli Wsk api creation with path parameters with swagger"
 
-  it should "create the API when swagger file contains path parameters" in withAssetCleaner(
-    wskprops) { (wp, assetHelper) =>
-    val actionName = "cli_apigwtest_path_param_swagger_action"
-    val apiName = "/guest/v1"
-    val reqPath = "\\$\\(request.path\\)"
-    val testRelPath = "/api2/greeting2/{name}"
-    val testUrlName = "scooby"
-    val testRelPathGet = s"/api2/greeting2/$testUrlName"
-    val testUrlOp = "get"
-    var file = TestUtils.getTestActionFilename(s"echo-web-http.js")
-    val hostRegex = "%HOST%".r
-    assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) {
-      (action, _) =>
+  it should "create the API when swagger file contains path parameters" in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val actionName = "cli_apigwtest_path_param_swagger_action"
+      val apiName = "/guest/v1"
+      val reqPath = "\\$\\(request.path\\)"
+      val testRelPath = "/api2/greeting2/{name}"
+      val testUrlName = "scooby"
+      val testRelPathGet = s"/api2/greeting2/$testUrlName"
+      val testUrlOp = "get"
+      var file = TestUtils.getTestActionFilename(s"echo-web-http.js")
+      val hostRegex = "%HOST%".r
+      assetHelper.withCleaner(wsk.action, actionName, confirmDelete = true) { (action, _) =>
         action.create(actionName, Some(file), web = Some("true"))
-    }
-    try {
-      //Create the API
-      var rr : RunResult = apiCreate(
-        basepath = Some(apiName),
-        relpath = Some(testRelPath),
-        operation = Some(testUrlOp),
-        action = Some(actionName),
-        responsetype = Some("http")
-      )
-      verifyApiCreated(rr)
+      }
+      try {
+        //Create the API
+        var rr: RunResult = apiCreate(
+          basepath = Some(apiName),
+          relpath = Some(testRelPath),
+          operation = Some(testUrlOp),
+          action = Some(actionName),
+          responsetype = Some("http"))
+        verifyApiCreated(rr)
 
-      //Get the api so we can create the swagger from the returned output
-      rr = apiGet(basepathOrApiName = Some(apiName))
-      rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
-      val swaggerFile = writeSwaggerFile(rr)
+        //Get the api so we can create the swagger from the returned output
+        rr = apiGet(basepathOrApiName = Some(apiName))
+        rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
+        val swaggerFile = writeSwaggerFile(rr)
 
-      //Delete the api so we can re-create it using the swagger
-      rr = apiDelete(basepathOrApiName = apiName)
-      verifyApiDeleted(rr)
+        //Delete the api so we can re-create it using the swagger
+        rr = apiDelete(basepathOrApiName = apiName)
+        verifyApiDeleted(rr)
 
-      //Create the api using the swagger file.
-      rr = apiCreate(swagger = Some(swaggerFile.getAbsolutePath()), expectedExitCode = SUCCESS_EXIT)
-      verifyApiCreated(rr)
-      val swaggerApiUrl = getSwaggerUrl(rr).replace("{name}", testUrlName)
+        //Create the api using the swagger file.
+        rr = apiCreate(swagger = Some(swaggerFile.getAbsolutePath()), expectedExitCode = SUCCESS_EXIT)
+        verifyApiCreated(rr)
+        val swaggerApiUrl = getSwaggerUrl(rr).replace("{name}", testUrlName)
 
-      //Lets validate that the swagger we get from the create contains the correct info.
-      rr = apiGet(basepathOrApiName = Some(apiName))
-      rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
+        //Lets validate that the swagger we get from the create contains the correct info.
+        rr = apiGet(basepathOrApiName = Some(apiName))
+        rr.stdout should include regex (s"""target-url.*${actionName}.http${reqPath}""")
 
-      val params = getParametersFromJson(rr.stdout.parseJson.asJsObject, testRelPath)
-      params.size should be(1)
-      validateParameter(params(0).asJsObject, "name", "path", true, "string", "Default description for 'name'")
+        val params = getParametersFromJson(rr.stdout.parseJson.asJsObject, testRelPath)
+        params.size should be(1)
+        validateParameter(params(0).asJsObject, "name", "path", true, "string", "Default description for 'name'")
 
-      //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
-      val apiToInvoke = s"$swaggerApiUrl"
-      println(s"Invoking: '${apiToInvoke}'")
-      val response = whisk.utils.retry({
-        val response = RestAssured.given().config(getSslConfig()).get(s"$apiToInvoke")
-        response.statusCode should be(200)
-        response
-      }, 6, Some(2.second))
-      val jsonResponse = response.body.asString.parseJson.asJsObject
+        //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
+        val apiToInvoke = s"$swaggerApiUrl"
+        println(s"Invoking: '${apiToInvoke}'")
+        val response = whisk.utils.retry({
+          val response = RestAssured.given().config(getSslConfig()).get(s"$apiToInvoke")
+          response.statusCode should be(200)
+          response
+        }, 6, Some(2.second))
+        val jsonResponse = response.body.asString.parseJson.asJsObject
 
-      jsonResponse.fields("__ow_path").toString should include (testRelPathGet)
-    } finally {
-      apiDelete(basepathOrApiName = apiName)
-    }
+        jsonResponse.fields("__ow_path").toString should include(testRelPathGet)
+      } finally {
+        apiDelete(basepathOrApiName = apiName)
+      }
   }
 
   it should "reject an api commands with an invalid path parameter" in {
@@ -492,7 +505,6 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
     }
   }
-
 
   it should "verify get API name " in {
     val testName = "CLI_APIGWTEST3"
