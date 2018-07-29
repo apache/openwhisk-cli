@@ -42,6 +42,8 @@ var triggerCmd = &cobra.Command{
 	Short: wski18n.T("work with triggers"),
 }
 
+var trigger = Trigger{}
+
 /**
  * Constructs the parameters to pass to the feed, consisting of the event type, trigger name, and subject key.
  *
@@ -75,7 +77,7 @@ func feedParameters(feed string, lifecycle string, trigger *QualifiedName, authK
  *
  * NOTE: this function will exit in case of a processing error since it indicates a problem parsing parameters.
  */
-func createOrUpdate(fqn *QualifiedName, trigger *whisk.Trigger, overwrite bool) {
+func createOrUpdate(Client *whisk.Client,fqn *QualifiedName, trigger *whisk.Trigger, overwrite bool) {
 	// TODO get rid of these global modifiers
 	Client.Namespace = fqn.GetNamespace()
 	_, _, err := Client.Triggers.Insert(trigger, overwrite)
@@ -145,80 +147,7 @@ var triggerCreateCmd = &cobra.Command{
 	SilenceErrors: true,
 	PreRunE:       SetupClientConfig,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if whiskErr := CheckArgs(args, 1, 1, "Trigger create",
-			wski18n.T("A trigger name is required.")); whiskErr != nil {
-			return whiskErr
-		}
-
-		triggerName, err := NewQualifiedName(args[0])
-		if err != nil {
-			return NewQualifiedNameError(args[0], err)
-		}
-
-		paramArray := Flags.common.param
-		annotationArray := Flags.common.annotation
-		feedParam := Flags.common.feed
-		authToken := Client.Config.AuthToken
-
-		// if a feed is specified, create additional parameters which must be passed to the feed
-		feedName, feedParams := feedParameters(feedParam, FEED_CREATE, triggerName, authToken)
-		// the feed receives all the paramaters that are specified on the command line so we merge
-		// the feed lifecycle parameters with the command line ones
-		parameters := getParameters(append(paramArray, feedParams...), feedName == nil, false)
-
-		// if a feed is specified, add feed annotation the annotations declared on the command line
-		// TODO: add test to ensure that generated annotation has precedence
-		if feedName != nil {
-			annotationArray = append(annotationArray, getFormattedJSON("feed", feedName.GetFullQualifiedName()))
-		}
-		annotations := getParameters(annotationArray, true, true)
-
-		trigger := &whisk.Trigger{
-			Name:        triggerName.GetEntityName(),
-			Annotations: annotations.(whisk.KeyValueArr),
-		}
-
-		if feedName == nil {
-			// parameters are only attached to the trigger in there is no feed, otherwise
-			// parameters are passed to the feed instead
-			trigger.Parameters = parameters.(whisk.KeyValueArr)
-		}
-
-		createOrUpdate(triggerName, trigger, false)
-
-		// Invoke the specified feed action to configure the trigger feed
-		if feedName != nil {
-			res, err := invokeAction(*feedName, parameters, true, false)
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "Failed configuring feed '%s' failed: %s\n", feedName.GetFullQualifiedName(), err)
-
-				// TODO: should we do this at all? Keeping for now.
-				printFailedBlockingInvocationResponse(*feedName, false, res, err)
-
-				reason := wski18n.T(FEED_CONFIGURATION_FAILURE, map[string]interface{}{"feedname": feedName.GetFullQualifiedName(), "err": err})
-				errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
-					map[string]interface{}{"name": trigger.Name, "err": reason})
-				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-
-				// Delete trigger that was created for this feed
-				err = deleteTrigger(triggerName.GetEntityName())
-				if err != nil {
-					whisk.Debug(whisk.DbgWarn, "Ignoring deleteTrigger(%s) failure: %s\n", triggerName.GetEntityName(), err)
-				}
-
-				return werr
-			} else {
-				whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", feedName)
-
-				// preserve existing behavior where output of feed activation is emitted to console
-				printInvocationMsg(*feedName, true, true, res, color.Output)
-			}
-		}
-
-		fmt.Fprintf(color.Output,
-			wski18n.T("{{.ok}} created trigger {{.name}}\n",
-				map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(trigger.Name)}))
-		return nil
+		return trigger.Create(Client, args)
 	},
 }
 
@@ -229,98 +158,7 @@ var triggerUpdateCmd = &cobra.Command{
 	SilenceErrors: true,
 	PreRunE:       SetupClientConfig,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var err error
-		var fullFeedName string
-		var qualifiedName = new(QualifiedName)
-
-		if whiskErr := CheckArgs(args, 1, 1, "Trigger update",
-			wski18n.T("A trigger name is required.")); whiskErr != nil {
-			return whiskErr
-		}
-
-		if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
-			return NewQualifiedNameError(args[0], err)
-		}
-
-		Client.Namespace = qualifiedName.GetNamespace()
-
-		// Convert the trigger's list of default parameters from a string into []KeyValue
-		// The 1 or more --param arguments have all been combined into a single []string
-		// e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
-
-		whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
-		parameters, err := getJSONFromStrings(Flags.common.param, true)
-
-		if err != nil {
-			whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
-			errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-				map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
-			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-			return werr
-		}
-
-		whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
-		annotations, err := getJSONFromStrings(Flags.common.annotation, true)
-
-		if err != nil {
-			whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
-			errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-				map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
-			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-			return werr
-		}
-
-		retTrigger, _, err := Client.Triggers.Get(qualifiedName.GetEntityName())
-		if err != nil {
-			whisk.Debug(whisk.DbgError, "Client.Triggers.Get(%s) failed: %s\n", qualifiedName.GetEntityName(), err)
-			errStr := wski18n.T("Unable to get trigger '{{.name}}': {{.err}}",
-				map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
-			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-			return werr
-		}
-
-		// Get full feed name from trigger get request as it is needed to get the feed
-		if retTrigger != nil && retTrigger.Annotations != nil {
-			fullFeedName = getValueString(retTrigger.Annotations, "feed")
-		}
-
-		if len(fullFeedName) > 0 {
-			fullTriggerName := fmt.Sprintf("/%s/%s", qualifiedName.GetNamespace(), qualifiedName.GetEntityName())
-			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_LIFECYCLE_EVENT, FEED_UPDATE))
-			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
-			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
-
-			// Invoke the specified feed action to configure the trigger feed
-			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), Flags.common.feed,
-					err)
-				errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
-					map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
-				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-				return werr
-			}
-		} else {
-			trigger := &whisk.Trigger{
-				Name:        qualifiedName.GetEntityName(),
-				Parameters:  parameters.(whisk.KeyValueArr),
-				Annotations: annotations.(whisk.KeyValueArr),
-			}
-
-			_, _, err = Client.Triggers.Insert(trigger, true)
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "Client.Triggers.Insert(%+v,true) failed: %s\n", trigger, err)
-				errStr := wski18n.T("Unable to update trigger '{{.name}}': {{.err}}",
-					map[string]interface{}{"name": trigger.Name, "err": err})
-				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-				return werr
-			}
-		}
-
-		fmt.Fprintf(color.Output,
-			wski18n.T("{{.ok}} updated trigger {{.name}}\n",
-				map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(qualifiedName.GetEntityName())}))
-		return nil
+		return trigger.Update(Client, args)
 	},
 }
 
@@ -582,4 +420,185 @@ func init() {
 		triggerDeleteCmd,
 		triggerListCmd,
 	)
+}
+
+
+type Trigger struct {
+}
+
+func (t *Trigger) Create(Client *whisk.Client, args []string) error {
+	if whiskErr := CheckArgs(args, 1, 1, "Trigger create",
+		wski18n.T("A trigger name is required.")); whiskErr != nil {
+		return whiskErr
+	}
+
+	triggerName, err := NewQualifiedName(args[0])
+	if err != nil {
+		return NewQualifiedNameError(args[0], err)
+	}
+
+	paramArray := Flags.common.param
+	annotationArray := Flags.common.annotation
+	feedParam := Flags.common.feed
+	authToken := Client.Config.AuthToken
+
+	// if a feed is specified, create additional parameters which must be passed to the feed
+	feedName, feedParams := feedParameters(feedParam, FEED_CREATE, triggerName, authToken)
+	// the feed receives all the paramaters that are specified on the command line so we merge
+	// the feed lifecycle parameters with the command line ones
+	parameters := getParameters(append(paramArray, feedParams...), feedName == nil, false)
+
+	// if a feed is specified, add feed annotation the annotations declared on the command line
+	// TODO: add test to ensure that generated annotation has precedence
+	if feedName != nil {
+		annotationArray = append(annotationArray, getFormattedJSON("feed", feedName.GetFullQualifiedName()))
+	}
+	annotations := getParameters(annotationArray, true, true)
+
+	trigger := &whisk.Trigger{
+		Name:        triggerName.GetEntityName(),
+		Annotations: annotations.(whisk.KeyValueArr),
+	}
+
+	if feedName == nil {
+		// parameters are only attached to the trigger in there is no feed, otherwise
+		// parameters are passed to the feed instead
+		trigger.Parameters = parameters.(whisk.KeyValueArr)
+	}
+
+	createOrUpdate(Client, triggerName, trigger, false)
+
+	// Invoke the specified feed action to configure the trigger feed
+	if feedName != nil {
+		res, err := invokeAction(*feedName, parameters, true, false)
+		if err != nil {
+			whisk.Debug(whisk.DbgError, "Failed configuring feed '%s' failed: %s\n", feedName.GetFullQualifiedName(), err)
+
+			// TODO: should we do this at all? Keeping for now.
+			printFailedBlockingInvocationResponse(*feedName, false, res, err)
+
+			reason := wski18n.T(FEED_CONFIGURATION_FAILURE, map[string]interface{}{"feedname": feedName.GetFullQualifiedName(), "err": err})
+			errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
+				map[string]interface{}{"name": trigger.Name, "err": reason})
+			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+
+			// Delete trigger that was created for this feed
+			err = deleteTrigger(triggerName.GetEntityName())
+			if err != nil {
+				whisk.Debug(whisk.DbgWarn, "Ignoring deleteTrigger(%s) failure: %s\n", triggerName.GetEntityName(), err)
+			}
+
+			return werr
+		} else {
+			whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", feedName)
+
+			// preserve existing behavior where output of feed activation is emitted to console
+			printInvocationMsg(*feedName, true, true, res, color.Output)
+		}
+	}
+
+	fmt.Fprintf(color.Output,
+		wski18n.T("{{.ok}} created trigger {{.name}}\n",
+			map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(trigger.Name)}))
+	return nil
+}
+
+func(t *Trigger) Update(Client *whisk.Client, args []string) error {
+	var err error
+	var fullFeedName string
+	var qualifiedName = new(QualifiedName)
+
+	if whiskErr := CheckArgs(args, 1, 1, "Trigger update",
+		wski18n.T("A trigger name is required.")); whiskErr != nil {
+		return whiskErr
+	}
+
+	if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
+		return NewQualifiedNameError(args[0], err)
+	}
+
+	Client.Namespace = qualifiedName.GetNamespace()
+
+	// Convert the trigger's list of default parameters from a string into []KeyValue
+	// The 1 or more --param arguments have all been combined into a single []string
+	// e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
+
+	whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+	parameters, err := getJSONFromStrings(Flags.common.param, true)
+
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
+		errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
+			map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return werr
+	}
+
+	whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+	annotations, err := getJSONFromStrings(Flags.common.annotation, true)
+
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
+		errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
+			map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return werr
+	}
+
+	retTrigger, httpResp, err := Client.Triggers.Get(qualifiedName.GetEntityName())
+
+	if err != nil && httpResp.StatusCode == 404{
+		t.Create(Client, args)
+	} else if err != nil {
+		whisk.Debug(whisk.DbgError, "Client.Triggers.Get(%s) failed: %s\n", qualifiedName.GetEntityName(), err)
+		errStr := wski18n.T("Unable to get trigger '{{.name}}': {{.err}}",
+			map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+		return werr
+	} else {
+
+		// Get full feed name from trigger get request as it is needed to get the feed
+		if retTrigger != nil && retTrigger.Annotations != nil {
+			fullFeedName = getValueString(retTrigger.Annotations, "feed")
+		}
+
+		if len(fullFeedName) > 0 {
+			fullTriggerName := fmt.Sprintf("/%s/%s", qualifiedName.GetNamespace(), qualifiedName.GetEntityName())
+			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_LIFECYCLE_EVENT, FEED_UPDATE))
+			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_TRIGGER_NAME, fullTriggerName))
+			Flags.common.param = append(Flags.common.param, getFormattedJSON(FEED_AUTH_KEY, Client.Config.AuthToken))
+
+			// Invoke the specified feed action to configure the trigger feed
+			err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
+			if err != nil {
+				whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), Flags.common.feed,
+					err)
+				errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
+					map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
+				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
+		} else {
+			trigger := &whisk.Trigger{
+				Name:        qualifiedName.GetEntityName(),
+				Parameters:  parameters.(whisk.KeyValueArr),
+				Annotations: annotations.(whisk.KeyValueArr),
+			}
+
+			_, _, err = Client.Triggers.Insert(trigger, true)
+			if err != nil {
+				whisk.Debug(whisk.DbgError, "Client.Triggers.Insert(%+v,true) failed: %s\n", trigger, err)
+				errStr := wski18n.T("Unable to update trigger '{{.name}}': {{.err}}",
+					map[string]interface{}{"name": trigger.Name, "err": err})
+				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
+		}
+
+		fmt.Fprintf(color.Output,
+			wski18n.T("{{.ok}} updated trigger {{.name}}\n",
+				map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(qualifiedName.GetEntityName())}))
+	}
+
+	return nil
 }
