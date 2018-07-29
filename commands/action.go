@@ -53,11 +53,13 @@ const (
 	SWIFT_EXT         = ".swift"
 	ZIP_EXT           = ".zip"
 	PHP_EXT           = ".php"
+	RUBY_EXT          = ".rb"
 	NODE_JS           = "nodejs"
 	PYTHON            = "python"
 	JAVA              = "java"
 	SWIFT             = "swift"
 	PHP               = "php"
+	RUBY              = "ruby"
 	DEFAULT           = "default"
 	BLACKBOX          = "blackbox"
 	SEQUENCE          = "sequence"
@@ -623,6 +625,8 @@ func getExec(args []string, params ActionFlags) (*whisk.Exec, error) {
 		exec.Kind = fmt.Sprintf("%s:%s", JAVA, DEFAULT)
 	} else if ext == PHP_EXT {
 		exec.Kind = fmt.Sprintf("%s:%s", PHP, DEFAULT)
+	} else if ext == RUBY_EXT {
+		exec.Kind = fmt.Sprintf("%s:%s", RUBY, DEFAULT)
 	} else {
 		if ext == ZIP_EXT {
 			return nil, zipKindError()
@@ -664,6 +668,8 @@ func getKindExtension(runtime string) (extension string) {
 		fallthrough
 	case PHP:
 		extension = fmt.Sprintf(".%s", runtime)
+	case RUBY:
+		extension = RUBY_EXT
 	}
 
 	return extension
