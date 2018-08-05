@@ -77,7 +77,7 @@ func feedParameters(feed string, lifecycle string, trigger *QualifiedName, authK
  *
  * NOTE: this function will exit in case of a processing error since it indicates a problem parsing parameters.
  */
-func createOrUpdate(Client *whisk.Client,fqn *QualifiedName, trigger *whisk.Trigger, overwrite bool) {
+func createOrUpdate(Client *whisk.Client, fqn *QualifiedName, trigger *whisk.Trigger, overwrite bool) {
 	// TODO get rid of these global modifiers
 	Client.Namespace = fqn.GetNamespace()
 	_, _, err := Client.Triggers.Insert(trigger, overwrite)
@@ -422,7 +422,6 @@ func init() {
 	)
 }
 
-
 type Trigger struct {
 }
 
@@ -503,7 +502,7 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 	return nil
 }
 
-func(t *Trigger) Update(Client *whisk.Client, args []string) error {
+func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 	var err error
 	var fullFeedName string
 	var qualifiedName = new(QualifiedName)
@@ -547,7 +546,7 @@ func(t *Trigger) Update(Client *whisk.Client, args []string) error {
 
 	retTrigger, httpResp, err := Client.Triggers.Get(qualifiedName.GetEntityName())
 
-	if err != nil && httpResp.StatusCode == 404{
+	if err != nil && httpResp.StatusCode == 404 {
 		t.Create(Client, args)
 	} else if err != nil {
 		whisk.Debug(whisk.DbgError, "Client.Triggers.Get(%s) failed: %s\n", qualifiedName.GetEntityName(), err)
