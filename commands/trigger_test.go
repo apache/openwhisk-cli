@@ -43,24 +43,26 @@ func (t MockedTriggerService) Fire(triggerName string, payload interface{}) (*wh
 
 var _ = Describe("Trigger Command", func() {
 	t := Trigger{}
+	name := "awesomeTrigger"
+	client := whisk.Client{Triggers:&MockedTriggerService{},Config: &whisk.Config{}}
+	args := []string{name}
+
 	BeforeEach(func(){
 		Triggers = make(map[string]*whisk.Trigger)
 	})
 
 	It("should update an existing trigger", func(){
-		testTrigger := "awesomeTrigger"
-		Triggers[testTrigger] = &whisk.Trigger{}
-		fakeArgs := []string{testTrigger}
-		client := whisk.Client{Triggers:&MockedTriggerService{},Config: &whisk.Config{}}
-		err := t.Update(&client, fakeArgs)
+		Triggers[name] = &whisk.Trigger{}
+		Expect(len(Triggers)).To(Equal(1))
+		err := t.Update(&client, args)
 		Expect(err).To(BeNil())
+		Expect(len(Triggers)).To(Equal(1))
 	})
 
 	It("should create a trigger on update when it does not exist yet", func(){
-		testTrigger := "awesomeTrigger"
-		fakeArgs := []string{testTrigger}
-		client := whisk.Client{Triggers:&MockedTriggerService{},Config: &whisk.Config{}}
-		err := t.Update(&client, fakeArgs)
+		Expect(len(Triggers)).To(Equal(0))
+		err := t.Update(&client, args)
 		Expect(err).To(BeNil())
+		Expect(len(Triggers)).To(Equal(1))
 	})
 })

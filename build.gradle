@@ -65,6 +65,10 @@ dependencies {
         test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
         test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
         test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
+
+        test name:'github.com/onsi/ginkgo', transitive:false
+
+        test name:'github.com/onsi/gomega', transitive:false
     }
 }
 
@@ -223,6 +227,12 @@ task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
 }
 
 goCheck.dependsOn(goLint)
+
+task unitTests(type: com.github.blindpirate.gogradle.Go) {
+    go 'test ./commands'
+}
+
+goBuild.dependsOn(unitTests)
 
 goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
