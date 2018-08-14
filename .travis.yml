@@ -57,7 +57,8 @@ before_script:
   - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/apache/incubator-openwhisk-utilities.git
   - git clone https://github.com/apache/incubator-openwhisk.git
-  - ./incubator-openwhisk/tools/travis/setup.sh
+  - cd incubator-openwhisk
+  - ./tools/travis/setup.sh
 
 script:
   - cd $TRAVIS_BUILD_DIR/../incubator-openwhisk
