@@ -94,6 +94,8 @@ $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controllerProtocolForSetup=http
+$ANSIBLE_CMD properties.yml
+$ANSIBLE_CMD routemgmt.yml
 
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
