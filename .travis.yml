@@ -82,6 +82,10 @@ before_deploy:
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
   - export GIT_TAG="latest"
   - export TAG=false;
+  - if [ ! -z "$TRAVIS_TAG" ] ; then
+      export GIT_TAG=$TRAVIS_TAG;
+      export TAG=true;
+    fi
   # This tag is automatically generated for the latest merged commit in master branch.
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
       git config --global user.email "builds@travis-ci.com";
@@ -91,10 +95,6 @@ before_deploy:
       git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli :refs/tags/$GIT_TAG;
       GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
       git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
-    fi
-  - if [ ! -z "$TRAVIS_TAG" ] ; then
-      export GIT_TAG=$TRAVIS_TAG;
-      export TAG=true;
     fi
   - echo "The GIT_TAG of this Travis build is $GIT_TAG."
 
