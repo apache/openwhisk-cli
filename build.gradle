@@ -228,12 +228,6 @@ task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
 
 goCheck.dependsOn(goLint)
 
-task unitTests(type: com.github.blindpirate.gogradle.Go) {
-    go 'test ./commands'
-}
-
-goBuild.dependsOn(unitTests)
-
 goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
     def now = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")

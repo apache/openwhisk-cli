@@ -1,8 +1,6 @@
-package commands_test
+package commands
 
 import (
-	. "../commands"
-
 	"errors"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	. "github.com/onsi/ginkgo"
