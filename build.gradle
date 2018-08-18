@@ -67,7 +67,6 @@ dependencies {
         test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
 
         test name:'github.com/onsi/ginkgo'
-
         test name:'github.com/onsi/gomega'
     }
 }
