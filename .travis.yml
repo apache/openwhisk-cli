@@ -69,7 +69,7 @@ script:
         export BUILD_VERSION=$TRAVIS_TAG;
     fi
   - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
-  - ./tools/travis/test_openwhisk.sh
+  - ./tools/travis/test_openwhisk.sh $BUILD_VERSION
 
 after_success:
   - export DEPLOY_BUILD_READY=true

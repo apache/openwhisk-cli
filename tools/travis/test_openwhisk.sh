@@ -46,6 +46,7 @@ set -e
 #  Determine default directories, etc., so we're not beholden to Travis
 #  when running tests of the script during the development cycle.
 #
+openwhisk_cli_tag=${1:-"latest"}
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 TRAVIS_BUILD_DIR="$( cd "${TRAVIS_BUILD_DIR:-$scriptdir/../..}" && pwd )"
@@ -93,7 +94,7 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controllerProtocolForSetup=http
+$ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controllerProtocolForSetup=http
 $ANSIBLE_CMD properties.yml
 $ANSIBLE_CMD routemgmt.yml
 
