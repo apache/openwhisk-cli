@@ -26,7 +26,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.blindpirate.gogradle' version '0.8.1'
+    id 'com.github.blindpirate.gogradle' version '0.10'
 }
 
 subprojects {
@@ -66,8 +66,8 @@ dependencies {
         test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
         test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
 
-        test name:'github.com/onsi/ginkgo'
-        test name:'github.com/onsi/gomega'
+        test name:'github.com/onsi/ginkgo', transitive:false
+        test name:'github.com/onsi/gomega', transitive:false
     }
 }
 
