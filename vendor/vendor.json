@@ -1,0 +1,121 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "ASp79qek5lZJ18lexnxnnw8wQSs=",
+			"path": "github.com/apache/incubator-openwhisk-client-go/whisk",
+			"revision": "d7cee96e83a1f38413a1f5286bd524dac72686c9",
+			"revisionTime": "2018-08-03T16:52:51Z"
+		},
+		{
+			"checksumSHA1": "4NY5lFykxXaoN+JNMxo179L79sU=",
+			"path": "github.com/apache/incubator-openwhisk-client-go/wski18n",
+			"revision": "d7cee96e83a1f38413a1f5286bd524dac72686c9",
+			"revisionTime": "2018-08-03T16:52:51Z"
+		},
+		{
+			"checksumSHA1": "A/DjlgGYOKIkKC8qckZB1shNTFk=",
+			"path": "github.com/cloudfoundry/jibber_jabber",
+			"revision": "bcc4c8345a21301bf47c032ff42dd1aae2fe3027",
+			"revisionTime": "2015-11-20T18:32:58Z"
+		},
+		{
+			"checksumSHA1": "AANTVr9CVVyzsgviODY6Wi2thuM=",
+			"path": "github.com/fatih/color",
+			"revision": "570b54cabe6b8eb0bc2dfce68d964677d63b5260",
+			"revisionTime": "2017-05-23T13:53:55Z"
+		},
+		{
+			"checksumSHA1": "nQqAEaB3gBG9PSKYZTbQ5IiN3jo=",
+			"path": "github.com/ghodss/yaml",
+			"revision": "e9ed3c6dfb39bb1a32197cb10d527906fe4da4b6",
+			"revisionTime": "2018-05-03T02:20:59Z"
+		},
+		{
+			"checksumSHA1": "yyAzHoiVLu+xywYI2BDyRq6sOqE=",
+			"path": "github.com/google/go-querystring/query",
+			"revision": "9235644dd9e52eeae6fa48efd539fdc351a0af53",
+			"revisionTime": "2016-03-11T01:20:12Z"
+		},
+		{
+			"checksumSHA1": "TuS7rrLDK41z7LMgbcET4O8uMj4=",
+			"path": "github.com/hokaccha/go-prettyjson",
+			"revision": "f75235bd99dad4e98ff360db8372d5c0ef1d054a",
+			"revisionTime": "2014-12-01T06:53:30Z"
+		},
+		{
+			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",
+			"path": "github.com/inconshreveable/mousetrap",
+			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
+			"revisionTime": "2014-10-17T20:07:13Z"
+		},
+		{
+			"checksumSHA1": "I4njd26dG5hxFT2nawuByM4pxzY=",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "d228849504861217f796da67fae4f6e347643f15",
+			"revisionTime": "2016-11-03T16:00:40Z"
+		},
+		{
+			"checksumSHA1": "xZuhljnmBysJPta/lMyYmJdujCg=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8",
+			"revisionTime": "2016-08-06T12:27:52Z"
+		},
+		{
+			"checksumSHA1": "Li0PaRmaVBdibS/zs8myzc07L6o=",
+			"path": "github.com/mitchellh/go-homedir",
+			"revision": "58046073cbffe2f25d425fe1331102f55cf719de",
+			"revisionTime": "2018-08-01T23:32:06Z"
+		},
+		{
+			"checksumSHA1": "uEc9/1HbYGeK7wPStF6FmUlfzGE=",
+			"path": "github.com/nicksnyder/go-i18n/i18n",
+			"revision": "991e81cc94f6c54209edb3192cb98e3995ad71c1",
+			"revisionTime": "2016-11-05T14:54:59Z"
+		},
+		{
+			"checksumSHA1": "S1YUq0Ts6uu44Krqwgqon0/hNWg=",
+			"path": "github.com/nicksnyder/go-i18n/i18n/bundle",
+			"revision": "991e81cc94f6c54209edb3192cb98e3995ad71c1",
+			"revisionTime": "2016-11-05T14:54:59Z"
+		},
+		{
+			"checksumSHA1": "+XOg99I1zdmBRUb04ZswvzQ2WS0=",
+			"path": "github.com/nicksnyder/go-i18n/i18n/language",
+			"revision": "991e81cc94f6c54209edb3192cb98e3995ad71c1",
+			"revisionTime": "2016-11-05T14:54:59Z"
+		},
+		{
+			"checksumSHA1": "nhlpSPeAP6jMGAuLPM2xflAZTlo=",
+			"path": "github.com/nicksnyder/go-i18n/i18n/translation",
+			"revision": "991e81cc94f6c54209edb3192cb98e3995ad71c1",
+			"revisionTime": "2016-11-05T14:54:59Z"
+		},
+		{
+			"checksumSHA1": "FZ0r4TzEy9UxXLkFVXFygApni4M=",
+			"path": "github.com/spf13/cobra",
+			"revision": "6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d",
+			"revisionTime": "2016-10-26T01:28:26Z"
+		},
+		{
+			"checksumSHA1": "GxPD7A0NjMDom1xte0mghkpzr0E=",
+			"path": "github.com/spf13/pflag",
+			"revision": "5ccb023bc27df288a957c5e994cd44fd19619465",
+			"revisionTime": "2016-10-24T13:13:51Z"
+		},
+		{
+			"checksumSHA1": "2e4afOQfHP7YB4P68v6SlnAVJDk=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "9a2e24c3733eddc63871eda99f253e2db29bd3b9",
+			"revisionTime": "2016-11-08T14:26:43Z"
+		},
+		{
+			"checksumSHA1": "RDJpJQwkF012L6m/2BJizyOksNw=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "eb3733d160e74a9c7e442f435eb3bea458e1d19f",
+			"revisionTime": "2017-08-12T16:00:11Z"
+		}
+	],
+	"rootPath": "github.com/apache/incubator-openwhisk-cli"
+}

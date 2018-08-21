@@ -18,6 +18,7 @@
 -->
 
 # OpenWhisk Command Line Interface `wsk`
+
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
 
@@ -36,14 +37,14 @@ The OpenWhisk CLI is written in the Go language. You have two options to build
 the binary locally:
 
 1.  Build using the packaged Gradle scripts (including the 'gogradle' plugin),
-now the preferred build method.
+    now the preferred build method.
 2.  Compile in your local Go environment,
 
 ## Build the binary with Gradle
 
 **Note:** For those who may have used the Gradle build previously, it has been
 re-engineered to no longer required Docker or Go to be pre-installed on your
-system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
+system. Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
 Gradle now uses a prexisting Go environment to build if it can be located, or
 downloads and installs an environment within the build directory.
 
@@ -125,11 +126,12 @@ $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
 
 Unfortunately, it has become necessary to lock dependencies versions to obtain a
-clean build of wsk.  To that end, it's now necessary to populate the `vendors`
-folder using the versions selected in the `build.gradle`:
+clean build of wsk. To that end, it's now necessary to populate the `vendors`
+folder using the versions selected in the `vendor/vendor.json`:
 
-```
-$ ./gradlew goVendor
+```sh
+$ go get -u github.com/kardianos/govendor         # Install govendor tool
+$ govendor sync     # Download and install packages with specified dependencies.
 ```
 
 Once vendor is populated, it's possible to build the binary:
