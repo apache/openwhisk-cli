@@ -40,15 +40,14 @@ local environment.
 The OpenWhisk CLI is written in the Go language. You have two options to build
 the binary locally:
 
-1.  Build using the packaged Gradle scripts (including the 'gogradle' plugin)
-    now the preferred build method.
-2.  Compile in your local Go environment
+1. Build using the packaged Gradle scripts (including the 'gogradle' plugin) now the preferred build method.
+2. Compile in your local Go environment
 
 ## Build the binary with Gradle
 
 **Note:** For those who may have used the Gradle build previously, it has been
 re-engineered to no longer required Docker or Go to be pre-installed on your
-system.  Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
+system. Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
 Gradle now uses a preexisting Go environment to build if it can be located, or
 downloads and installs an environment within the build directory.
 
@@ -129,7 +128,7 @@ $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
 
 It is necessary to lock dependencies versions to obtain a
-clean build of wsk.  To that end, it's now necessary to populate the `vendors`
+clean build of wsk. To that end, it's now necessary to populate the `vendors`
 folder using the versions selected in the `vendor/vendor.json`:
 
 ```sh
