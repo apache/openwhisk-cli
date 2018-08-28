@@ -274,7 +274,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         val response = activation.response
         response.result.get
           .fields("error") shouldBe Messages.abnormalInitialization.toJson
-        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.ContainerError)
+        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
 
@@ -304,7 +304,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
         val response = activation.response
         response.result.get.fields("error") shouldBe Messages.abnormalRun.toJson
-        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.ContainerError)
+        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
 
