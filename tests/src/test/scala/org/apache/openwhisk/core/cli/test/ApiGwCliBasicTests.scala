@@ -1059,7 +1059,8 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     } finally {
       wsk.action.delete(name = actionName, expectedExitCode = DONTCARE_EXIT)
       apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
-      wsk.pkg.delete(packageName).stdout should include regex (s""""ok: deleted package $packageName\\s*"""")
+      wsk.pkg.delete(packageName).stdout should include regex (s""""ok: deleted package $packageName
+    """")
     }
   }
 }
