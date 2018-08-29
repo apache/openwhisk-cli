@@ -1044,7 +1044,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
 
       // Create the action for the API.  It must be a "web-action" action.
       val file = TestUtils.getTestActionFilename(s"echo.js")
-      wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = 200, web = Some("true"))
+      wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
 
       var rr = apiCreate(
         basepath = Some(testbasepath),
