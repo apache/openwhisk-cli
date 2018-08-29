@@ -17,15 +17,19 @@
 #
 -->
 
-# OpenWhisk Command Line Interface `wsk`
+# OpenWhisk Command-line Interface `wsk`
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
+[![Twitter](https://img.shields.io/twitter/follow/openwhisk.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=openwhisk)
+
+OpenWhisk Command-line Interface (CLI) is a unified tool that
+provides a consistent interface to interact with OpenWhisk services.
 
 # Where to download the binary of OpenWhisk CLI
 
-The OpenWhisk CLI is available on the release page: [click here to
-download](https://github.com/apache/incubator-openwhisk-cli/releases). We
+The OpenWhisk CLI is available on the [releases page](https://github.com/apache/incubator-openwhisk-cli/releases). We
 currently have binaries available for Linux, Mac OS and Windows under i386 and
 amd64 architectures. Linux versions are also available under Linux on Z, Power
 and 64-bit ARM architectures. You can download the binary, which fits your
@@ -36,16 +40,15 @@ local environment.
 The OpenWhisk CLI is written in the Go language. You have two options to build
 the binary locally:
 
-1.  Build using the packaged Gradle scripts (including the 'gogradle' plugin),
-    now the preferred build method.
-2.  Compile in your local Go environment,
+1. Build using the packaged Gradle scripts (including the 'gogradle' plugin) now the preferred build method.
+2. Compile in your local Go environment
 
 ## Build the binary with Gradle
 
 **Note:** For those who may have used the Gradle build previously, it has been
 re-engineered to no longer required Docker or Go to be pre-installed on your
 system. Using the [gogradle](https://github.com/gogradle/gogradle) plugin,
-Gradle now uses a prexisting Go environment to build if it can be located, or
+Gradle now uses a preexisting Go environment to build if it can be located, or
 downloads and installs an environment within the build directory.
 
 To build with Gradle, open an terminal, go to the directory of OpenWhisk CLI
@@ -104,8 +107,7 @@ functional OpenWhisk environment.
 
 ## Compile the binary using your local Go environment
 
-Make sure that you have Go installed [installing
-Go](https://golang.org/doc/install), and `$GOPATH` is defined [Go development
+Make sure that you have [Go installed](https://golang.org/doc/install), and `$GOPATH` is defined in your [Go development
 environment](https://golang.org/doc/code.html).
 
 Then download the source code of the OpenWhisk CLI and the dependencies by
@@ -125,7 +127,7 @@ $ go get -u github.com/jteeuwen/go-bindata/...
 $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
 
-Unfortunately, it has become necessary to lock dependencies versions to obtain a
+It is necessary to lock dependencies versions to obtain a
 clean build of wsk. To that end, it's now necessary to populate the `vendors`
 folder using the versions selected in the `vendor/vendor.json`:
 
@@ -141,8 +143,8 @@ $ go build -o wsk
 ```
 
 If you would like to build the binary for a specific operating system, you may
-add the arguments GOOS and GOARCH into the Go build command. GOOS can
-be set to "linux" "darwin" or "windows".
+add the arguments `GOOS` and `GOARCH` into the Go build command. `GOOS` can
+be set to `linux`, `darwin`, or `windows`.
 
 For example, run the following command to build the binary for Linux:
 
@@ -163,33 +165,16 @@ command help, execute the following command:
 $ wsk --help
 ```
 
-To get CLI command debug information, include the -d, or --debug flag when
+To get CLI command debug information, include the `-d`, or `--debug` flag when
 executing this command.
 
 # Continuous Integration
 
-In order to build OpenWhisk CLI binaries with good quality, OpenWhisk CLI uses
-Travis CI as the continuous delivery service for Linux and Mac. OpenWhisk CLI is
-a Go project. Currently Travis CI supports the environments of Linux and Mac,
+Travis CI is used as a continuous delivery service for Linux and Mac.
+Currently Travis CI supports the environments of Linux and Mac,
 but it is not available for Windows. We will add support of AppVeyor CI in
-future to run the test cases and build the binary for Windows.
+future to run test cases and build the binary for Windows.
 
 # Disclaimer
 
-Apache OpenWhisk Command Line Interface(CLI) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
-
-This project is currently on an experimental stage. We periodically synchronize
-the source code and test cases of this repository with the [CLI
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
-and the [test
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tests) in
-OpenWhisk. The framework of test cases is under construction for this
-repository. Please contribute to the [CLI
-folder](https://github.com/apache/incubator-openwhisk/tree/master/tools/cli/go-whisk-cli)
-in OpenWhisk for any CLI changes, before we officially announce the separation
-of OpenWhisk CLI from OpenWhisk.
-
-The OpenWhisk Command Line Interface (OpenWhisk CLI) is a unified tool that
-provides a consistent interface to interact with OpenWhisk services. With this
-tool to download and configure, you are able to manage OpenWhisk services from
-the command line and automate them through scripts.
+Apache OpenWhisk Command-line Interface (CLI) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
