@@ -80,3 +80,17 @@ Please provide information that helps the developer test any changes they make b
 ## Coding style guidelines
 
 Use idomatic go. Document exported functions.
+
+# Publishing Tagged Release to Homebrew
+
+ [Homebrew](https://brew.sh) is used to install `wsk` locally. Once we release a new version of `wsk` we should update its version in homebrew.
+
+ Get the new release SHA256 checksum by downloading the Source Code (tar.gz) from the [releases page](https://github.com/apache/incubator-openwhisk-cli/releases) and running `shasum -a 256 X.Y.Z.tar.gz` on the tarball.
+
+ Update brew formula with the automation command `brew bump-formula-pr`:
+ ```bash
+ $ brew bump-formula-pr \
+   --url='https://github.com/apache/incubator-openwhisk-cli/archive/X.Y.Z.tar.gz' \
+   --sha256='PASTE THE SHA256 CHECKSUM HERE' \
+   wsk
+ ```
