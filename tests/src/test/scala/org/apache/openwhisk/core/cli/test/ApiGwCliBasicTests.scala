@@ -1040,7 +1040,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
     val packageName = withTimestamp("pkg")
     val actionName = packageName + "/" + testName + "_action"
     try {
-      wsk.pkg.create(packageName).stdout should include regex (s""""name":\\s*"$packageName"""")
+      wsk.pkg.create(packageName).stdout should include regex (s"""ok: created package $packageName""")
 
       // Create the action for the API.  It must be a "web-action" action.
       val file = TestUtils.getTestActionFilename(s"echo.js")
