@@ -1055,7 +1055,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       verifyApiCreated(rr)
 
       rr = apiGet(basepathOrApiName = Some(testapiname))
-      verifyApiList(rr, clinamespace, testName + "_action", testurlop, testbasepath, testrelpath, testapiname)
+      verifyApiGet(rr, wskprops.apihost)
     } finally {
       wsk.action.delete(name = actionName, expectedExitCode = DONTCARE_EXIT)
       apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
