@@ -54,6 +54,9 @@ var apiCmd = &cobra.Command{
 
 var fmtString = "%-30s %7s %20s  %s\n"
 
+// When set, this overrides the default authkey based api context id
+var ContextId string
+
 func IsValidApiVerb(verb string) (error, bool) {
 	// Is the API verb valid?
 	if _, ok := whisk.ApiVerbs[strings.ToUpper(verb)]; !ok {
@@ -1025,19 +1028,24 @@ func getUserContextId() (string, error) {
 	var guid string
 	var err error
 
-	props, err := ReadProps(Properties.PropsFile)
-	if err == nil {
-		if len(props["AUTH"]) > 0 {
-			guid = strings.Split(props["AUTH"], ":")[0]
-		} else {
-			whisk.Debug(whisk.DbgError, "AUTH property not set in properties file: '%s'\n", Properties.PropsFile)
-			errStr := wski18n.T("Authorization key is not configured (--auth is required)")
-			err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-		}
+	// If the context id override has been set, use it instead of the default
+	if len(ContextId) > 0 {
+	    guid = ContextId
 	} else {
-		whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
-		errStr := wski18n.T("Unable to obtain the auth key from the properties file: {{.err}}", map[string]interface{}{"err": err})
-		err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+        props, errprops := ReadProps(Properties.PropsFile)
+    	if errprops == nil {
+	    	if len(props["AUTH"]) > 0 {
+		    	guid = strings.Split(props["AUTH"], ":")[0]
+    		} else {
+	    		whisk.Debug(whisk.DbgError, "AUTH property not set in properties file: '%s'\n", Properties.PropsFile)
+		    	errStr := wski18n.T("Authorization key is not configured (--auth is required)")
+			    err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+    		}
+	    } else {
+		    whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
+    		errStr := wski18n.T("Unable to obtain the auth key from the properties file: {{.err}}", map[string]interface{}{"err": err})
+	    	err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+	    }
 	}
 
 	return guid, err
