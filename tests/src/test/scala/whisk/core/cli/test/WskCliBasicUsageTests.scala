@@ -290,7 +290,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         response.result.get.fields("error") shouldBe Messages
           .timedoutActivation(3 seconds, true)
           .toJson
-        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.ApplicationError)
+        response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
 
@@ -490,7 +490,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       val run = wsk.action.invoke(name)
       withActivation(wsk.activation, run) { activation =>
-        activation.response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.ApplicationError)
+        activation.response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
         activation.response.result.get
           .fields("error") shouldBe s"Failed to pull container image '$containerName'.".toJson
         activation.annotations shouldBe defined
@@ -584,7 +584,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val hungRun = wsk.action.invoke(name, Map("forceHang" -> true.toJson))
       withActivation(wsk.activation, hungRun) { activation =>
         // the first action must fail with a timeout error
-        activation.response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.ApplicationError)
+        activation.response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
         activation.response.result shouldBe Some(
           JsObject("error" -> Messages.timedoutActivation(3 seconds, false).toJson))
       }
