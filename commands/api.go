@@ -1030,22 +1030,22 @@ func getUserContextId() (string, error) {
 
 	// If the context id override has been set, use it instead of the default
 	if len(ContextId) > 0 {
-	    guid = ContextId
+		guid = ContextId
 	} else {
-        props, errprops := ReadProps(Properties.PropsFile)
-    	if errprops == nil {
-	    	if len(props["AUTH"]) > 0 {
-		    	guid = strings.Split(props["AUTH"], ":")[0]
-    		} else {
-	    		whisk.Debug(whisk.DbgError, "AUTH property not set in properties file: '%s'\n", Properties.PropsFile)
-		    	errStr := wski18n.T("Authorization key is not configured (--auth is required)")
-			    err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-    		}
-	    } else {
-		    whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
-    		errStr := wski18n.T("Unable to obtain the auth key from the properties file: {{.err}}", map[string]interface{}{"err": err})
-	    	err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-	    }
+		props, errprops := ReadProps(Properties.PropsFile)
+		if errprops == nil {
+			if len(props["AUTH"]) > 0 {
+				guid = strings.Split(props["AUTH"], ":")[0]
+			} else {
+				whisk.Debug(whisk.DbgError, "AUTH property not set in properties file: '%s'\n", Properties.PropsFile)
+				errStr := wski18n.T("Authorization key is not configured (--auth is required)")
+				err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+			}
+		} else {
+			whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
+			errStr := wski18n.T("Unable to obtain the auth key from the properties file: {{.err}}", map[string]interface{}{"err": err})
+			err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+		}
 	}
 
 	return guid, err
