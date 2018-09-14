@@ -67,7 +67,6 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   it should "reject unauthenticated access" in {
     implicit val wskprops = WskProps("xxx") // shadow properties
     val errormsg = "The supplied authentication is invalid"
-    wsk.namespace.list(expectedExitCode = UNAUTHORIZED).stderr should include(errormsg)
     wsk.namespace.get(expectedExitCode = UNAUTHORIZED).stderr should include(errormsg)
   }
 
