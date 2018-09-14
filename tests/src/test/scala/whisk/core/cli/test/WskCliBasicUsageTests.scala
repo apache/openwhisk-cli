@@ -57,6 +57,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   val wsk = new Wsk
   val defaultAction = Some(TestUtils.getTestActionFilename("hello.js"))
   val usrAgentHeaderRegEx = """\bUser-Agent\b": \[\s+"OpenWhisk\-CLI/1.\d+.*"""
+  val namespaceInvalidArgumentErrMsg = "error: Invalid argument(s): invalidArg. No arguments are required."
   // certain environments may return router IP address instead of api_host string causing a failure
   // Set apiHostCheck to false to avoid apihost check
   val apiHostCheck = true
@@ -1969,7 +1970,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       (Seq("activation", "result", "activationID", invalidArg), s"${tooManyArgsMsg}${invalidArg}."),
       (Seq("activation", "poll", "activationID", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${optNamespaceMsg}"),
       (Seq("namespace", "list", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${noArgsReqMsg}"),
-      (Seq("namespace", "get", invalidArg), s"${tooManyArgsMsg}${invalidArg}. ${noArgsReqMsg}"),
+      (Seq("namespace", "get", invalidArg), s"${namespaceInvalidArgumentErrMsg}"),
       (Seq("package", "create"), s"${tooFewArgsMsg} ${packageNameReqMsg}"),
       (Seq("package", "create", "packageName", invalidArg), s"${tooManyArgsMsg}${invalidArg}."),
       (Seq("package", "create", "packageName", "--shared", invalidArg), invalidShared),
