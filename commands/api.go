@@ -1019,8 +1019,8 @@ func getAccessToken() (string, error) {
 		token = ApiGwAccessToken
 		whisk.Debug(whisk.DbgInfo, "Using %s as the api gw access token\n", token)
 	} else {
-		props, err := ReadProps(Properties.PropsFile)
-		if err == nil {
+		props, errprops := ReadProps(Properties.PropsFile)
+		if errprops == nil {
 			if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
 				token = props["APIGW_ACCESS_TOKEN"]
 			}
