@@ -57,6 +57,9 @@ var fmtString = "%-30s %7s %20s  %s\n"
 // When set, this overrides the default authkey based api context id
 var ContextId string
 
+// When set, this overrides the default access token used to authenticate with the api gw
+var ApiGwAccessToken string
+
 func IsValidApiVerb(verb string) (error, bool) {
 	// Is the API verb valid?
 	if _, ok := whisk.ApiVerbs[strings.ToUpper(verb)]; !ok {
@@ -1010,15 +1013,22 @@ func getAccessToken() (string, error) {
 	var token string = "DUMMY TOKEN"
 	var err error
 
-	props, err := ReadProps(Properties.PropsFile)
-	if err == nil {
-		if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
-			token = props["APIGW_ACCESS_TOKEN"]
-		}
+	// If the api gw access token override has been set, use it instead of the default
+	whisk.Debug(whisk.DbgInfo, "api gw access token override is '%s'\n", ApiGwAccessToken)
+	if len(ApiGwAccessToken) > 0 {
+		token = ApiGwAccessToken
+		whisk.Debug(whisk.DbgInfo, "Using %s as the api gw access token\n", token)
 	} else {
-		whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
-		errStr := wski18n.T("Unable to obtain the API Gateway access token from the properties file: {{.err}}", map[string]interface{}{"err": err})
-		err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+		props, err := ReadProps(Properties.PropsFile)
+		if err == nil {
+			if len(props["APIGW_ACCESS_TOKEN"]) > 0 {
+				token = props["APIGW_ACCESS_TOKEN"]
+			}
+		} else {
+			whisk.Debug(whisk.DbgError, "readProps(%s) failed: %s\n", Properties.PropsFile, err)
+			errStr := wski18n.T("Unable to obtain the API Gateway access token from the properties file: {{.err}}", map[string]interface{}{"err": err})
+			err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+		}
 	}
 
 	return token, err
