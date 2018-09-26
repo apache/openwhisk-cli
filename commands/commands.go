@@ -44,7 +44,7 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 		Flags.property.cert || Flags.property.key || Flags.property.apihost || Flags.property.namespace ||
 		Flags.property.apiversion || Flags.property.cliversion)) ||
 		(cmd.Parent().Name() == "property" && cmd.Name() == "set" && (len(Flags.property.apihostSet) > 0 ||
-			len(Flags.property.apiversionSet) > 0 || len(Flags.Global.Auth) > 0)) ||
+			len(Flags.property.apiversionSet) > 0 || len(Flags.Global.Auth) > 0 || Flags.property.promptOnChange)) ||
 		(cmd.Parent().Name() == "sdk" && cmd.Name() == "install" && len(args) > 0 && args[0] == "bashauto")
 
 	// Display an error if the parent command requires an API host to be set, and the current API host is not valid

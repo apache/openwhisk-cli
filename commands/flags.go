@@ -69,20 +69,21 @@ type FlagsStruct struct {
 	}
 
 	property struct {
-		cert          bool
-		key           bool
-		auth          bool
-		apihost       bool
-		apiversion    bool
-		namespace     bool
-		cliversion    bool
-		apibuild      bool
-		apibuildno    bool
-		insecure      bool
-		all           bool
-		apihostSet    string
-		apiversionSet string
-		namespaceSet  string
+		cert           bool
+		key            bool
+		auth           bool
+		apihost        bool
+		apiversion     bool
+		namespace      bool
+		promptOnChange bool
+		cliversion     bool
+		apibuild       bool
+		apibuildno     bool
+		insecure       bool
+		all            bool
+		apihostSet     string
+		apiversionSet  string
+		namespaceSet   string
 	}
 
 	action ActionFlags
@@ -145,6 +146,7 @@ type ActionFlags struct {
 	url       bool
 	save      bool
 	saveAs    string
+	force     bool
 }
 
 func IsVerbose() bool {

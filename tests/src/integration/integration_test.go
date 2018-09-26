@@ -342,7 +342,7 @@ func TestSetAPIHostAuthNamespace(t *testing.T) {
 	namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
 	expectedNamespace := string(namespaces[len(namespaces)-1])
 	fmt.Println(wsk.Wskprops.APIHost)
-	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.APIHost != "" {
+	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.AuthKey != "" {
 		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
 			"--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace)
 		ouputString := string(stdout)
@@ -353,6 +353,69 @@ func TestSetAPIHostAuthNamespace(t *testing.T) {
 			"The output of the command property set --apihost --auth --namespace does not contain \"whisk API host set\".")
 		assert.Contains(t, ouputString, "ok: whisk namespace set to "+expectedNamespace,
 			"The output of the command property set --apihost --auth --namespace does not contain \"whisk namespace set\".")
+	}
+	common.DeleteFile(tmpProp)
+}
+
+// Test delete action when property promptOnChange is true
+func TestDeleteActionWhenPromptOnChangeIsTrue(t *testing.T) {
+	common.CreateFile(tmpProp)
+	common.WriteFile(tmpProp, []string{})
+
+	os.Setenv("WSK_CONFIG_FILE", tmpProp)
+	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
+
+	namespace, _ := wsk.ListNamespaces()
+	namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
+	expectedNamespace := string(namespaces[len(namespaces)-1])
+	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.AuthKey != "" {
+		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
+			"--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace, "--promptOnChange")
+		assert.Equal(t, nil, err, "The command property set --apihost --auth --namespace --promptOnChange failed to run.")
+
+		helloFile := common.GetTestActionFilename("hello.js")
+		stdout, err = wsk.RunCommand("action", "create", "hello", helloFile)
+		assert.Equal(t, nil, err, "The command action create failed to run.")
+
+		stdout, err = wsk.RunCommand("action", "delete", "hello")
+		assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "please delete action using --force if you really want to delete it",
+			"The output of the command does not contain \"please delete action using --force if you really want to delete it\".")
+
+		stdout, err = wsk.RunCommand("action", "delete", "hello", "--force")
+		assert.Equal(t, nil, err, "The command action delete failed to run.")
+	}
+	common.DeleteFile(tmpProp)
+}
+
+// Test update action when property promptOnChange is true
+func TestUpdateActionWhenPromptOnChangeIsTrue(t *testing.T) {
+	common.CreateFile(tmpProp)
+	common.WriteFile(tmpProp, []string{})
+
+	os.Setenv("WSK_CONFIG_FILE", tmpProp)
+	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
+
+	namespace, _ := wsk.ListNamespaces()
+	namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
+	expectedNamespace := string(namespaces[len(namespaces)-1])
+	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.AuthKey != "" {
+		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
+			"--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace, "--promptOnChange")
+		assert.Equal(t, nil, err, "The command property set --apihost --auth --namespace --promptOnChange failed to run.")
+
+		helloFile := common.GetTestActionFilename("hello.js")
+		stdout, err = wsk.RunCommand("action", "create", "hello", helloFile)
+		assert.Equal(t, nil, err, "The command action create failed to run.")
+
+		stdout, err = wsk.RunCommand("action", "update", "hello", helloFile)
+		assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "please update action using --force if you really want to update it",
+			"The output of the command does not contain \"please update action using --force if you really want to update it\".")
+
+		stdout, err = wsk.RunCommand("action", "update", "hello", helloFile, "--force")
+		assert.Equal(t, nil, err, "The command action update failed to run.")
+
+		stdout, err = wsk.RunCommand("action", "delete", "hello", "--force")
+		assert.Equal(t, nil, err, "The command action delete failed to run.")
 	}
 	common.DeleteFile(tmpProp)
 }
