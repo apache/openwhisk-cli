@@ -56,7 +56,7 @@ before_script:
   - test -z "$(gofmt -s -l $(echo $GO_FILES))"
   - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/apache/incubator-openwhisk-utilities.git
-  - git clone https://github.com/apache/incubator-openwhisk.git
+  - git clone --depth=1 --single-branch -b scala-2-12 https://github.com/chetanmeh/incubator-openwhisk.git
   - cd incubator-openwhisk
   - ./tools/travis/setup.sh
 
