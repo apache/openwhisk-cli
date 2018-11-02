@@ -69,7 +69,7 @@ Please use [Slack channel #whisk-users](https://cloudplatform.slack.com/messages
 
 ## Setup
 
-Project was written with `Go v1.8`. It has a dependency on [incubator-openwhisk-client-go](https://github.com/apache/incubator-openwhisk-client-go).
+Project was written with `Go v1.9`. It has a dependency on [incubator-openwhisk-client-go](https://github.com/apache/incubator-openwhisk-client-go).
 
 ## Testing
 
