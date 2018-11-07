@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.cli.test
 
 import java.time.Instant
 import java.net.URLEncoder
@@ -38,14 +38,14 @@ import common.WskProps
 import common.WskTestHelpers
 import spray.json.DefaultJsonProtocol._
 import spray.json._
-import whisk.core.entity._
-import whisk.core.entity.LogLimit._
-import whisk.core.entity.MemoryLimit._
-import whisk.core.entity.TimeLimit._
-import whisk.core.entity.size.SizeInt
-import whisk.utils.retry
-import whisk.core.cli.test.TestJsonArgs._
-import whisk.http.Messages
+import org.apache.openwhisk.core.entity._
+import org.apache.openwhisk.core.entity.LogLimit._
+import org.apache.openwhisk.core.entity.MemoryLimit._
+import org.apache.openwhisk.core.entity.TimeLimit._
+import org.apache.openwhisk.core.entity.size.SizeInt
+import org.apache.openwhisk.utils.retry
+import org.apache.openwhisk.core.cli.test.TestJsonArgs._
+import org.apache.openwhisk.http.Messages
 
 /**
  * Tests for basic CLI usage. Some of these tests require a deployed backend.

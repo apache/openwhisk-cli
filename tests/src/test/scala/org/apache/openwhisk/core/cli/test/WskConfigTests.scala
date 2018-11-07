@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.cli.test
 
 import java.io.File
 import java.io.BufferedWriter

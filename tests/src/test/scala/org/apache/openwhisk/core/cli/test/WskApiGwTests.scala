@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.cli.test
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
