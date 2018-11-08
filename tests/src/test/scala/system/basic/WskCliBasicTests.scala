@@ -35,7 +35,7 @@ import common.WskTestHelpers
 import spray.json._
 import spray.json.DefaultJsonProtocol._
 
-import whisk.http.Messages
+import org.apache.openwhisk.http.Messages
 
 @RunWith(classOf[JUnitRunner])
 class WskCliBasicTests extends TestHelpers with WskTestHelpers {

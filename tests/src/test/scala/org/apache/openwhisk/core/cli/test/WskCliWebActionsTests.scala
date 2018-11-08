@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.cli.test
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -23,6 +23,6 @@ import org.scalatest.junit.JUnitRunner
 import common.Wsk
 
 @RunWith(classOf[JUnitRunner])
-class WskCliActionSequenceTests extends WskActionSequenceTests {
-  override lazy val wsk = new Wsk
+class WskCliWebActionsTests extends WskWebActionsTests {
+  override val wsk = new Wsk
 }

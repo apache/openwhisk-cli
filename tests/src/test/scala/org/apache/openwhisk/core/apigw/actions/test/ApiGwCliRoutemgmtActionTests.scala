@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.apigw.actions.test
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import common.Wsk
-import common.TestUtils.FORBIDDEN
-import common.TestUtils.TIMEOUT
-import common.TestUtils.NOT_FOUND
 
 @RunWith(classOf[JUnitRunner])
-class WskCliEntitlementTests extends WskEntitlementTests {
+class ApiGwCliRoutemgmtActionTests extends ApiGwRoutemgmtActionTests {
   override lazy val wsk = new Wsk
-  override lazy val forbiddenCode = FORBIDDEN
-  override lazy val timeoutCode = TIMEOUT
-  override lazy val notFoundCode = NOT_FOUND
 }

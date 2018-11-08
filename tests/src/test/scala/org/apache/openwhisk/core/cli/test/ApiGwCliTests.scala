@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package whisk.core.cli.test
+package org.apache.openwhisk.core.cli.test
 
 import com.jayway.restassured.RestAssured
 
@@ -116,7 +116,7 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
       println(s"Invoking: '${apiToInvoke}'")
-      val response = whisk.utils.retry({
+      val response = org.apache.openwhisk.utils.retry({
         val response = RestAssured.given().config(getSslConfig()).get(s"$apiToInvoke")
         response.statusCode should be(200)
         response
@@ -181,7 +181,7 @@ class ApiGwCliTests extends ApiGwCliBasicTests {
       //Lets call the swagger url so we can make sure the response is valid and contains our path in the ow path
       val apiToInvoke = s"$swaggerApiUrl"
       println(s"Invoking: '${apiToInvoke}'")
-      val response = whisk.utils.retry({
+      val response = org.apache.openwhisk.utils.retry({
         val response = RestAssured.given().config(getSslConfig()).get(s"$apiToInvoke")
         response.statusCode should be(200)
         response
