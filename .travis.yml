@@ -22,7 +22,7 @@ matrix:
     - os: linux
       sudo: required
       group: deprecated-2017Q3
-      go: 1.9
+      go: 1.9.3
       services: docker
 
 env:
