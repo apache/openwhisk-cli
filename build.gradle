@@ -37,6 +37,7 @@ subprojects {
 golang {
     packagePath = 'github.com/apache/incubator-openwhisk-cli' as String
     buildTags = (rootProject.findProperty('goTags')?:'').split(',')
+    goVersion = '1.9.3'
 }
 
 dependencies {
