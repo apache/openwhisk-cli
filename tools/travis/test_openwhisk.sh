@@ -81,13 +81,11 @@ cd $TRAVIS_BUILD_DIR
 #  Set up the OpenWhisk environment for integration testing
 #
 
-#  Build docker images
 cd $OPENWHISK_HOME
-./gradlew --console=plain distDocker -PdockerImagePrefix=testing
 
 #  Fire up the cluster
 cd $OPENWHISK_HOME/ansible
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
 $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
