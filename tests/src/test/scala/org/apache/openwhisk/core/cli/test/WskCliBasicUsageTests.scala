@@ -2044,14 +2044,14 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       def testLimit(timeout: Option[Duration] = None,
                     memory: Option[ByteSize] = None,
                     logs: Option[ByteSize] = None,
-        concurrency: Option[Int] = None,
+                    concurrency: Option[Int] = None,
                     ec: Int = SUCCESS_EXIT) = {
         // Limits to assert, standard values if CLI omits certain values
         val limits = JsObject(
           "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
           "memory" -> memory.getOrElse(stdMemory).toMB.toInt.toJson,
           "logs" -> logs.getOrElse(stdLogSize).toMB.toInt.toJson,
-        "concurrency" -> concurrency.getOrElse(stdConcurrent).toJson)
+          "concurrency" -> concurrency.getOrElse(stdConcurrent).toJson)
 
         val name = "ActionLimitTests" + Instant.now.toEpochMilli
         val createResult =
@@ -2064,7 +2064,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
               timeout = timeout,
               concurrency = concurrency,
               expectedExitCode = DONTCARE_EXIT)
-            withClue(s"create failed for parameters: timeout = $timeout, memory = $memory, logsize = $logs, concurrency = $concurrency:") {
+            withClue(
+              s"create failed for parameters: timeout = $timeout, memory = $memory, logsize = $logs, concurrency = $concurrency:") {
               result.exitCode should be(ec)
             }
             result
