@@ -411,7 +411,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         val limitsObj =
           JsObject(
             "key" -> JsString("limits"),
-            "value" -> ActionLimits(TimeLimit(timeLimit), MemoryLimit(memoryLimit), LogLimit(logLimit), ConcurrencyLimit(concurrencyLimit)).toJson)
+            "value" -> ActionLimits(
+              TimeLimit(timeLimit),
+              MemoryLimit(memoryLimit),
+              LogLimit(logLimit),
+              ConcurrencyLimit(concurrencyLimit)).toJson)
 
         val path = annotations.find {
           _.fields("key").convertTo[String] == "path"
