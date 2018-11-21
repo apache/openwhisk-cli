@@ -289,6 +289,26 @@
     "translation": "{{.ok}} whisk namespace set to {{.name}}\n"
   },
   {
+    "id": "{{.ok}} whisk promptOnChange set to {{.name}}\n",
+    "translation": "{{.ok}} whisk promptOnChange set to {{.name}}\n"
+  },
+  {
+    "id": "{{.ok}} whisk promptOnChange unset.\n",
+    "translation": "{{.ok}} whisk promptOnChange unset.\n"
+  },
+  {
+    "id": "force to do this operation when property promptOnChange is true",
+    "translation": "force to do this operation when property promptOnChange is true"
+  },
+  {
+    "id": "please update action using --force if you really want to update it",
+    "translation": "please update action using --force if you really want to update it"
+  },
+  {
+    "id": "please delete action using --force if you really want to delete it",
+    "translation": "please delete action using --force if you really want to delete it"
+  },
+  {
     "id": "Unable to set the property value(s): {{.err}}",
     "translation": "Unable to set the property value(s): {{.err}}"
   },
@@ -359,6 +379,10 @@
   {
     "id": "whisk namespace",
     "translation": "whisk namespace"
+  },
+  {
+    "id": "whisk promptOnChange",
+    "translation": "whisk promptOnChange"
   },
   {
     "id": "whisk CLI version",

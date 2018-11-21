@@ -31,16 +31,17 @@ import (
 )
 
 var Properties struct {
-	Cert       string
-	Key        string
-	Auth       string
-	APIHost    string
-	APIVersion string
-	APIBuild   string
-	APIBuildNo string
-	CLIVersion string
-	Namespace  string
-	PropsFile  string
+	Cert           string
+	Key            string
+	Auth           string
+	APIHost        string
+	APIVersion     string
+	APIBuild       string
+	APIBuildNo     string
+	CLIVersion     string
+	Namespace      string
+	PromptOnChange bool
+	PropsFile      string
 }
 
 const DefaultCert string = ""
@@ -51,6 +52,7 @@ const DefaultAPIVersion string = "v1"
 const DefaultAPIBuild string = ""
 const DefaultAPIBuildNo string = ""
 const DefaultNamespace string = "_"
+const DefaultPromptOnChange bool = false
 const DefaultPropsFile string = "~/.wskprops"
 
 var propertyCmd = &cobra.Command{
@@ -165,6 +167,13 @@ var propertySetCmd = &cobra.Command{
 			}
 		}
 
+		if promptOnChange := Flags.property.promptOnChange; promptOnChange {
+			props["PROMPTONCHANGE"] = "true"
+			okMsg += fmt.Sprintf(
+				wski18n.T("{{.ok}} whisk promptOnChange set to {{.name}}\n",
+					map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(promptOnChange)}))
+		}
+
 		err = WriteProps(Properties.PropsFile, props)
 		if err != nil {
 			whisk.Debug(whisk.DbgError, "writeProps(%s, %#v) failed: %s\n", Properties.PropsFile, props, err)
@@ -261,6 +270,13 @@ var propertyUnsetCmd = &cobra.Command{
 			}
 		}
 
+		if Flags.property.promptOnChange {
+			delete(props, "PROMPTONCHANGE")
+			okMsg += fmt.Sprintf(
+				wski18n.T("{{.ok}} whisk promptOnChange unset.\n",
+					map[string]interface{}{"ok": color.GreenString("ok:")}))
+		}
+
 		err = WriteProps(Properties.PropsFile, props)
 		if err != nil {
 			whisk.Debug(whisk.DbgError, "writeProps(%s, %#v) failed: %s\n", Properties.PropsFile, props, err)
@@ -291,8 +307,9 @@ var propertyGetCmd = &cobra.Command{
 		if !(Flags.property.all || Flags.property.cert ||
 			Flags.property.key || Flags.property.auth ||
 			Flags.property.apiversion || Flags.property.cliversion ||
-			Flags.property.namespace || Flags.property.apibuild ||
-			Flags.property.apihost || Flags.property.apibuildno) {
+			Flags.property.namespace || Flags.property.promptOnChange ||
+			Flags.property.apibuild || Flags.property.apihost ||
+			Flags.property.apibuildno) {
 			Flags.property.all = true
 		}
 
@@ -318,6 +335,10 @@ var propertyGetCmd = &cobra.Command{
 
 		if Flags.property.all || Flags.property.namespace {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk namespace"), boldString(Properties.Namespace))
+		}
+
+		if Flags.property.all || Flags.property.promptOnChange {
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk promptOnChange"), boldString(Properties.PromptOnChange))
 		}
 
 		if Flags.property.all || Flags.property.cliversion {
@@ -368,6 +389,7 @@ func init() {
 	propertyGetCmd.Flags().BoolVar(&Flags.property.apibuildno, "apibuildno", false, wski18n.T("whisk API build number"))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.cliversion, "cliversion", false, wski18n.T("whisk CLI version"))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T("whisk namespace"))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.promptOnChange, "promptOnChange", false, wski18n.T("whisk promptOnChange"))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.all, "all", false, wski18n.T("all properties"))
 
 	propertySetCmd.Flags().StringVarP(&Flags.Global.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
@@ -376,6 +398,7 @@ func init() {
 	propertySetCmd.Flags().StringVar(&Flags.property.apihostSet, "apihost", "", wski18n.T("whisk API `HOST`"))
 	propertySetCmd.Flags().StringVar(&Flags.property.apiversionSet, "apiversion", "", wski18n.T("whisk API `VERSION`"))
 	propertySetCmd.Flags().StringVar(&Flags.property.namespaceSet, "namespace", "", wski18n.T("whisk `NAMESPACE`"))
+	propertySetCmd.Flags().BoolVar(&Flags.property.promptOnChange, "promptOnChange", false, wski18n.T("whisk promptOnChange"))
 
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T("client cert"))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T("client key"))
@@ -383,6 +406,7 @@ func init() {
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T("whisk API host"))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T("whisk API version"))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T("whisk namespace"))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.promptOnChange, "promptOnChange", false, wski18n.T("whisk promptOnChange"))
 
 }
 
@@ -391,6 +415,7 @@ func SetDefaultProperties() {
 	Properties.Cert = DefaultKey
 	Properties.Auth = DefaultAuth
 	Properties.Namespace = DefaultNamespace
+	Properties.PromptOnChange = DefaultPromptOnChange
 	Properties.APIHost = DefaultAPIHost
 	Properties.APIBuild = DefaultAPIBuild
 	Properties.APIBuildNo = DefaultAPIBuildNo
@@ -490,6 +515,10 @@ func loadProperties() error {
 
 	if namespace := os.Getenv("WHISK_NAMESPACE"); len(namespace) > 0 {
 		Properties.Namespace = namespace
+	}
+
+	if promptOnChange, hasProp := props["PROMPTONCHANGE"]; hasProp && len(promptOnChange) > 0 && promptOnChange == "true" {
+		Properties.PromptOnChange = true
 	}
 
 	return nil

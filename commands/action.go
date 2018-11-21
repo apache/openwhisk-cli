@@ -141,6 +141,15 @@ var actionUpdateCmd = &cobra.Command{
 			return actionParseError(cmd, args, err)
 		}
 
+		if Properties.PromptOnChange {
+			if !Flags.action.force {
+				errMsg := wski18n.T("please update action using --force if you really want to update it")
+				whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+					whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+				return whiskErr
+			}
+		}
+
 		if _, _, err = Client.Actions.Insert(action, true); err != nil {
 			return actionInsertError(action, err)
 		}
@@ -336,6 +345,15 @@ var actionDeleteCmd = &cobra.Command{
 		}
 
 		Client.Namespace = qualifiedName.GetNamespace()
+
+		if Properties.PromptOnChange {
+			if !Flags.action.force {
+				errMsg := wski18n.T("please delete action using --force if you really want to delete it")
+				whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+					whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+				return whiskErr
+			}
+		}
 
 		if _, err = Client.Actions.Delete(qualifiedName.GetEntityName()); err != nil {
 			return actionDeleteError(qualifiedName.GetEntityName(), err)
@@ -1275,6 +1293,8 @@ func init() {
 	actionCreateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
 
+	actionDeleteCmd.Flags().BoolVar(&Flags.action.force, "force", false, wski18n.T("force to do this operation when property promptOnChange is true"))
+
 	actionUpdateCmd.Flags().BoolVar(&Flags.action.native, "native", false, wski18n.T("treat ACTION as native action (zip file provides a compatible executable to run)"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.docker, "docker", "", wski18n.T("use provided docker image (a path on DockerHub) to run the action"))
 	actionUpdateCmd.Flags().BoolVar(&Flags.action.copy, "copy", false, wski18n.T("treat ACTION as the name of an existing action"))
@@ -1290,6 +1310,7 @@ func init() {
 	actionUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
+	actionUpdateCmd.Flags().BoolVar(&Flags.action.force, "force", false, wski18n.T("force to do this operation when property promptOnChange is true"))
 
 	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))

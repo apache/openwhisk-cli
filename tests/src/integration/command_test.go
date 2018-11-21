@@ -145,6 +145,21 @@ func TestSetAuth(t *testing.T) {
 	common.DeleteFile(tmpProp)
 }
 
+// Test case to set promptOnChange in property file.
+func TestSetPromptOnChange(t *testing.T) {
+	common.CreateFile(tmpProp)
+
+	os.Setenv("WSK_CONFIG_FILE", tmpProp)
+	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
+
+	_, err := wsk.RunCommand("property", "set", "--promptOnChange")
+	assert.Equal(t, nil, err, "The command property set --promptOnChange failed to run.")
+	output := common.ReadFile(tmpProp)
+	assert.Contains(t, output, "PROMPTONCHANGE=true",
+		"The wsk property file does not contain \"PROMPTONCHANGE=true\".")
+	common.DeleteFile(tmpProp)
+}
+
 // Test case to set multiple property values with single command.
 func TestSetMultipleValues(t *testing.T) {
 	common.CreateFile(tmpProp)
@@ -153,13 +168,14 @@ func TestSetMultipleValues(t *testing.T) {
 	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
 	_, err := wsk.RunCommand("property", "set", "--auth", "testKey", "--apihost", "openwhisk.ng.bluemix.net",
-		"--apiversion", "v1")
+		"--apiversion", "v1", "--promptOnChange")
 	assert.Equal(t, nil, err, "The command property set --auth --apihost --apiversion failed to run.")
 	output := common.ReadFile(tmpProp)
 	assert.Contains(t, output, "AUTH=testKey", "The wsk property file does not contain \"AUTH=testKey\".")
 	assert.Contains(t, output, "APIHOST=openwhisk.ng.bluemix.net",
 		"The wsk property file does not contain \"APIHOST=openwhisk.ng.bluemix.net\".")
 	assert.Contains(t, output, "APIVERSION=v1", "The wsk property file does not contain \"APIVERSION=v1\".")
+	assert.Contains(t, output, "PROMPTONCHANGE=true", "The wsk property file does not contain \"PROMPTONCHANGE=true\".")
 	common.DeleteFile(tmpProp)
 }
 
