@@ -42,6 +42,7 @@ const (
 	MEMORY_LIMIT      = 256
 	TIMEOUT_LIMIT     = 60000
 	LOGSIZE_LIMIT     = 10
+	CONCURRENCY_LIMIT = 1
 	ACTIVATION_ID     = "activationId"
 	WEB_EXPORT_ANNOT  = "web-export"
 	RAW_HTTP_ANNOT    = "raw-http"
@@ -413,9 +414,11 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		cmd.LocalFlags().Changed(MEMORY_FLAG),
 		cmd.LocalFlags().Changed(LOG_SIZE_FLAG),
 		cmd.LocalFlags().Changed(TIMEOUT_FLAG),
+		cmd.LocalFlags().Changed(CONCURRENCY_FLAG),
 		Flags.action.memory,
 		Flags.action.logsize,
-		Flags.action.timeout)
+		Flags.action.timeout,
+		Flags.action.concurrency)
 
 	paramArgs = Flags.common.param
 	annotArgs = Flags.common.annotation
@@ -886,10 +889,10 @@ func webSecureSecret(webSecureMode string) interface{} {
 	}
 }
 
-func getLimits(memorySet bool, logSizeSet bool, timeoutSet bool, memory int, logSize int, timeout int) *whisk.Limits {
+func getLimits(memorySet bool, logSizeSet bool, timeoutSet bool, concurrencySet bool, memory int, logSize int, timeout int, concurrency int) *whisk.Limits {
 	var limits *whisk.Limits
 
-	if memorySet || logSizeSet || timeoutSet {
+	if memorySet || logSizeSet || timeoutSet || concurrencySet {
 		limits = new(whisk.Limits)
 
 		if memorySet {
@@ -902,6 +905,10 @@ func getLimits(memorySet bool, logSizeSet bool, timeoutSet bool, memory int, log
 
 		if timeoutSet {
 			limits.Timeout = &timeout
+		}
+
+		if concurrencySet {
+			limits.Concurrency = &concurrency
 		}
 	}
 
@@ -1268,6 +1275,7 @@ func init() {
 	actionCreateCmd.Flags().IntVarP(&Flags.action.timeout, TIMEOUT_FLAG, "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
 	actionCreateCmd.Flags().IntVarP(&Flags.action.memory, MEMORY_FLAG, "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
 	actionCreateCmd.Flags().IntVarP(&Flags.action.logsize, LOG_SIZE_FLAG, "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
+	actionCreateCmd.Flags().IntVarP(&Flags.action.concurrency, CONCURRENCY_FLAG, "c", CONCURRENCY_LIMIT, wski18n.T("the maximum intra-container concurrent activation `LIMIT` for the action"))
 	actionCreateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", nil, wski18n.T("annotation values in `KEY VALUE` format"))
 	actionCreateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
 	actionCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", nil, wski18n.T("parameter values in `KEY VALUE` format"))
@@ -1284,6 +1292,7 @@ func init() {
 	actionUpdateCmd.Flags().IntVarP(&Flags.action.timeout, TIMEOUT_FLAG, "t", TIMEOUT_LIMIT, wski18n.T("the timeout `LIMIT` in milliseconds after which the action is terminated"))
 	actionUpdateCmd.Flags().IntVarP(&Flags.action.memory, MEMORY_FLAG, "m", MEMORY_LIMIT, wski18n.T("the maximum memory `LIMIT` in MB for the action"))
 	actionUpdateCmd.Flags().IntVarP(&Flags.action.logsize, LOG_SIZE_FLAG, "l", LOGSIZE_LIMIT, wski18n.T("the maximum log size `LIMIT` in MB for the action"))
+	actionUpdateCmd.Flags().IntVarP(&Flags.action.concurrency, CONCURRENCY_FLAG, "c", CONCURRENCY_LIMIT, wski18n.T("the maximum intra-container concurrent activation `LIMIT` for the action"))
 	actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
 	actionUpdateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
 	actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))

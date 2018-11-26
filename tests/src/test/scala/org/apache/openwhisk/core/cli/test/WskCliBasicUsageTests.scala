@@ -39,6 +39,7 @@ import common.WskTestHelpers
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 import org.apache.openwhisk.core.entity._
+import org.apache.openwhisk.core.entity.ConcurrencyLimit._
 import org.apache.openwhisk.core.entity.LogLimit._
 import org.apache.openwhisk.core.entity.MemoryLimit._
 import org.apache.openwhisk.core.entity.TimeLimit._
@@ -390,6 +391,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val memoryLimit = 512 MB
       val logLimit = 1 MB
       val timeLimit = 60 seconds
+      val concurrencyLimit = 500
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(
@@ -397,7 +399,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           Some(TestUtils.getTestActionFilename("helloAsync.js")),
           memory = Some(memoryLimit),
           timeout = Some(timeLimit),
-          logsize = Some(logLimit))
+          logsize = Some(logLimit),
+          concurrency = Some(concurrencyLimit))
       }
 
       val run = wsk.action.invoke(name, Map("payload" -> "this is a test".toJson))
@@ -408,7 +411,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         val limitsObj =
           JsObject(
             "key" -> JsString("limits"),
-            "value" -> ActionLimits(TimeLimit(timeLimit), MemoryLimit(memoryLimit), LogLimit(logLimit)).toJson)
+            "value" -> ActionLimits(
+              TimeLimit(timeLimit),
+              MemoryLimit(memoryLimit),
+              LogLimit(logLimit),
+              ConcurrencyLimit(concurrencyLimit)).toJson)
 
         val path = annotations.find {
           _.fields("key").convertTo[String] == "path"
@@ -2041,12 +2048,14 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       def testLimit(timeout: Option[Duration] = None,
                     memory: Option[ByteSize] = None,
                     logs: Option[ByteSize] = None,
+                    concurrency: Option[Int] = None,
                     ec: Int = SUCCESS_EXIT) = {
         // Limits to assert, standard values if CLI omits certain values
         val limits = JsObject(
           "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
           "memory" -> memory.getOrElse(stdMemory).toMB.toInt.toJson,
-          "logs" -> logs.getOrElse(stdLogSize).toMB.toInt.toJson)
+          "logs" -> logs.getOrElse(stdLogSize).toMB.toInt.toJson,
+          "concurrency" -> concurrency.getOrElse(stdConcurrent).toJson)
 
         val name = "ActionLimitTests" + Instant.now.toEpochMilli
         val createResult =
@@ -2057,8 +2066,10 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
               logsize = logs,
               memory = memory,
               timeout = timeout,
+              concurrency = concurrency,
               expectedExitCode = DONTCARE_EXIT)
-            withClue(s"create failed for parameters: timeout = $timeout, memory = $memory, logsize = $logs:") {
+            withClue(
+              s"create failed for parameters: timeout = $timeout, memory = $memory, logsize = $logs, concurrency = $concurrency:") {
               result.exitCode should be(ec)
             }
             result
@@ -2084,13 +2095,15 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         time <- Seq(None, Some(MIN_DURATION), Some(MAX_DURATION))
         mem <- Seq(None, Some(minMemory), Some(maxMemory))
         log <- Seq(None, Some(minLogSize), Some(maxLogSize))
-      } testLimit(time, mem, log)
+        concurrency <- Seq(None, Some(minConcurrent), Some(maxConcurrent))
+      } testLimit(time, mem, log, concurrency)
 
       // Assert that invalid permutation are rejected
-      testLimit(Some(0.milliseconds), None, None, BAD_REQUEST)
-      testLimit(Some(100.minutes), None, None, BAD_REQUEST)
-      testLimit(None, Some(0.MB), None, BAD_REQUEST)
-      testLimit(None, Some(32768.MB), None, BAD_REQUEST)
-      testLimit(None, None, Some(32768.MB), BAD_REQUEST)
+      testLimit(Some(0.milliseconds), None, None, None, BAD_REQUEST)
+      testLimit(Some(100.minutes), None, None, None, BAD_REQUEST)
+      testLimit(None, Some(0.MB), None, None, BAD_REQUEST)
+      testLimit(None, Some(32768.MB), None, None, BAD_REQUEST)
+      testLimit(None, None, Some(32768.MB), None, BAD_REQUEST)
+      testLimit(None, None, None, Some(5000), BAD_REQUEST)
   }
 }

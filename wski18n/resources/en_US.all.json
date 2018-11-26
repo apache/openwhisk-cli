@@ -928,6 +928,10 @@
     "translation": "the maximum memory `LIMIT` in MB for the action"
   },
   {
+    "id": "the maximum intra-container concurrent activation `LIMIT` for the action",
+    "translation": "the maximum intra-container concurrent activation `LIMIT` for the action"
+  },
+  {
     "id": "the maximum log size `LIMIT` in MB for the action",
     "translation": "the maximum log size `LIMIT` in MB for the action"
   },

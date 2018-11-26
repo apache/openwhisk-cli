@@ -26,13 +26,14 @@ import (
 ///////////
 
 const (
-	MEMORY_FLAG     = "memory"
-	LOG_SIZE_FLAG   = "logsize"
-	TIMEOUT_FLAG    = "timeout"
-	WEB_FLAG        = "web"
-	WEB_SECURE_FLAG = "web-secure"
-	SAVE_FLAG       = "save"
-	SAVE_AS_FLAG    = "save-as"
+	MEMORY_FLAG      = "memory"
+	LOG_SIZE_FLAG    = "logsize"
+	CONCURRENCY_FLAG = "concurrency"
+	TIMEOUT_FLAG     = "timeout"
+	WEB_FLAG         = "web"
+	WEB_SECURE_FLAG  = "web-secure"
+	SAVE_FLAG        = "save"
+	SAVE_AS_FLAG     = "save-as"
 )
 
 var cliDebug = os.Getenv("WSK_CLI_DEBUG") // Useful for tracing init() code
@@ -130,21 +131,22 @@ type FlagsStruct struct {
 }
 
 type ActionFlags struct {
-	docker    string
-	native    bool
-	copy      bool
-	web       string
-	websecure string
-	sequence  bool
-	timeout   int
-	memory    int
-	logsize   int
-	result    bool
-	kind      string
-	main      string
-	url       bool
-	save      bool
-	saveAs    string
+	docker      string
+	native      bool
+	copy        bool
+	web         string
+	websecure   string
+	sequence    bool
+	timeout     int
+	memory      int
+	logsize     int
+	concurrency int
+	result      bool
+	kind        string
+	main        string
+	url         bool
+	save        bool
+	saveAs      string
 }
 
 func IsVerbose() bool {
