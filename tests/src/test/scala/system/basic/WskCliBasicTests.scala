@@ -313,8 +313,8 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
         .get(name, fieldFilter = Some("annotations"))
         .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
       wsk.action
-        .get(name, fieldFilter = Some("limits"))
-        .stdout should include regex (s"""$successMsg limits\n\\{\\s+"timeout":\\s+60000,\\s+"memory":\\s+256,\\s+"logs":\\s+10\\s+\\}""")
+        .get(name, fieldFilter = Some("limits")) //
+        .stdout should include regex (s"""$successMsg limits\n\\{\\s+"timeout":\\s+60000,\\s+"memory":\\s+256,\\s+"logs":\\s+10,\\s+"concurrency":\\s+1\\s+\\}""")
       wsk.action
         .get(name, fieldFilter = Some("namespace"))
         .stdout should include regex (s"""(?i)$successMsg namespace\n"$ns"""")
