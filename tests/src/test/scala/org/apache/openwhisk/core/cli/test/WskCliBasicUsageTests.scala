@@ -1086,46 +1086,40 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val saveName = s"save-as-$name.js"
     val badSaveName = s"bad-directory${File.separator}$saveName"
 
-    // Test for successful --save
-    assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, defaultAction)
-    }
+    Seq(
+      (name, true, false, false),
+      (name, false, true, false),
+      (name, false, false, true)
+    ).foreach {
+      case (actionName, save, saveAs, blackbox) =>
+        assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
+          blackbox match {
+            case false => action.create(name, defaultAction, update = true)
+            case true => action.create(name, defaultAction, update = true, docker = Some("asdf"))
+          }
+        }
 
-    val saveMsg = wsk.action.get(name, save = Some(true)).stdout
+        val saveMsg: String = if (save) {
+          wsk.action.get(name, save = Some(true)).stdout
+        } else  {
+          wsk.action.get(name, saveAs = Some(saveName)).stdout
+        }
 
-    saveMsg should include(s"saved action code to ")
+        saveMsg should include(s"saved action code to ")
 
-    val savePath = saveMsg.split("ok: saved action code to ")(1).trim()
-    val saveFile = new File(savePath);
+        val savePath = saveMsg.split("ok: saved action code to ")(1).trim()
+        val saveFile = new File(savePath);
 
-    try {
-      saveFile.exists shouldBe true
+        try {
+          saveFile.exists shouldBe true
 
-      // Test for failure saving file when it already exist
-      wsk.action
-        .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
-        .stderr should include(s"The file '$name.js' already exists")
-    } finally {
-      saveFile.delete()
-    }
-
-    // Test for successful --save-as
-    val saveAsMsg = wsk.action.get(name, saveAs = Some(saveName)).stdout
-
-    saveAsMsg should include(s"saved action code to ")
-
-    val saveAsPath = saveAsMsg.split("ok: saved action code to ")(1).trim()
-    val saveAsFile = new File(saveAsPath);
-
-    try {
-      saveAsFile.exists shouldBe true
-
-      // Test for failure saving file when it already exist
-      wsk.action
-        .get(name, saveAs = Some(saveName), expectedExitCode = MISUSE_EXIT)
-        .stderr should include(s"The file '$saveName' already exists")
-    } finally {
-      saveAsFile.delete()
+          // Test for failure saving file when it already exist
+          wsk.action
+            .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
+            .stderr should include(s"The file '$name.js' already exists")
+        } finally {
+          saveFile.delete()
+        }
     }
 
     // Test for failure when using an invalid filename

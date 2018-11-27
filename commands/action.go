@@ -692,7 +692,7 @@ func saveCode(action whisk.Action, filename string) (err error) {
 	exec = *action.Exec
 	runtime = strings.Split(exec.Kind, ":")[0]
 
-	if strings.ToLower(runtime) == BLACKBOX {
+	if strings.ToLower(runtime) == BLACKBOX && exec.Code == nil && *exec.Binary == false {
 		return cannotSaveImageError()
 	} else if strings.ToLower(runtime) == SEQUENCE {
 		return cannotSaveSequenceError()
