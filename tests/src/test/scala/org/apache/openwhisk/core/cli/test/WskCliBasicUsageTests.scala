@@ -1086,22 +1086,18 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val saveName = s"save-as-$name.js"
     val badSaveName = s"bad-directory${File.separator}$saveName"
 
-    Seq(
-      (name, true, false, false),
-      (name, false, true, false),
-      (name, false, false, true)
-    ).foreach {
+    Seq((name, true, false, false), (name, false, true, false), (name, false, false, true)).foreach {
       case (actionName, save, saveAs, blackbox) =>
         assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
           blackbox match {
             case false => action.create(name, defaultAction, update = true)
-            case true => action.create(name, defaultAction, update = true, docker = Some("asdf"))
+            case true  => action.create(name, defaultAction, update = true, docker = Some("asdf"))
           }
         }
 
         val saveMsg: String = if (save) {
           wsk.action.get(name, save = Some(true)).stdout
-        } else  {
+        } else {
           wsk.action.get(name, saveAs = Some(saveName)).stdout
         }
 
