@@ -1091,7 +1091,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
           blackbox match {
             case false => action.create(name, defaultAction, update = true)
-            case true  => action.create(name, defaultAction, update = true, docker = Some("asdf"))
+            case true  => action.create(name, defaultAction, update = true, docker = Some("bogus"))
           }
         }
 
