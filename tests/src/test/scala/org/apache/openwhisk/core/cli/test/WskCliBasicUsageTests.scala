@@ -1083,22 +1083,22 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val dockerName = "dockerName"
     val containerName =
       s"bogus${Random.alphanumeric.take(16).mkString.toLowerCase}"
-    val saveName = s"save-as-$name.js"
-    val badSaveName = s"bad-directory${File.separator}$saveName"
+    val saveAsName = s"save-as-$name.js"
+    val badSaveName = s"bad-directory${File.separator}$saveAsName"
 
     Seq((name, true, false, false), (name, false, true, false), (name, false, false, true)).foreach {
       case (actionName, save, saveAs, blackbox) =>
         assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
           blackbox match {
-            case false => action.create(name, defaultAction, update = true)
-            case true  => action.create(name, defaultAction, update = true, docker = Some("bogus"))
+            case false => action.create(actionName, defaultAction, update = true)
+            case true  => action.create(actionName, defaultAction, update = true, docker = Some("bogus"))
           }
         }
 
         val saveMsg: String = if (save) {
           wsk.action.get(name, save = Some(true)).stdout
         } else {
-          wsk.action.get(name, saveAs = Some(saveName)).stdout
+          wsk.action.get(name, saveAs = Some(saveAsName)).stdout
         }
 
         saveMsg should include(s"saved action code to ")
@@ -1110,9 +1110,15 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           saveFile.exists shouldBe true
 
           // Test for failure saving file when it already exist
-          wsk.action
-            .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
-            .stderr should include(s"The file '$name.js' already exists")
+          if (save) {
+            wsk.action
+              .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
+              .stderr should include(s"The file '$actionName.js' already exists")
+          } else {
+            wsk.action
+              .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
+              .stderr should include(s"The file '$saveAsName' already exists")
+          }
         } finally {
           saveFile.delete()
         }
