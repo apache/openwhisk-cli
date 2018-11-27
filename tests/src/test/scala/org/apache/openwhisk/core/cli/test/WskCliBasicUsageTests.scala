@@ -1078,15 +1078,17 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   }
 
   it should "save action code to file" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
-    val name = "saveAction"
     val seqName = "seqName"
     val dockerName = "dockerName"
     val containerName =
       s"bogus${Random.alphanumeric.take(16).mkString.toLowerCase}"
-    val saveAsName = s"save-as-$name.js"
-    val badSaveName = s"bad-directory${File.separator}$saveAsName"
+    val badSaveName = s"bad-directory${File.separator}action"
 
-    Seq((name, true, false, false), (name, false, true, false), (name, false, false, true)).foreach {
+    Seq(
+      ("saveAction", true, false, false),
+      ("saveAsAction", false, true, false),
+      ("dockerSaveAction", true, false, true),
+      ("dockerSaveAsAction", true, true, false)).foreach {
       case (actionName, save, saveAs, blackbox) =>
         assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
           blackbox match {
@@ -1096,38 +1098,44 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         }
 
         val saveMsg: String = if (save) {
-          wsk.action.get(name, save = Some(true)).stdout
+          wsk.action.get(actionName, save = Some(true)).stdout
         } else {
-          wsk.action.get(name, saveAs = Some(saveAsName)).stdout
+          wsk.action.get(actionName, saveAs = Some(s"save-as-$actionName")).stdout
         }
 
         saveMsg should include(s"saved action code to ")
 
         val savePath = saveMsg.split("ok: saved action code to ")(1).trim()
-        val saveFile = new File(savePath);
+        val saveFile = new File(savePath)
 
         try {
           saveFile.exists shouldBe true
 
           // Test for failure saving file when it already exist
           if (save) {
-            wsk.action
-              .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
-              .stderr should include(s"The file '$actionName.js' already exists")
+            if (blackbox) {
+              wsk.action
+                .get(actionName, save = Some(true), expectedExitCode = MISUSE_EXIT)
+                .stderr should include(s"The file '$actionName' already exists")
+            } else {
+              wsk.action
+                .get(actionName, save = Some(true), expectedExitCode = MISUSE_EXIT)
+                .stderr should include(s"The file '$actionName.js' already exists")
+            }
           } else {
             wsk.action
-              .get(name, save = Some(true), expectedExitCode = MISUSE_EXIT)
-              .stderr should include(s"The file '$saveAsName' already exists")
+              .get(actionName, saveAs = Some(s"save-as-$actionName"), expectedExitCode = MISUSE_EXIT)
+              .stderr should include(s"The file 'save-as-$actionName' already exists")
           }
         } finally {
           saveFile.delete()
         }
-    }
 
-    // Test for failure when using an invalid filename
-    wsk.action
-      .get(name, saveAs = Some(badSaveName), expectedExitCode = MISUSE_EXIT)
-      .stderr should include(s"Cannot create file '$badSaveName'")
+        // Test for failure when using an invalid filename
+        wsk.action
+          .get(actionName, saveAs = Some(badSaveName), expectedExitCode = MISUSE_EXIT)
+          .stderr should include(s"Cannot create file '$badSaveName'")
+    }
 
     // Test for failure saving Docker images
     assetHelper.withCleaner(wsk.action, dockerName) { (action, _) =>
@@ -1142,9 +1150,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       .get(dockerName, saveAs = Some(dockerName), expectedExitCode = MISUSE_EXIT)
       .stderr should include("Cannot save Docker images")
 
-    // Tes for failure saving sequences
+    // Test for failure saving sequences
     assetHelper.withCleaner(wsk.action, seqName) { (action, _) =>
-      action.create(seqName, Some(name), kind = Some("sequence"))
+      action.create(seqName, Some(dockerName), kind = Some("sequence"))
     }
 
     wsk.action
