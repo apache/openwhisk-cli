@@ -66,7 +66,7 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 		Version:           Properties.APIVersion,
 		Insecure:          Flags.Global.Insecure,
 		Host:              Properties.APIHost,
-		UserAgent:         UserAgent + "/1.0 (" + Properties.CLIVersion + ") "  + runtime.GOOS + " " + runtime.GOARCH,
+		UserAgent:         UserAgent + "/1.0 (" + Properties.CLIVersion + ") " + runtime.GOOS + " " + runtime.GOARCH,
 		AdditionalHeaders: AdditionalHeaders,
 	}
 
