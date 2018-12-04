@@ -63,6 +63,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   // Set apiHostCheck to false to avoid apihost check
   val apiHostCheck = true
 
+  // Some action invocation environments will not have an api key; so allow this check to be conditionally skipped
+  val apiKeyCheck = true
+
   behavior of "Wsk CLI usage"
 
   it should "show help and usage info" in {
@@ -514,7 +517,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "invoke an action using npm openwhisk" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "hello npm openwhisk"
     assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")))
+      action.create(name, Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")), kind = Some("nodejs:8"))
     }
 
     val run = wsk.action
@@ -543,7 +546,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       if (apiHostCheck) {
         fields("api_host") shouldBe WhiskProperties.getApiHostForAction
       }
-      fields("api_key") shouldBe wskprops.authKey
+      if (apiKeyCheck) {
+        fields("api_key") shouldBe wskprops.authKey
+      }
       fields("namespace") shouldBe namespace
       fields("action_name") shouldBe s"/$namespace/$name"
       fields("activation_id") shouldBe activation.activationId
@@ -969,7 +974,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
     wsk.action.get(nonExistentActionName, url = Some(true), expectedExitCode = NOT_FOUND)
 
-    val httpsProps = WskProps(apihost = "https://" + wskprops.apihost)
+    val httpsProps = WskProps(apihost = "https://" + wskprops.apihost, authKey = wskprops.authKey)
     wsk.action
       .get(actionName, url = Some(true))(httpsProps)
       .stdout should include(

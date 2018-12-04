@@ -64,10 +64,11 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
     wsk.action.delete(name, expectedExitCode = CONFLICT)
   }
 
+  val WskCLI_RejUnauthAccess_exitCode = UNAUTHORIZED
+  val WskCLI_RejUnauthAccess_stderr = "The supplied authentication is invalid"
   it should "reject unauthenticated access" in {
-    implicit val wskprops = WskProps("xxx") // shadow properties
-    val errormsg = "The supplied authentication is invalid"
-    wsk.namespace.get(expectedExitCode = UNAUTHORIZED).stderr should include(errormsg)
+    implicit val new_wskprops = wskprops.copy(authKey = "xxx")   //WskProps("xxx") // shadow properties
+    wsk.namespace.get(expectedExitCode = WskCLI_RejUnauthAccess_exitCode)(new_wskprops).stderr should include(WskCLI_RejUnauthAccess_stderr)
   }
 
   behavior of "Wsk Package CLI"
@@ -907,16 +908,18 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
 
   behavior of "Wsk Namespace CLI"
 
-  it should "return a list of exactly one namespace" in {
-    val lines = wsk.namespace.list().stdout.lines.toSeq
+  def WskNsCLI_RetListOneNs_test(wsk: Wsk, wp: WskProps): Unit = {
+    val lines = wsk.namespace.list()(wp).stdout.lines.toSeq
     lines should have size 2
     lines.head shouldBe "namespaces"
     lines(1).trim should not be empty
   }
+  it should "return a list of exactly one namespace" in {
+    WskNsCLI_RetListOneNs_test(wsk, wskprops)
+  }
 
   it should "list entities in default namespace" in {
-    // use a fresh wsk props instance that is guaranteed to use the default namespace
-    wsk.namespace.get(expectedExitCode = SUCCESS_EXIT)(WskProps()).stdout should include("default")
+    wsk.namespace.get(expectedExitCode = SUCCESS_EXIT)(wskprops).stdout should include("default")
   }
 
   behavior of "Wsk Activation CLI"
