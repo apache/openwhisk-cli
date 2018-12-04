@@ -67,8 +67,9 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   val WskCLI_RejUnauthAccess_exitCode = UNAUTHORIZED
   val WskCLI_RejUnauthAccess_stderr = "The supplied authentication is invalid"
   it should "reject unauthenticated access" in {
-    implicit val new_wskprops = wskprops.copy(authKey = "xxx")   //WskProps("xxx") // shadow properties
-    wsk.namespace.get(expectedExitCode = WskCLI_RejUnauthAccess_exitCode)(new_wskprops).stderr should include(WskCLI_RejUnauthAccess_stderr)
+    implicit val new_wskprops = wskprops.copy(authKey = "xxx") //WskProps("xxx") // shadow properties
+    wsk.namespace.get(expectedExitCode = WskCLI_RejUnauthAccess_exitCode)(new_wskprops).stderr should include(
+      WskCLI_RejUnauthAccess_stderr)
   }
 
   behavior of "Wsk Package CLI"
