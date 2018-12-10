@@ -388,13 +388,13 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
   }
 
+  val concurrencyLimit = 500
   it should "write the action-path and the limits to the annotations" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "annotations"
       val memoryLimit = 512 MB
       val logLimit = 1 MB
       val timeLimit = 60 seconds
-      val concurrencyLimit = 500
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(
