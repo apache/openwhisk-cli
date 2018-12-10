@@ -57,6 +57,7 @@ func init() {
 		namespaceCmd,
 		listCmd,
 		apiCmd,
+		projectCmd,
 	)
 
 	WskCmd.PersistentFlags().BoolVarP(&Flags.Global.Verbose, "verbose", "v", false, wski18n.T("verbose output"))
