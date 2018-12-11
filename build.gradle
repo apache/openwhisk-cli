@@ -58,7 +58,7 @@ dependencies {
         build(['name':'gopkg.in/yaml.v2', 'version':'cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b', 'transitive':false])
         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
         build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk','version':'c7013c9f456f35be34b3bf166535aaa03b834331','transitive':false])
-        build(['name':'github.com/apache/incubator-openwhisk-client-wskdeploy','version':'3bcc605a7f969f5b7f76f5990caa0ef562e3404a','transitive':false])
+        build(['name':'github.com/apache/incubator-openwhisk-wskdeploy','version':'3bcc605a7f969f5b7f76f5990caa0ef562e3404a','transitive':false])
         // END - Imported from Godeps
         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
         test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
