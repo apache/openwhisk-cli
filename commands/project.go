@@ -20,19 +20,20 @@ package commands
 import (
 	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	wskdeploy_wski18n "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
-)
+	"github.com/apache/incubator-openwhisk-cli/wski18n"
+	)
 
 var projectCmd = &cobra.Command{
 	Use:   "project",
-	Short: "work with project",
+	Short: "The OpenWhisk Project Management Tool",
 }
 
 var projectDeployCmd = &cobra.Command{
 	Use:           "deploy",
-	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
-	Long:   	   wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
+	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_ROOT),
+	Long:   	   wski18n.T("help message for deployment"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -42,8 +43,8 @@ var projectDeployCmd = &cobra.Command{
 
 var projectUnDeployCmd = &cobra.Command{
 	Use:           "undeploy",
-	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_UNDEPLOY),
-	Long:   	   wski18n.T(wski18n.ID_CMD_DESC_LONG_UNDEPLOY),
+	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_UNDEPLOY),
+	Long:   	   wski18n.T("help message for undeployment"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -53,8 +54,8 @@ var projectUnDeployCmd = &cobra.Command{
 
 var projectSyncCmd = &cobra.Command{
 	Use:           "sync",
-	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_SYNC),
-	Long:   	   wski18n.T(wski18n.ID_CMD_DESC_LONG_SYNC),
+	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_SYNC),
+	Long:   	   wski18n.T("help message for sync"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -65,8 +66,8 @@ var projectSyncCmd = &cobra.Command{
 
 var projectExportCmd = &cobra.Command{
 	Use:           "export",
-	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_EXPORT),
-	Long:   	   wski18n.T(wski18n.ID_CMD_DESC_LONG_EXPORT),
+	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_EXPORT),
+	Long:   	   wski18n.T("help message for export"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -75,13 +76,20 @@ var projectExportCmd = &cobra.Command{
 }
 
 func init() {
-	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, cmd.FLAG_MANIFEST, "", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
-	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, cmd.FLAG_PROJECT, "", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
-	projectCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, cmd.FLAG_DEPLOYMENT, "", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
-	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, cmd.FLAG_STRICT, "", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
-	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Preview, cmd.FLAG_PREVIEW, "", false, wski18n.T(wski18n.ID_CMD_FLAG_PREVIEW))
-	projectCmd.PersistentFlags().StringSliceVarP(&utils.Flags.Param, cmd.FLAG_PARAM, "", []string{}, wski18n.T(wski18n.ID_CMD_FLAG_PARAM))
-	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ParamFile, cmd.FLAG_PARAMFILE, "", "", wski18n.T(wski18n.ID_CMD_FLAG_PARAM_FILE))
+	projectCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, cmd.FLAG_CONFIG, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_CONFIG))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, cmd.FLAG_MANIFEST, "", "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_MANIFEST))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, cmd.FLAG_PROJECT, "", ".", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_PROJECT))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, cmd.FLAG_DEPLOYMENT, "", "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_DEPLOYMENT))
+	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, cmd.FLAG_STRICT, "", false, wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_STRICT))
+	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Preview, cmd.FLAG_PREVIEW, "", false, wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_PREVIEW))
+	projectCmd.PersistentFlags().StringSliceVarP(&utils.Flags.Param, cmd.FLAG_PARAM, "", []string{}, wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_PARAM))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ParamFile, cmd.FLAG_PARAMFILE, "", "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_PARAM_FILE))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, cmd.FLAG_API_HOST, "", "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_API_HOST))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, cmd.FLAG_NAMESPACE, cmd.FLAG_NAMESPACE_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_NAMESPACE))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, cmd.FLAG_AUTH, cmd.FLAG_AUTH_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_AUTH_KEY))
+	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, cmd.FLAG_VERBOSE, cmd.FLAG_VERBOSE_SHORT, false, wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_VERBOSE))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Key, cmd.FLAG_KEY, cmd.FLAG_KEY_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_KEY_FILE))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, cmd.FLAG_CERT, cmd.FLAG_CERT_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_CERT_FILE))
 
 	projectCmd.AddCommand(projectDeployCmd)
 	projectCmd.AddCommand(projectUnDeployCmd)

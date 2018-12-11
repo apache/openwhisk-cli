@@ -1586,5 +1586,21 @@
   {
     "id": "A response type of 'http' is required when using path parameters.",
     "translation": "A response type of 'http' is required when using path parameters."
+  },
+  {
+    "id": "help message for deployment",
+    "translation": "To begin working with deploy, run the 'wsk project deploy' command:\n\n\t$ wsk project deploy\n\nThis will deploy OpenWhisk assets specified in manifest.yaml or manifest.yml\nIf current directory doesnt have any manifest file, wsk project deploy prints this help message.\n\nThe most common ways of using wsk project deploy to deploy and/or undeploy OpenWhisk assets are:\n\n$ wsk project deploy\n$ wsk project deploy --manifest path/to/manifest.yaml\n$ wsk project deploy --manifest path/to/manifest.yaml --deployment path/to/deployment.yaml\n$ wsk project undeploy\n$ wsk project undeploy --manifest path/to/manifest.yaml\n$ wsk project undeploy --manifest path/to/manifest.yaml --deployment path/to/deployment.yaml\n\nAunthentication:\nwsk project deploy reads credentials from $HOME/.wskprops by default\nOverwrite default config file on CLI:\n  $ wsk project deploy --config <config file> --manifest path/to/manifest.yaml\nOr specify all three on CLI:\n  $ wsk project deploy --apihost HOST --auth KEY --namespace NAMESPACE --manifest path/to/manifest.yaml"
+  },
+  {
+    "id": "help message for undeployment",
+    "translation": "Undeploy removes OpenWhisk assets which were deployed from the manifest and deployment YAML.\n\nTo begin deleting OpenWhisk assets from the manifest file, run:\n$ wsk project undeploy\n$ wsk project undeploy --manifest path/to/manifest.yaml\n$ wsk project undeploy --manifest path/to/manifest.yaml --deployment path/to/deployment.yaml\n$ wsk project undeploy --projectname PROJECT (only works for deployments in sync mode)"
+  },
+  {
+    "id": "help message for sync",
+    "translation": "A tool to sync deployment and undeployment of OpenWhisk packages using a manifest and optional deployment files using YAML.\n\nDifferent ways of running sync:\n$ wsk project sync\n$ wsk project sync --manifest path/to/manifest.yaml\n$ wsk project sync --manifest path/to/manifest.yaml --deployment path/to/manifest.yaml\n$ wsk project sync --manifest path/to/manifest.yaml --projectname PROJECT"
+  },
+  {
+    "id": "help message for export",
+    "translation": "Exports managed project assets from OpenWhisk to manifest and function files\n\nThe most common way to run export:\n$ wsk project export --projectname PROJECT --manifest path/to/exported-manifest.yaml"
   }
 ]
