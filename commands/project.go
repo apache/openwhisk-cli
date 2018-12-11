@@ -18,12 +18,12 @@
 package commands
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-cli/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	wskdeploy_wski18n "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
-	"github.com/apache/incubator-openwhisk-cli/wski18n"
-	)
+	"github.com/spf13/cobra"
+)
 
 var projectCmd = &cobra.Command{
 	Use:   "project",
@@ -33,7 +33,7 @@ var projectCmd = &cobra.Command{
 var projectDeployCmd = &cobra.Command{
 	Use:           "deploy",
 	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_ROOT),
-	Long:   	   wski18n.T("help message for deployment"),
+	Long:          wski18n.T("help message for deployment"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -44,7 +44,7 @@ var projectDeployCmd = &cobra.Command{
 var projectUnDeployCmd = &cobra.Command{
 	Use:           "undeploy",
 	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_UNDEPLOY),
-	Long:   	   wski18n.T("help message for undeployment"),
+	Long:          wski18n.T("help message for undeployment"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -55,7 +55,7 @@ var projectUnDeployCmd = &cobra.Command{
 var projectSyncCmd = &cobra.Command{
 	Use:           "sync",
 	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_SYNC),
-	Long:   	   wski18n.T("help message for sync"),
+	Long:          wski18n.T("help message for sync"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -67,7 +67,7 @@ var projectSyncCmd = &cobra.Command{
 var projectExportCmd = &cobra.Command{
 	Use:           "export",
 	Short:         wski18n.T(wskdeploy_wski18n.ID_CMD_DESC_SHORT_EXPORT),
-	Long:   	   wski18n.T("help message for export"),
+	Long:          wski18n.T("help message for export"),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cobraCMD *cobra.Command, args []string) error {
@@ -96,4 +96,3 @@ func init() {
 	projectCmd.AddCommand(projectSyncCmd)
 	projectCmd.AddCommand(projectExportCmd)
 }
-
