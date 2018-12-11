@@ -514,7 +514,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
   }
 
-  it should "invoke an action using npm openwhisk" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+  def WskCliBasicActions_InvokeActionUsingNpmOpenwhisk_test(wsk: Wsk, wp: WskProps, assetHelper: AssetCleaner): Unit = {
     val name = "hello npm openwhisk"
     assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
       action.create(name, Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")), kind = Some("nodejs:8"))
@@ -529,6 +529,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
 
     wsk.action.delete(name, expectedExitCode = NOT_FOUND)
+  }
+  it should "invoke an action using npm openwhisk" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+    WskCliBasicActions_InvokeActionUsingNpmOpenwhisk_test(wsk, wp, assetHelper)
   }
 
   it should "invoke an action receiving context properties" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
