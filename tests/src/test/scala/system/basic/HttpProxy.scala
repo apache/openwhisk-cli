@@ -17,14 +17,16 @@
 package system.basic
 import java.net.ServerSocket
 
-import akka.http.scaladsl.Http
+import akka.http.scaladsl.{Http, HttpsConnectionContext}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, Uri}
 import akka.http.scaladsl.model.Uri.Authority
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
+import com.typesafe.sslconfig.akka.AkkaSSLConfig
 import common.{WskActorSystem, WskProps}
-import common.rest.SSL
+import common.rest.{AcceptAllHostNameVerifier, SSL}
+import javax.net.ssl.HostnameVerifier
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 
@@ -85,10 +87,19 @@ trait HttpProxy extends WskActorSystem with ScalaFutures {
       Http(actorSystem).outgoingConnectionHttps(
         uri.authority.host.address(),
         uri.effectivePort,
-        connectionContext = SSL.httpsConnectionContext)
+        connectionContext = httpsConnectionContext())
     } else {
       Http(actorSystem).outgoingConnection(uri.authority.host.address(), uri.effectivePort)
     }
+  }
+
+  private def httpsConnectionContext() = {
+    val sslConfig = AkkaSSLConfig().mapSettings { s =>
+      s.withHostnameVerifierClass(classOf[AcceptAllHostNameVerifier].asInstanceOf[Class[HostnameVerifier]])
+    }
+    //SSL.httpsConnectionContext initializes config which is not there in cli test
+    //So inline the flow as we do not need client auth for this case
+    new HttpsConnectionContext(SSL.nonValidatingContext(false), Some(sslConfig))
   }
 
   private def proxyRequest(req: HttpRequest, uri: Uri): HttpRequest = {

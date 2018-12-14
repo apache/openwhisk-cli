@@ -60,6 +60,7 @@ class WskCliActivationTests extends TestHelpers with WskTestHelpers with HttpPro
         println(s"Running poll for $pollDuration")
 
         val consoleFuture = Future {
+          //pass the `proxyProps` such that calls from poll cli command go via our proxy
           wsk.activation.console(pollDuration, actionName = Some(name))(proxyProps)
         }
 
