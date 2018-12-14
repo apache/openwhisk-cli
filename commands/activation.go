@@ -387,6 +387,9 @@ var activationPollCmd = &cobra.Command{
 					printJSON(activation.Logs)
 					reported[activation.ActivationID] = true
 				}
+				if activation.Start > pollSince {
+					pollSince = activation.Start
+				}
 			}
 			time.Sleep(time.Second * 2)
 		}
