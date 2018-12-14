@@ -38,13 +38,11 @@ class WskCliActivationTests extends TestHelpers with WskTestHelpers with HttpPro
 
   implicit val wskprops: WskProps = WskProps()
 
-  it should "create, and invoke an action that utilizes a docker container" in withAssetCleaner(wskprops) {
-    val name = "dockerContainer"
+  it should "change the since time as it polls" in withAssetCleaner(wskprops) {
+    val name = "pollTest"
     (wp, assetHelper) =>
-      assetHelper.withCleaner(wsk.action, name) {
-        // this docker image will be need to be pulled from dockerhub and hence has to be published there first
-        (action, _) =>
-          action.create(name, None, docker = Some("openwhisk/example"))
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, Some(TestUtils.getTestActionFilename("hello.js")))
       }
 
       val args = Map("payload" -> "test".toJson)
@@ -85,17 +83,19 @@ class WskCliActivationTests extends TestHelpers with WskTestHelpers with HttpPro
 
         //There should be more than 1 activationId in common between poll output
         //and actual invoked actions output
+        //This is required to ensure that since time can change which would only
+        //happen if more than one activation result is picked up in poll
         withClue(
           s"activations received ${activations.mkString("\n")}, console output $consoleResult. Expecting" +
             s"more than one matching activation between these 2") {
           idsInPoll.size should be > 1
-        }
 
-        //Collect the 'since' value passed during poll requests
-        val sinceTimes = requests.map(_._1.uri.query()).flatMap(_.get("since")).toSet
+          //Collect the 'since' value passed during poll requests
+          val sinceTimes = requests.map(_._1.uri.query()).flatMap(_.get("since")).toSet
 
-        withClue(s"value of 'since' $sinceTimes should have changed") {
-          sinceTimes.size should be > 1
+          withClue(s"value of 'since' $sinceTimes should have changed") {
+            sinceTimes.size should be > 1
+          }
         }
       }
   }
