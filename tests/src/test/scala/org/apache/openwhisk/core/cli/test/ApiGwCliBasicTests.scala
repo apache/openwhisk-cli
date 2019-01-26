@@ -1029,4 +1029,37 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
       apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
     }
   }
+
+  it should "verify get API name that uses custom package" in {
+    val testName = "CLI_APIGWTEST25"
+    val testbasepath = "/" + testName + "_bp"
+    val testrelpath = "/path"
+    val testnewrelpath = "/path_new"
+    val testurlop = "get"
+    val testapiname = testName + " API Name"
+    val packageName = withTimestamp("pkg")
+    val actionName = packageName + "/" + testName + "_action"
+    try {
+      wsk.pkg.create(packageName).stdout should include regex (s"""ok: created package $packageName""")
+
+      // Create the action for the API.  It must be a "web-action" action.
+      val file = TestUtils.getTestActionFilename(s"echo.js")
+      wsk.action.create(name = actionName, artifact = Some(file), expectedExitCode = createCode, web = Some("true"))
+
+      var rr = apiCreate(
+        basepath = Some(testbasepath),
+        relpath = Some(testrelpath),
+        operation = Some(testurlop),
+        action = Some(actionName),
+        apiname = Some(testapiname))
+      verifyApiCreated(rr)
+
+      rr = apiGet(basepathOrApiName = Some(testapiname))
+      verifyApiNameGet(rr, testbasepath, actionName)
+    } finally {
+      wsk.action.delete(name = actionName, expectedExitCode = DONTCARE_EXIT)
+      apiDelete(basepathOrApiName = testbasepath, expectedExitCode = DONTCARE_EXIT)
+      wsk.pkg.delete(packageName).stdout should include regex (s"""ok: deleted package $packageName""")
+    }
+  }
 }
