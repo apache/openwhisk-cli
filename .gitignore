@@ -3,6 +3,7 @@ wsk
 wsk.exe
 scripts
 Godeps/_workspace
+*~
 
 # IDE-related exclusions
 .idea/
