@@ -95,7 +95,7 @@ $ ./gradlew compile -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
 
 The build library understands most representations of most Operating Systems.
 
-Tests can be run using the Gradle script as well:
+Tests can be run using the Gradle script:
 
 ```
 $ ./gradlew goTest -PgoTags=unit
@@ -154,6 +154,13 @@ $ GOOS=linux GOARCH=amd64 go build -o wsk-$GOOS-$GOARCH
 
 If it is executed successfully, you can find your binary `wsk` directly under
 OpenWhisk CLI home directory.
+
+You can run unit tests as well (although note the majority of the tests today are not in Go).
+
+```
+$ cd commands
+$ go test -tags=unit -v
+```
 
 # How to use the binary
 
