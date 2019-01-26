@@ -95,7 +95,7 @@ $ ./gradlew compile -PbuildPlatforms=linux-amd64,mac-amd64,windows-amd64
 
 The build library understands most representations of most Operating Systems.
 
-Tests can be run using the Gradle script as well:
+Tests can be run using the Gradle script:
 
 ```
 $ ./gradlew goTest -PgoTags=unit
@@ -127,17 +127,21 @@ $ go get -u github.com/jteeuwen/go-bindata/...
 $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
 
-It is necessary to lock dependencies versions to obtain a
-clean build of wsk. To that end, it's now necessary to populate the `vendors`
-folder using the versions selected in the `vendor/vendor.json`:
+The project includes a `vendor/vendor.json` and you can lock down
+dependencies for a clean build of the CLI by populating the `vendor` folder.
 
-```sh
+```
 $ go get -u github.com/kardianos/govendor         # Install govendor tool
 $ govendor sync     # Download and install packages with specified dependencies.
 ```
 
-Once vendor is populated, it's possible to build the binary:
+NOTE: As a temporary workaround, you have to remove a redundant instance of `spf13/cobra`
+in the vendor folder. See this [issue](https://github.com/apache/incubator-openwhisk-cli/issues/398) for details.
+```
+$ rm -rf vendor/github.com/spf13
+```
 
+Now you can build the binary.
 ```
 $ go build -o wsk
 ```
@@ -154,6 +158,14 @@ $ GOOS=linux GOARCH=amd64 go build -o wsk-$GOOS-$GOARCH
 
 If it is executed successfully, you can find your binary `wsk` directly under
 OpenWhisk CLI home directory.
+
+You can run unit tests as well (although note the majority of the tests today are not in Go).
+
+```sh
+$ cd commands
+$ go get github.com/stretchr/testify/assert
+$ go test -tags=unit -v
+```
 
 # How to use the binary
 
