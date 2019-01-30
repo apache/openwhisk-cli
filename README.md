@@ -114,8 +114,9 @@ Then download the source code of the OpenWhisk CLI and the dependencies by
 typing:
 
 ```
-$ cd $GOPATH
-$ go get github.com/apache/incubator-openwhisk-cli
+$ mkdir -p $GOPATH/github.com/apache
+$ cd $GOPATH/github.com/apache
+$ git clone https://github.com/apache/incubator-openwhisk-cli
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-cli
 ```
 
