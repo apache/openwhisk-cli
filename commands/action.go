@@ -662,6 +662,8 @@ func getBinaryKindExtension(runtime string) (extension string) {
 	switch strings.ToLower(runtime) {
 	case JAVA:
 		extension = JAVA_EXT
+	case BAL:
+		extension = BAL_BIN_EXT
 	default:
 		extension = ZIP_EXT
 	}
