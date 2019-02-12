@@ -342,7 +342,7 @@ func TestSetAPIHostAuthNamespace(t *testing.T) {
 	namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
 	expectedNamespace := string(namespaces[len(namespaces)-1])
 	fmt.Println(wsk.Wskprops.APIHost)
-	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.APIHost != "" {
+	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.AuthKey != "" {
 		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
 			"--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace)
 		ouputString := string(stdout)
