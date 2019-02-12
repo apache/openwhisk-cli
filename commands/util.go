@@ -188,7 +188,7 @@ func toPrintable(sortable []whisk.Sortable) []whisk.Printable {
 
 // Prints the parameters/list for wsk xxxx list
 // Identifies type and then copies array into an array of interfaces(Sortable) to be sorted and printed
-// Param: Takes in an interace which contains an array of a command(Ex: []Action)
+// Param: Takes in an interface which contains an array of a command(Ex: []Action)
 func printList(collection interface{}, sortByName bool) {
 	var commandToSort []whisk.Sortable
 	switch collection := collection.(type) {
@@ -319,7 +319,7 @@ func printSummary(collection interface{}) {
 // Used to print Action, Tigger, Package, and Rule lists
 // Param: Takes in a array of Printable interface, and the name of the command
 //          being sent to it
-// **Note**: The name sould be an empty string for APIs.
+// **Note**: The name should be an empty string for APIs.
 func printCommandsList(commands []whisk.Printable, defaultHeader string) {
 	if len(commands) != 0 {
 		fmt.Fprint(color.Output, boldString(commands[0].ToHeaderString()))

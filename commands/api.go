@@ -594,7 +594,7 @@ var apiListCmd = &cobra.Command{
 			for i := 0; i < len(retApiArray.Apis); i++ {
 				orderFilteredList = append(orderFilteredList, genFilteredList(retApiArray.Apis[i].ApiValue, apiPath, apiVerb)...)
 			}
-			printList(orderFilteredList, sortByName) // Sends an array of structs that contains specifed variables that are not truncated
+			printList(orderFilteredList, sortByName) // Sends an array of structs that contains specified variables that are not truncated
 		} else {
 			if len(retApiArray.Apis) > 0 {
 				// Dynamically create the output format string based on the maximum size of the
@@ -610,7 +610,7 @@ var apiListCmd = &cobra.Command{
 				for i := 0; i < len(retApiArray.Apis); i++ {
 					orderFilteredRow = append(orderFilteredRow, genFilteredRow(retApiArray.Apis[i].ApiValue, apiPath, apiVerb, maxActionNameSize, maxApiNameSize)...)
 				}
-				printList(orderFilteredRow, sortByName) // Sends an array of structs that contains specifed variables that are truncated
+				printList(orderFilteredRow, sortByName) // Sends an array of structs that contains specified variables that are truncated
 			} else {
 				fmt.Fprintf(color.Output,
 					wski18n.T("{{.ok}} APIs\n",

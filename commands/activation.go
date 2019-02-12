@@ -110,7 +110,7 @@ var activationGetCmd = &cobra.Command{
 		var field string
 		var err error
 
-		if args, err = lastFlag(args); err != nil { // Checks if any errors occured in lastFlag(args)
+		if args, err = lastFlag(args); err != nil { // Checks if any errors occurred in lastFlag(args)
 			whisk.Debug(whisk.DbgError, "lastFlag(%#v) failed: %s\n", args, err)
 			errStr := wski18n.T("Unable to get activation: {{.err}}",
 				map[string]interface{}{"err": err})
@@ -180,7 +180,7 @@ var activationLogsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 
-		if args, err = lastFlag(args); err != nil { // Checks if any errors occured in lastFlag(args)
+		if args, err = lastFlag(args); err != nil { // Checks if any errors occurred in lastFlag(args)
 			whisk.Debug(whisk.DbgError, "lastFlag(%#v) failed: %s\n", args, err)
 			errStr := wski18n.T("Unable to get logs for activation: {{.err}}",
 				map[string]interface{}{"err": err})
@@ -221,7 +221,7 @@ var activationResultCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 
-		if args, err = lastFlag(args); err != nil { // Checks if any errors occured in lastFlag(args)
+		if args, err = lastFlag(args); err != nil { // Checks if any errors occurred in lastFlag(args)
 			whisk.Debug(whisk.DbgError, "lastFlag(%#v) failed: %s\n", args, err)
 			errStr := wski18n.T("Unable to get result for activation: {{.err}}",
 				map[string]interface{}{"err": err})
