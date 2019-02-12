@@ -443,7 +443,7 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 
 	// if a feed is specified, create additional parameters which must be passed to the feed
 	feedName, feedParams := feedParameters(feedParam, FEED_CREATE, triggerName, authToken)
-	// the feed receives all the paramaters that are specified on the command line so we merge
+	// the feed receives all the parameters that are specified on the command line so we merge
 	// the feed lifecycle parameters with the command line ones
 	parameters := getParameters(append(paramArray, feedParams...), feedName == nil, false)
 
