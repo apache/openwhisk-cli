@@ -90,6 +90,7 @@ func init() {
 	projectCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, cmd.FLAG_VERBOSE, cmd.FLAG_VERBOSE_SHORT, false, wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_VERBOSE))
 	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Key, cmd.FLAG_KEY, cmd.FLAG_KEY_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_KEY_FILE))
 	projectCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, cmd.FLAG_CERT, cmd.FLAG_CERT_SHORT, "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_CERT_FILE))
+	projectCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, cmd.FLAG_PROJECTNAME, "", "", wski18n.T(wskdeploy_wski18n.ID_CMD_FLAG_PROJECTNAME))
 
 	projectCmd.AddCommand(projectDeployCmd)
 	projectCmd.AddCommand(projectUnDeployCmd)
