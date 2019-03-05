@@ -3,16 +3,94 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "krP/Rb7hvLXzwRp+5spDj5WBk9g=",
+			"checksumSHA1": "6D6U+hfBxkxhDZWSHTrn8uhGod8=",
 			"path": "github.com/apache/incubator-openwhisk-client-go/whisk",
-			"revision": "41bdfc4b124d7a9e419ba72ab19ce31f01338509",
-			"revisionTime": "2019-01-21T12:59:58Z"
+			"revision": "4286a8212a74c40d8950ee76681a67e12c9bf1a0",
+			"revisionTime": "2019-03-04T14:44:55Z"
 		},
 		{
 			"checksumSHA1": "4NY5lFykxXaoN+JNMxo179L79sU=",
 			"path": "github.com/apache/incubator-openwhisk-client-go/wski18n",
-			"revision": "41bdfc4b124d7a9e419ba72ab19ce31f01338509",
-			"revisionTime": "2019-01-21T12:59:58Z"
+			"revision": "4286a8212a74c40d8950ee76681a67e12c9bf1a0",
+			"revisionTime": "2019-03-04T14:44:55Z"
+		},
+		{
+			"checksumSHA1": "yHeYR1/McRN2DBGYNNkmIfjZQAQ=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "Vxd1iFfdoXjzG+wvixFlR6o+fOk=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/cmd",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "zoY15nrCfmU+4Xsk2dzrpviEPuU=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/conductor",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "o7oqPbymhiZ4x/ajT3zHKYmizkU=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/dependencies",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "3M3Dd5jXZUAYrHdKjAbTGhQpx2c=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/deployers",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "SF2iutNA9FZqcK2RKBhMWvZWyec=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/parsers",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "0pxUt7OAYYSxhEzJAmRyUgwTW4Q=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/runtimes",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "PA2NcJNNMitJcdgSwNhXC3w4EiA=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/utils",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "pPW5QDgsHH/Ckz++Li+r0Qhj8WA=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/webaction",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "lUDv3myF33Wcf7bQ7xctTWaS7vk=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "kEwvrkKJTrmgPx4bypQM1jUPsFs=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskenv",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "kAlPBXMUmrvM5FY2cbfYDCBXLsg=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wski18n",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "y8Rck9vRpJdrkxHBYZHxPTXuTs0=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskprint",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
 		},
 		{
 			"checksumSHA1": "A/DjlgGYOKIkKC8qckZB1shNTFk=",
