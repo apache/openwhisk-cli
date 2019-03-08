@@ -517,7 +517,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "invoke an action using npm openwhisk" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val name = "hello npm openwhisk"
     assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")), kind = Some("nodejs:8"))
+      action.create(
+        name,
+        Some(TestUtils.getTestActionFilename("helloOpenwhiskPackage.js")),
+        kind = Some("nodejs:8"),
+        annotations = Map(WhiskAction.provideApiKeyAnnotationName -> JsBoolean(true)))
     }
 
     val run = wsk.action
@@ -534,8 +538,18 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   it should "invoke an action receiving context properties" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
     val namespace = wsk.namespace.whois()
     val name = "context"
-    assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, Some(TestUtils.getTestActionFilename("helloContext.js")))
+
+    if (apiKeyCheck) {
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(
+          name,
+          Some(TestUtils.getTestActionFilename("helloContext.js")),
+          annotations = Map(WhiskAction.provideApiKeyAnnotationName -> JsBoolean(true)))
+      }
+    } else {
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, Some(TestUtils.getTestActionFilename("helloContext.js")))
+      }
     }
 
     val start = Instant.now(Clock.systemUTC()).toEpochMilli
@@ -634,7 +648,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")),
           JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(webEnabled || rawEnabled)),
           JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(rawEnabled)),
-          JsObject("key" -> JsString("final"), "value" -> JsBoolean(webEnabled || rawEnabled)))
+          JsObject("key" -> JsString("final"), "value" -> JsBoolean(webEnabled || rawEnabled)),
+          JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)))
       }
   }
 
@@ -668,6 +683,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
       JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
       JsObject("key" -> JsString(createKey), "value" -> createValue),
+      JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
       JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
 
     wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots)
@@ -681,6 +697,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       JsObject("key" -> JsString(updateKey), "value" -> updateValue),
       JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
       JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
+      JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
       JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
   }
 
@@ -698,6 +715,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       removeCLIHeader(stdout).parseJson shouldBe JsArray(
         JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
+        JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
         JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
   }
