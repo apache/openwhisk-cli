@@ -304,7 +304,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
 
       wsk.action.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
       wsk.action.get(name, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
-      wsk.action.get(name, fieldFilter = Some("exec")).stdout should include(s"""$successMsg""")
+      wsk.action.get(name, fieldFilter = Some("exec")).stdout should include(successMsg)
       wsk.action
         .get(name, fieldFilter = Some("exec"))
         .stdout should include regex (s"""$successMsg exec\n\\{\\s+"kind":\\s+"nodejs:6",\\s+"binary":\\s+false\\s+\\}""")
@@ -313,7 +313,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
         .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")
       wsk.action
         .get(name, fieldFilter = Some("annotations"))
-        .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
+        .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"provide-api-key",\\s+"value":\\s+false\\s+\\},\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
       wsk.action
         .get(name, fieldFilter = Some("limits")) //
         .stdout should include regex (s"""$successMsg limits\n\\{\\s+"timeout":\\s+60000,\\s+"memory":\\s+256,\\s+"logs":\\s+10,\\s+"concurrency":\\s+1\\s+\\}""")
