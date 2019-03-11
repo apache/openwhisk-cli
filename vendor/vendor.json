@@ -15,6 +15,78 @@
 			"revisionTime": "2019-01-21T12:59:58Z"
 		},
 		{
+			"checksumSHA1": "Vxd1iFfdoXjzG+wvixFlR6o+fOk=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/cmd",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "zoY15nrCfmU+4Xsk2dzrpviEPuU=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/conductor",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "o7oqPbymhiZ4x/ajT3zHKYmizkU=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/dependencies",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "3M3Dd5jXZUAYrHdKjAbTGhQpx2c=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/deployers",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "SF2iutNA9FZqcK2RKBhMWvZWyec=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/parsers",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "0pxUt7OAYYSxhEzJAmRyUgwTW4Q=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/runtimes",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "PA2NcJNNMitJcdgSwNhXC3w4EiA=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/utils",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "pPW5QDgsHH/Ckz++Li+r0Qhj8WA=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/webaction",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "lUDv3myF33Wcf7bQ7xctTWaS7vk=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "kEwvrkKJTrmgPx4bypQM1jUPsFs=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskenv",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "kAlPBXMUmrvM5FY2cbfYDCBXLsg=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wski18n",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
+			"checksumSHA1": "y8Rck9vRpJdrkxHBYZHxPTXuTs0=",
+			"path": "github.com/apache/incubator-openwhisk-wskdeploy/wskprint",
+			"revision": "7d79fd74ca1045658196e5004f8820b67570734c",
+			"revisionTime": "2019-03-05T19:40:48Z"
+		},
+		{
 			"checksumSHA1": "A/DjlgGYOKIkKC8qckZB1shNTFk=",
 			"path": "github.com/cloudfoundry/jibber_jabber",
 			"revision": "bcc4c8345a21301bf47c032ff42dd1aae2fe3027",
