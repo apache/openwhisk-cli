@@ -3,16 +3,16 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "krP/Rb7hvLXzwRp+5spDj5WBk9g=",
+			"checksumSHA1": "6D6U+hfBxkxhDZWSHTrn8uhGod8=",
 			"path": "github.com/apache/incubator-openwhisk-client-go/whisk",
-			"revision": "41bdfc4b124d7a9e419ba72ab19ce31f01338509",
-			"revisionTime": "2019-01-21T12:59:58Z"
+			"revision": "4286a8212a74c40d8950ee76681a67e12c9bf1a0",
+			"revisionTime": "2019-03-04T14:44:55Z"
 		},
 		{
 			"checksumSHA1": "4NY5lFykxXaoN+JNMxo179L79sU=",
 			"path": "github.com/apache/incubator-openwhisk-client-go/wski18n",
-			"revision": "41bdfc4b124d7a9e419ba72ab19ce31f01338509",
-			"revisionTime": "2019-01-21T12:59:58Z"
+			"revision": "4286a8212a74c40d8950ee76681a67e12c9bf1a0",
+			"revisionTime": "2019-03-04T14:44:55Z"
 		},
 		{
 			"checksumSHA1": "Vxd1iFfdoXjzG+wvixFlR6o+fOk=",
