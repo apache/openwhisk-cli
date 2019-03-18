@@ -212,7 +212,7 @@ func printList(collection interface{}, sortByName bool) {
 		for i := range collection {
 			commandToSort = append(commandToSort, collection[i])
 		}
-	case []whisk.Activation:
+	case []whisk.ActivationFilteredRow:
 		for i := range collection {
 			commandToSort = append(commandToSort, collection[i])
 		}
@@ -265,6 +265,8 @@ func makeDefaultHeader(collection interface{}) string {
 	if defaultHeader == "apifilteredrows" {
 		defaultHeader = fmt.Sprintf("%-30s %7s %20s  %s", "Action", "Verb", "API Name", "URL")
 	} else if defaultHeader == "apifilteredlists" {
+		defaultHeader = ""
+	} else if defaultHeader == "activationfilteredrows" {
 		defaultHeader = ""
 	}
 	return defaultHeader
