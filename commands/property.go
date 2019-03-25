@@ -23,7 +23,7 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/mitchellh/go-homedir"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 
 	"github.com/apache/incubator-openwhisk-cli/wski18n"
@@ -295,56 +295,67 @@ var propertyGetCmd = &cobra.Command{
 			Flags.property.apihost || Flags.property.apibuildno) {
 			Flags.property.all = true
 		}
-
-		if Flags.property.all || Flags.property.cert {
+		if Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("client cert"), boldString(Properties.Cert))
-		}
-
-		if Flags.property.all || Flags.property.key {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("Client key"), boldString(Properties.Key))
-		}
-
-		if Flags.property.all || Flags.property.auth {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk auth"), boldString(Properties.Auth))
-		}
-
-		if Flags.property.all || Flags.property.apihost {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API host"), boldString(Properties.APIHost))
-		}
-
-		if Flags.property.all || Flags.property.apiversion {
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk API version"), boldString(Properties.APIVersion))
-		}
-
-		if Flags.property.all || Flags.property.namespace {
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk namespace"), boldString(Properties.Namespace))
-		}
-
-		if Flags.property.all || Flags.property.cliversion {
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk CLI version"), boldString(Properties.CLIVersion))
 		}
 
-		if Flags.property.all || Flags.property.apibuild || Flags.property.apibuildno {
-			info, _, err := Client.Info.Get()
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
-				info = &whisk.Info{}
-				info.Build = wski18n.T("Unknown")
-				info.BuildNo = wski18n.T("Unknown")
-			}
-			if Flags.property.all || Flags.property.apibuild {
-				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build"), boldString(info.Build))
-			}
-			if Flags.property.all || Flags.property.apibuildno {
-				fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk API build number"), boldString(info.BuildNo))
-			}
-			if err != nil {
-				errStr := fmt.Sprintf(
-					wski18n.T("Unable to obtain API build information: {{.err}}",
-						map[string]interface{}{"err": err}))
-				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-				return werr
-			}
+		if Flags.property.cert {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Cert))
+		}
+
+		if Flags.property.key {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Key))
+		}
+
+		if Flags.property.auth {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Auth))
+		}
+
+		if Flags.property.apihost {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIHost))
+		}
+
+		if Flags.property.apiversion {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIVersion))
+		}
+
+		if Flags.property.namespace {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Namespace))
+		}
+
+		if Flags.property.cliversion {
+			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.CLIVersion))
+		}
+
+		info, _, err := Client.Info.Get()
+		if err != nil {
+			whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
+			info = &whisk.Info{}
+			info.Build = wski18n.T("Unknown")
+			info.BuildNo = wski18n.T("Unknown")
+		}
+		if Flags.property.all {
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build"), boldString(info.Build))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build number"), boldString(info.BuildNo))
+		}
+		if Flags.property.apibuild {
+			fmt.Fprintf(color.Output, "%s\n", boldString(info.Build))
+		}
+		if Flags.property.apibuildno {
+			fmt.Fprintf(color.Output, "%s\n", boldString(info.BuildNo))
+		}
+		if err != nil {
+			errStr := fmt.Sprintf(
+				wski18n.T("Unable to obtain API build information: {{.err}}",
+					map[string]interface{}{"err": err}))
+			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+			return werr
 		}
 
 		return nil
