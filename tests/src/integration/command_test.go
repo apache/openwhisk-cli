@@ -20,10 +20,11 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
 )
 
 var wsk *common.Wsk = common.NewWsk()
@@ -65,17 +66,17 @@ func TestShowCLIBuildVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--cliversion")
 	assert.Equal(t, nil, err, "The command property get --cliversion failed to run.")
 	output := common.RemoveRedundentSpaces(string(stdout))
-	assert.NotContains(t, output, "whisk CLI version not set",
-		"The output of the command property get --cliversion contains \"whisk CLI version not set\".")
-	assert.Contains(t, output, "whisk CLI version",
-		"The output of the command property get --cliversion does not contain \"whisk CLI version\".")
+	assert.NotContains(t, output, "not set",
+		"The output of the command property get --cliversion contains \"not set\".")
+	assert.Contains(t, output, "20",
+		"The output of the command property get --cliversion does not contain \"20\".")
 }
 
 func TestShowAPIVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--apiversion")
 	assert.Equal(t, nil, err, "The command property get --apiversion failed to run.")
-	assert.Contains(t, string(stdout), "whisk API version",
-		"The output of the command property get --apiversion does not contain \"whisk API version\".")
+	assert.Contains(t, string(stdout), "v1",
+		"The output of the command property get --apiversion does not contain \"v1\".")
 }
 
 // Test case to verify the default namespace _.
@@ -88,8 +89,8 @@ func TestDefaultNamespace(t *testing.T) {
 
 	stdout, err := wsk.RunCommand("property", "get", "-i", "--namespace")
 	assert.Equal(t, nil, err, "The command property get -i --namespace failed to run.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk namespace _",
-		"The output of the command does not contain \"whisk namespace _\".")
+	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "_",
+		"The output of the command does not contain \"_\".")
 	common.DeleteFile(tmpProp)
 }
 
@@ -114,18 +115,18 @@ func TestValidateDefaultProperties(t *testing.T) {
 
 	stdout, err = wsk.RunCommand("property", "get", "--auth")
 	assert.Equal(t, nil, err, "The command property get --auth failed to run.")
-	assert.Equal(t, "whisk auth", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"whisk auth\".")
+	assert.Equal(t, "", common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to \"\".")
 
 	stdout, err = wsk.RunCommand("property", "get", "--apihost")
 	assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
-	assert.Equal(t, "whisk API host", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"whisk API host\".")
+	assert.Equal(t, "", common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to \"\".")
 
 	stdout, err = wsk.RunCommand("property", "get", "--namespace")
 	assert.Equal(t, nil, err, "The command property get --namespace failed to run.")
-	assert.Equal(t, "whisk namespace _", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"whisk namespace _\".")
+	assert.Equal(t, "_", common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to \"_\".")
 
 	common.DeleteFile(tmpProp)
 }
