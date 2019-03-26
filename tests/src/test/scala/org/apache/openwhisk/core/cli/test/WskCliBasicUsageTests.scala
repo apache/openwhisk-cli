@@ -89,7 +89,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "show api version" in {
     val stdout = wsk.cli(Seq("property", "get", "--apiversion")).stdout
-    stdout should startsWith ("v1")
+    stdout should startsWith("v1")
   }
 
   it should "reject bad command" in {
