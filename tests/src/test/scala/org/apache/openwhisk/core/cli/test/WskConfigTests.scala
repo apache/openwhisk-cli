@@ -259,7 +259,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       wsk.cli(Seq("property", "set", "-i") ++ wskprops.overrides, env = env)
       val stdout = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env).stdout
-      stdout should startWith regex ("201.*")
+      stdout should startWith regex ("20.*")
     } finally {
       tmpwskprops.delete()
     }
