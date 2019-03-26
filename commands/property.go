@@ -305,59 +305,60 @@ var propertyGetCmd = &cobra.Command{
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk CLI version"), boldString(Properties.CLIVersion))
 		}
 
-		if Flags.property.cert {
+		if Flags.property.cert && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Cert))
 		}
 
-		if Flags.property.key {
+		if Flags.property.key && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Key))
 		}
 
-		if Flags.property.auth {
+		if Flags.property.auth && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Auth))
 		}
 
-		if Flags.property.apihost {
+		if Flags.property.apihost && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIHost))
 		}
 
-		if Flags.property.apiversion {
+		if Flags.property.apiversion && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIVersion))
 		}
 
-		if Flags.property.namespace {
+		if Flags.property.namespace && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Namespace))
 		}
 
-		if Flags.property.cliversion {
+		if Flags.property.cliversion && !Flags.property.all {
 			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.CLIVersion))
 		}
 
-		info, _, err := Client.Info.Get()
-		if err != nil {
-			whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
-			info = &whisk.Info{}
-			info.Build = wski18n.T("Unknown")
-			info.BuildNo = wski18n.T("Unknown")
+		if Flags.property.all || Flags.property.apibuild || Flags.property.apibuildno {
+			info, _, err := Client.Info.Get()
+			if err != nil {
+				whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
+				info = &whisk.Info{}
+				info.Build = wski18n.T("Unknown")
+				info.BuildNo = wski18n.T("Unknown")
+			}
+			if Flags.property.all {
+				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build"), boldString(info.Build))
+				fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk API build number"), boldString(info.BuildNo))
+			}
+			if Flags.property.apibuild {
+				fmt.Fprintf(color.Output, "%s\n", boldString(info.Build))
+			}
+			if Flags.property.apibuildno {
+				fmt.Fprintf(color.Output, "%s\n", boldString(info.BuildNo))
+			}
+			if err != nil {
+				errStr := fmt.Sprintf(
+					wski18n.T("Unable to obtain API build information: {{.err}}",
+						map[string]interface{}{"err": err}))
+				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
 		}
-		if Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build"), boldString(info.Build))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build number"), boldString(info.BuildNo))
-		}
-		if Flags.property.apibuild {
-			fmt.Fprintf(color.Output, "%s\n", boldString(info.Build))
-		}
-		if Flags.property.apibuildno {
-			fmt.Fprintf(color.Output, "%s\n", boldString(info.BuildNo))
-		}
-		if err != nil {
-			errStr := fmt.Sprintf(
-				wski18n.T("Unable to obtain API build information: {{.err}}",
-					map[string]interface{}{"err": err}))
-			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-			return werr
-		}
-
 		return nil
 	},
 }
