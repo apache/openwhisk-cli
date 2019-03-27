@@ -53,6 +53,18 @@ const DefaultAPIBuildNo string = ""
 const DefaultNamespace string = "_"
 const DefaultPropsFile string = "~/.wskprops"
 
+const (
+	propDisplayCert       = "client cert"
+	propDisplayKey        = "Client key"
+	propDisplayAuth       = "whisk auth"
+	propDisplayAPIHost    = "whisk API host"
+	propDisplayAPIVersion = "whisk API version"
+	propDisplayNamespace  = "whisk namespace"
+	propDisplayCLIVersion = "whisk CLI version"
+	propDisplayAPIBuild   = "whisk API build"
+	propDisplayAPIBuildNo = "whisk API build number"
+)
+
 var propertyCmd = &cobra.Command{
 	Use:   "property",
 	Short: wski18n.T("work with whisk properties"),
@@ -287,6 +299,22 @@ var propertyGetCmd = &cobra.Command{
 	PreRunE:       SetupClientConfig,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
+		var outputFormat string = "std"
+		if Flags.property.output != "std" {
+			switch Flags.property.output {
+			case "raw":
+				outputFormat = "raw"
+				break
+			//case "json": For future implementation
+			//case "yaml": For future implementation
+			default:
+				errStr := fmt.Sprintf(
+					wski18n.T("Supported output format are std|raw"))
+				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), nil, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
+		}
+
 		// If no property is explicitly specified, default to all properties
 		if !(Flags.property.all || Flags.property.cert ||
 			Flags.property.key || Flags.property.auth ||
@@ -296,41 +324,39 @@ var propertyGetCmd = &cobra.Command{
 			Flags.property.all = true
 		}
 		if Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("client cert"), boldString(Properties.Cert))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("Client key"), boldString(Properties.Key))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk auth"), boldString(Properties.Auth))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API host"), boldString(Properties.APIHost))
-			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk API version"), boldString(Properties.APIVersion))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk namespace"), boldString(Properties.Namespace))
-			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk CLI version"), boldString(Properties.CLIVersion))
-		}
+			// Currently with all only standard output format is supported.
+			if outputFormat != "std" {
+				errStr := fmt.Sprintf(
+					wski18n.T("--output|-o raw only supported with specific property type"))
+				werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), nil, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+				return werr
+			}
 
-		if Flags.property.cert && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Cert))
-		}
-
-		if Flags.property.key && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Key))
-		}
-
-		if Flags.property.auth && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Auth))
-		}
-
-		if Flags.property.apihost && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIHost))
-		}
-
-		if Flags.property.apiversion && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.APIVersion))
-		}
-
-		if Flags.property.namespace && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.Namespace))
-		}
-
-		if Flags.property.cliversion && !Flags.property.all {
-			fmt.Fprintf(color.Output, "%s\n", boldString(Properties.CLIVersion))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayCert), boldString(Properties.Cert))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayKey), boldString(Properties.Key))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAuth), boldString(Properties.Auth))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIHost), boldString(Properties.APIHost))
+			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayAPIVersion), boldString(Properties.APIVersion))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayNamespace), boldString(Properties.Namespace))
+			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayCLIVersion), boldString(Properties.CLIVersion))
+		} else {
+			property := Flags.property
+			switch {
+			case property.cert:
+				printProperty(Properties.Cert, propDisplayCert, outputFormat)
+			case property.key:
+				printProperty(Properties.Key, propDisplayKey, outputFormat)
+			case property.cliversion:
+				printProperty(Properties.CLIVersion, propDisplayCLIVersion, outputFormat)
+			case property.apihost:
+				printProperty(Properties.APIHost, propDisplayAPIHost, outputFormat)
+			case property.auth:
+				printProperty(Properties.Auth, propDisplayAuth, outputFormat)
+			case property.apiversion:
+				printProperty(Properties.APIVersion, propDisplayAPIVersion, outputFormat)
+			case property.namespace:
+				printProperty(Properties.Namespace, propDisplayNamespace, outputFormat)
+			}
 		}
 
 		if Flags.property.all || Flags.property.apibuild || Flags.property.apibuildno {
@@ -342,14 +368,12 @@ var propertyGetCmd = &cobra.Command{
 				info.BuildNo = wski18n.T("Unknown")
 			}
 			if Flags.property.all {
-				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T("whisk API build"), boldString(info.Build))
-				fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T("whisk API build number"), boldString(info.BuildNo))
-			}
-			if Flags.property.apibuild {
-				fmt.Fprintf(color.Output, "%s\n", boldString(info.Build))
-			}
-			if Flags.property.apibuildno {
-				fmt.Fprintf(color.Output, "%s\n", boldString(info.BuildNo))
+				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIBuild), boldString(info.Build))
+				fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayAPIBuildNo), boldString(info.BuildNo))
+			} else if Flags.property.apibuild {
+				printProperty(info.Build, propDisplayAPIBuild, outputFormat)
+			} else if Flags.property.apibuildno {
+				printProperty(info.Build, propDisplayAPIBuildNo, outputFormat)
 			}
 			if err != nil {
 				errStr := fmt.Sprintf(
@@ -371,30 +395,31 @@ func init() {
 	)
 
 	// need to set property flags as booleans instead of strings... perhaps with boolApihost...
-	propertyGetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T("client cert"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T("client key"))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T(propDisplayCert))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T(propDisplayKey))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.auth, "auth", false, wski18n.T("authorization key"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T("whisk API host"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T("whisk API version"))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T(propDisplayAPIHost))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T(propDisplayAPIVersion))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.apibuild, "apibuild", false, wski18n.T("whisk API build version"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.apibuildno, "apibuildno", false, wski18n.T("whisk API build number"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.cliversion, "cliversion", false, wski18n.T("whisk CLI version"))
-	propertyGetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T("whisk namespace"))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.apibuildno, "apibuildno", false, wski18n.T(propDisplayAPIBuildNo))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.cliversion, "cliversion", false, wski18n.T(propDisplayCLIVersion))
+	propertyGetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T(propDisplayNamespace))
 	propertyGetCmd.Flags().BoolVar(&Flags.property.all, "all", false, wski18n.T("all properties"))
+	propertyGetCmd.Flags().StringVarP(&Flags.property.output, "output", "o", "std", wski18n.T("Output format in std|raw"))
 
 	propertySetCmd.Flags().StringVarP(&Flags.Global.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
-	propertySetCmd.Flags().StringVar(&Flags.Global.Cert, "cert", "", wski18n.T("client cert"))
-	propertySetCmd.Flags().StringVar(&Flags.Global.Key, "key", "", wski18n.T("client key"))
+	propertySetCmd.Flags().StringVar(&Flags.Global.Cert, "cert", "", wski18n.T(propDisplayCert))
+	propertySetCmd.Flags().StringVar(&Flags.Global.Key, "key", "", wski18n.T(propDisplayKey))
 	propertySetCmd.Flags().StringVar(&Flags.property.apihostSet, "apihost", "", wski18n.T("whisk API `HOST`"))
 	propertySetCmd.Flags().StringVar(&Flags.property.apiversionSet, "apiversion", "", wski18n.T("whisk API `VERSION`"))
 	propertySetCmd.Flags().StringVar(&Flags.property.namespaceSet, "namespace", "", wski18n.T("whisk `NAMESPACE`"))
 
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T("client cert"))
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T("client key"))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T(propDisplayCert))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T(propDisplayKey))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.auth, "auth", false, wski18n.T("authorization key"))
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T("whisk API host"))
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T("whisk API version"))
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T("whisk namespace"))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T(propDisplayAPIHost))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T(propDisplayAPIVersion))
+	propertyUnsetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T(propDisplayNamespace))
 
 }
 
@@ -569,4 +594,18 @@ func parseConfigFlags(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+func printProperty(propertyName string, defaultKey string, format string) {
+	switch format {
+	case "std":
+		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(defaultKey), boldString(propertyName))
+		break
+	case "raw":
+		fmt.Fprintf(color.Output, "%s\n", boldString(propertyName))
+		break
+	default:
+		// In case of any other type for now print in std format.
+		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(defaultKey), boldString(propertyName))
+	}
 }

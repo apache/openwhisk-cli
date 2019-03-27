@@ -47,7 +47,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       wsk.cli(Seq("property", "set", "-i", "--apihost", "xxxx.yyyy"), env = env)
       val rr = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env, expectedExitCode = NETWORK_ERROR_EXIT)
-      rr.stdout should include regex ("Unknown")
+      rr.stdout should include regex ("""whisk API build\s*Unknown""")
       rr.stderr should include regex ("Unable to obtain API build information")
     } finally {
       tmpwskprops.delete()
@@ -76,19 +76,19 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
 
       wsk
         .cli(Seq("property", "get", "--auth"), env = env)
-        .stdout should include regex ("""(?i)\\s*$""") // default = empty string
+        .stdout should include regex ("""(?i)whisk auth\s*$""") // default = empty string
       wsk
         .cli(Seq("property", "get", "--cert"), env = env)
-        .stdout should include regex ("""(?i)\\s*$""") // default = empty string
+        .stdout should include regex ("""(?i)client cert\s*$""") // default = empty string
       wsk
         .cli(Seq("property", "get", "--key"), env = env)
-        .stdout should include regex ("""(?i)\\s*$""") // default = empty string
+        .stdout should include regex ("""(?i)client key\s*$""") // default = empty string
       wsk
         .cli(Seq("property", "get", "--apihost"), env = env)
-        .stdout should include regex ("""(?i)\\s*$""") // default = empty string
+        .stdout should include regex ("""(?i)whisk API host\s*$""") // default = empty string
       wsk
         .cli(Seq("property", "get", "--namespace"), env = env)
-        .stdout should include("_") // default = _
+        .stdout should include regex ("""(?i)whisk namespace\s*_$""") // default = _
     } finally {
       tmpwskprops.delete()
     }
@@ -126,8 +126,8 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val rr = wsk.cli(Seq("property", "get", "--apibuild", "--apibuildno", "-i"), env = env)
       rr.stderr should not include ("https:///api/v1: http: no Host in request URL")
       rr.stdout should not include regex("Cannot determine API build")
-      rr.stdout should include regex ("""(?i)\s+201.*""")
-      rr.stdout should include regex ("""(?i)v1\s+.*""")
+      rr.stdout should include regex ("""(?i)whisk API build\s+20.*""")
+      rr.stdout should include regex ("""(?i)whisk API build number\s+.*""")
     } finally {
       tmpProps.delete()
     }
@@ -141,7 +141,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       writer.close()
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       val stdout = wsk.cli(Seq("property", "get", "-i", "--apihost"), env = env).stdout
-      stdout should include regex ("\\s+http://localhost:10001$")
+      stdout should include regex ("whisk API host\\s+http://localhost:10001$")
     } finally {
       tmpwskprops.delete()
     }
@@ -247,7 +247,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       writer.close()
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       val stdout = wsk.cli(Seq("property", "get", "-i", "--namespace"), env = env).stdout
-      stdout should startWith("_")
+      stdout should include regex ("whisk namespace\\s+_")
     } finally {
       tmpwskprops.delete()
     }
@@ -259,7 +259,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       wsk.cli(Seq("property", "set", "-i") ++ wskprops.overrides, env = env)
       val stdout = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env).stdout
-      stdout should startWith regex ("20.*")
+      stdout should include regex ("""(?i)whisk API build\s+20.*""")
     } finally {
       tmpwskprops.delete()
     }
@@ -274,9 +274,9 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
         s"${controllerProtocol}://${WhiskProperties.getBaseControllerHost()}"
       wsk.cli(Seq("property", "set", "--apihost", apihost), env = env)
       val rr = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env)
-      rr.stdout should not include regex("Unknown")
+      rr.stdout should not include regex("""whisk API build\s*Unknown""")
       rr.stderr should not include regex("Unable to obtain API build information")
-      rr.stdout should startWith regex ("20.*")
+      rr.stdout should include regex ("""(?i)whisk API build\s+201.*""")
     } finally {
       tmpwskprops.delete()
     }

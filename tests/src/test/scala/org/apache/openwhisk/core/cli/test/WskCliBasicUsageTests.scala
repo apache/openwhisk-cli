@@ -84,12 +84,12 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "show cli build version" in {
     val stdout = wsk.cli(Seq("property", "get", "--cliversion")).stdout
-    stdout should startWith regex ("20.*")
+    stdout should include regex ("""(?i)whisk CLI version\s+20.*""")
   }
 
   it should "show api version" in {
     val stdout = wsk.cli(Seq("property", "get", "--apiversion")).stdout
-    stdout should startWith("v1")
+    stdout should include regex ("""(?i)whisk API version\s+v1""")
   }
 
   it should "reject bad command" in {

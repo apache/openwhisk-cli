@@ -66,17 +66,17 @@ func TestShowCLIBuildVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--cliversion")
 	assert.Equal(t, nil, err, "The command property get --cliversion failed to run.")
 	output := common.RemoveRedundentSpaces(string(stdout))
-	assert.NotContains(t, output, "not set",
-		"The output of the command property get --cliversion contains \"not set\".")
-	assert.Contains(t, output, "20",
-		"The output of the command property get --cliversion does not contain \"20\".")
+	assert.NotContains(t, output, common.PropDisplayCLIVersion+" not set",
+		"The output of the command property get --cliversion contains "+common.PropDisplayCLIVersion+" not set")
+	assert.Contains(t, output, common.PropDisplayCLIVersion,
+		"The output of the command property get --cliversion does not contain "+common.PropDisplayCLIVersion)
 }
 
 func TestShowAPIVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--apiversion")
 	assert.Equal(t, nil, err, "The command property get --apiversion failed to run.")
-	assert.Contains(t, string(stdout), "v1",
-		"The output of the command property get --apiversion does not contain \"v1\".")
+	assert.Contains(t, string(stdout), common.PropDisplayAPIVersion,
+		"The output of the command property get --apiversion does not contain "+common.PropDisplayCLIVersion)
 }
 
 // Test case to verify the default namespace _.
@@ -89,8 +89,8 @@ func TestDefaultNamespace(t *testing.T) {
 
 	stdout, err := wsk.RunCommand("property", "get", "-i", "--namespace")
 	assert.Equal(t, nil, err, "The command property get -i --namespace failed to run.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "_",
-		"The output of the command does not contain \"_\".")
+	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayNamespace+" _",
+		"The output of the command does not contain "+common.PropDisplayCLIVersion+" _")
 	common.DeleteFile(tmpProp)
 }
 
@@ -115,18 +115,18 @@ func TestValidateDefaultProperties(t *testing.T) {
 
 	stdout, err = wsk.RunCommand("property", "get", "--auth")
 	assert.Equal(t, nil, err, "The command property get --auth failed to run.")
-	assert.Equal(t, "", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"\".")
+	assert.Equal(t, common.PropDisplayAuth, common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to "+common.PropDisplayAuth)
 
 	stdout, err = wsk.RunCommand("property", "get", "--apihost")
 	assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
-	assert.Equal(t, "", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"\".")
+	assert.Equal(t, common.PropDisplayAPIHost, common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to "+common.PropDisplayAPIHost)
 
 	stdout, err = wsk.RunCommand("property", "get", "--namespace")
 	assert.Equal(t, nil, err, "The command property get --namespace failed to run.")
-	assert.Equal(t, "_", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to \"_\".")
+	assert.Equal(t, common.PropDisplayNamespace+" _", common.RemoveRedundentSpaces(string(stdout)),
+		"The output of the command does not equal to "+common.PropDisplayNamespace+" _")
 
 	common.DeleteFile(tmpProp)
 }
