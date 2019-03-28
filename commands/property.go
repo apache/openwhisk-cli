@@ -340,21 +340,25 @@ var propertyGetCmd = &cobra.Command{
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayNamespace), boldString(Properties.Namespace))
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayCLIVersion), boldString(Properties.CLIVersion))
 		} else {
-			property := Flags.property
-			switch {
-			case property.cert:
+			if Flags.property.cert {
 				printProperty(Properties.Cert, propDisplayCert, outputFormat)
-			case property.key:
+			}
+			if Flags.property.key {
 				printProperty(Properties.Key, propDisplayKey, outputFormat)
-			case property.cliversion:
-				printProperty(Properties.CLIVersion, propDisplayCLIVersion, outputFormat)
-			case property.apihost:
+			}
+			if Flags.property.cliversion {
+				printProperty(Properties.CLIVersion, propDisplayCLIVersion, outputFormat, "%s\t%s\n")
+			}
+			if Flags.property.apihost {
 				printProperty(Properties.APIHost, propDisplayAPIHost, outputFormat)
-			case property.auth:
+			}
+			if Flags.property.auth {
 				printProperty(Properties.Auth, propDisplayAuth, outputFormat)
-			case property.apiversion:
-				printProperty(Properties.APIVersion, propDisplayAPIVersion, outputFormat)
-			case property.namespace:
+			}
+			if Flags.property.apiversion {
+				printProperty(Properties.APIVersion, propDisplayAPIVersion, outputFormat, "%s\t%s\n")
+			}
+			if Flags.property.namespace {
 				printProperty(Properties.Namespace, propDisplayNamespace, outputFormat)
 			}
 		}
@@ -370,10 +374,12 @@ var propertyGetCmd = &cobra.Command{
 			if Flags.property.all {
 				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIBuild), boldString(info.Build))
 				fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayAPIBuildNo), boldString(info.BuildNo))
-			} else if Flags.property.apibuild {
+			}
+			if Flags.property.apibuild && !Flags.property.all {
 				printProperty(info.Build, propDisplayAPIBuild, outputFormat)
-			} else if Flags.property.apibuildno {
-				printProperty(info.Build, propDisplayAPIBuildNo, outputFormat)
+			}
+			if Flags.property.apibuildno && !Flags.property.all {
+				printProperty(info.BuildNo, propDisplayAPIBuildNo, outputFormat, "%s\t%s\n")
 			}
 			if err != nil {
 				errStr := fmt.Sprintf(
@@ -596,16 +602,20 @@ func parseConfigFlags(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func printProperty(propertyName string, defaultKey string, format string) {
-	switch format {
+func printProperty(propertyName string, displayText string, formatType string, format ...string) {
+	switch formatType {
 	case "std":
-		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(defaultKey), boldString(propertyName))
+		if len(format) > 0 {
+			fmt.Fprintf(color.Output, format[0], wski18n.T(displayText), boldString(propertyName))
+			break
+		}
+		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(displayText), boldString(propertyName))
 		break
 	case "raw":
 		fmt.Fprintf(color.Output, "%s\n", boldString(propertyName))
 		break
 	default:
 		// In case of any other type for now print in std format.
-		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(defaultKey), boldString(propertyName))
+		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(displayText), boldString(propertyName))
 	}
 }
