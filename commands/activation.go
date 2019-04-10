@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -53,6 +54,7 @@ var activationListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 		var qualifiedName = new(QualifiedName)
+		var orderedFilteredRow []whisk.ActivationFilteredRow
 
 		if whiskErr := CheckArgs(args, 0, 1, "Activation list",
 			wski18n.T("An optional namespace is the only valid argument.")); whiskErr != nil {
@@ -93,7 +95,18 @@ var activationListCmd = &cobra.Command{
 		if options.Docs == true {
 			printFullActivationList(activations)
 		} else {
-			printList(activations, false) // Default sorting for Activations are by creation time, hence sortByName is always false
+			maxKindSize := max(len("Kind"), getLargestKindSize(activations))
+			maxStatusSize := max(len("Status"), getLargestStatusSize(activations))
+
+			// Header string should show "Datetime", "Activation ID", "Kind", "Start", "Duration", "Status", "Entity", with Kind and Status being
+			// dynamically sized. The last column Entity will be sized correctly when printed, so no need to calculate size here
+			headerFmt := "%-19s %-32s %-" + strconv.Itoa(maxKindSize) + "s %-6s%-10s %-" + strconv.Itoa(maxStatusSize) + "s %-6s\n"
+			rowFmt := "%d-%02d-%02d %02d:%02d:%02d %-32s %-" + strconv.Itoa(maxKindSize) + "s %-5s %-10v %-" + strconv.Itoa(maxStatusSize) + "s %-"
+
+			for i := 0; i < len(activations); i++ {
+				orderedFilteredRow = append(orderedFilteredRow, whisk.ActivationFilteredRow{Row: activations[i], HeaderFmt: headerFmt, RowFmt: rowFmt})
+			}
+			printList(orderedFilteredRow, false) // Default sorting for Activations are by creation time, hence sortByName is always false
 		}
 
 		return nil
@@ -395,6 +408,42 @@ var activationPollCmd = &cobra.Command{
 		}
 		return nil
 	},
+}
+
+// Find the size needed for the Kind column when listing activations
+func getLargestKindSize(activations []whisk.Activation) int {
+	var maxLen = 0
+	var curLen int
+	var kind interface{}
+
+	for i := 0; i < len(activations); i++ {
+		kind = activations[i].Annotations.GetValue("kind")
+		if kind == nil {
+			kind = "unknown"
+		}
+		curLen = len(kind.(string))
+		if curLen > maxLen {
+			maxLen = curLen
+		}
+	}
+	return maxLen
+}
+
+// Find the size needed for the Status column when listing activations
+func getLargestStatusSize(activations []whisk.Activation) int {
+	// The first array in the StatusCodes variable is "success"
+	var maxLen = len(whisk.StatusCodes[0])
+	var curLen int
+
+	for i := 0; i < len(activations); i++ {
+		if activations[i].StatusCode > 0 && activations[i].StatusCode < len(whisk.StatusCodes) {
+			curLen = len(whisk.StatusCodes[activations[i].StatusCode])
+			if curLen > maxLen {
+				maxLen = curLen
+			}
+		}
+	}
+	return maxLen
 }
 
 func init() {

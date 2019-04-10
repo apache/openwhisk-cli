@@ -3,10 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "6D6U+hfBxkxhDZWSHTrn8uhGod8=",
+			"checksumSHA1": "W0Cr3GbXN1qhrbg6BVwt2VH9qSQ=",
 			"path": "github.com/apache/incubator-openwhisk-client-go/whisk",
-			"revision": "4286a8212a74c40d8950ee76681a67e12c9bf1a0",
-			"revisionTime": "2019-03-04T14:44:55Z"
+			"revision": "47ad3426a4e3632fd17d859303f4074ae7b959ff",
+			"revisionTime": "2019-04-04T18:35:19Z"
 		},
 		{
 			"checksumSHA1": "4NY5lFykxXaoN+JNMxo179L79sU=",
