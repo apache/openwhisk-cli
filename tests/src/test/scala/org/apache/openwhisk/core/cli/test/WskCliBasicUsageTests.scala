@@ -632,7 +632,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           baseAnnotations ++ Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
         } else baseAnnotations
 
-        action.getFieldJsValue("annotations").convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray
+        removeCLIHeader(action.stdout).parseJson.asJsObject
+          .fields("annotations")
+          .convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray
           .convertTo[Set[JsObject]]
       }
   }
@@ -708,7 +710,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
 
       val action = wsk.action.get(name)
-      action.getFieldJsValue("annotations").convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray
+      removeCLIHeader(action.stdout).parseJson.asJsObject
+        .fields("annotations")
+        .convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray
         .convertTo[Set[JsObject]]
   }
 
