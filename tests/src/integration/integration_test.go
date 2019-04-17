@@ -21,11 +21,12 @@ package tests
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
 )
 
 var invalidArgs []common.InvalidArg
@@ -370,12 +371,12 @@ func TestShowAPIBuildVersion(t *testing.T) {
 	stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
 	assert.Equal(t, nil, err, "The command property get -i --apibuild failed to run.")
 	println(common.RemoveRedundentSpaces(string(stdout)))
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API build Unknown",
-		"The output of the command property get --apibuild does not contain \"whisk API build Unknown\".")
+	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" Unknown")
 	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API build 20",
-		"The output of the command property get --apibuild does not contain \"whisk API build 20\".")
+	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
+		"The output of the command property get --apibuild does not contain"+common.PropDisplayAPIBuild+" 20")
 	common.DeleteFile(tmpProp)
 }
 
@@ -390,8 +391,8 @@ func TestFailShowAPIBuildVersion(t *testing.T) {
 	assert.Equal(t, nil, err, "The command property set --apihost failed to run.")
 	stdout, err := wsk.RunCommand("property", "get", "-i", "--apibuild")
 	assert.NotEqual(t, nil, err, "The command property get -i --apibuild does not raise any error.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API build Unknown",
-		"The output of the command property get --apibuild does not contain \"whisk API build Unknown\".")
+	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+		"The output of the command property get --apibuild does not contain"+common.PropDisplayAPIBuild+" Unknown")
 	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
 }
@@ -409,12 +410,12 @@ func TestShowAPIBuildVersionHTTP(t *testing.T) {
 	stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
 	println(common.RemoveRedundentSpaces(string(stdout)))
 	//assert.Equal(t, nil, err, "The command property get -i --apibuild failed to run.")
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API build Unknown",
-		"The output of the command property get --apibuild does not contain \"whisk API build Unknown\".")
+	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" Unknown")
 	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "whisk API build 20",
-		"The output of the command property get --apibuild does not contain \"whisk API build 20\".")
+	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
+		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" 20")
 	common.DeleteFile(tmpProp)
 }
 

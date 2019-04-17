@@ -126,7 +126,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val rr = wsk.cli(Seq("property", "get", "--apibuild", "--apibuildno", "-i"), env = env)
       rr.stderr should not include ("https:///api/v1: http: no Host in request URL")
       rr.stdout should not include regex("Cannot determine API build")
-      rr.stdout should include regex ("""(?i)whisk API build\s+201.*""")
+      rr.stdout should include regex ("""(?i)whisk API build\s+20.*""")
       rr.stdout should include regex ("""(?i)whisk API build number\s+.*""")
     } finally {
       tmpProps.delete()
@@ -259,7 +259,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       wsk.cli(Seq("property", "set", "-i") ++ wskprops.overrides, env = env)
       val stdout = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env).stdout
-      stdout should include regex ("""(?i)whisk API build\s+201.*""")
+      stdout should include regex ("""(?i)whisk API build\s+20.*""")
     } finally {
       tmpwskprops.delete()
     }

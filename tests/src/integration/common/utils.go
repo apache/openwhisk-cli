@@ -26,6 +26,18 @@ import (
 	"unicode"
 )
 
+const (
+	PropDisplayCert       = "client cert"
+	PropDisplayKey        = "Client key"
+	PropDisplayAuth       = "whisk auth"
+	PropDisplayAPIHost    = "whisk API host"
+	PropDisplayAPIVersion = "whisk API version"
+	PropDisplayNamespace  = "whisk namespace"
+	PropDisplayCLIVersion = "whisk CLI version"
+	PropDisplayAPIBuild   = "whisk API build"
+	PropDisplayAPIBuildNo = "whisk API build number"
+)
+
 func checkError(err error) {
 	if err != nil {
 		fmt.Println(err.Error())

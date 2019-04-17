@@ -84,6 +84,7 @@ type FlagsStruct struct {
 		apihostSet    string
 		apiversionSet string
 		namespaceSet  string
+		output        string
 	}
 
 	action ActionFlags
