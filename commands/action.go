@@ -939,7 +939,7 @@ func nonNestedError(errorMessage string) error {
 }
 
 func actionParseError(cmd *cobra.Command, args []string, err error) error {
-	whisk.Debug(whisk.DbgError, "parseAction(%s, %s) error: %s\n", cmd, args, err)
+	whisk.Debug(whisk.DbgError, "parseAction(%s, %s) error: %s\n", cmd.Name(), args, err)
 
 	errMsg := wski18n.T(
 		"Invalid argument(s). {{.required}}",
@@ -1028,7 +1028,7 @@ func actionGetError(entityName string, fetchCode bool, err error) error {
 func handleInvocationError(err error, entityName string) error {
 	whisk.Debug(
 		whisk.DbgError,
-		"Client.Actions.Invoke(%s, %t) error: %s\n",
+		"Client.Actions.Invoke(%s) error: %s\n",
 		entityName,
 		err)
 
