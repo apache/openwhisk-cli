@@ -285,10 +285,6 @@
     "translation": "Namespace '{{.name}}' is not in the list of entitled namespaces"
   },
   {
-    "id": "{{.ok}} whisk namespace set to {{.name}}\n",
-    "translation": "{{.ok}} whisk namespace set to {{.name}}\n"
-  },
-  {
     "id": "Unable to set the property value(s): {{.err}}",
     "translation": "Unable to set the property value(s): {{.err}}"
   },
@@ -311,10 +307,6 @@
   {
     "id": "{{.ok}} whisk auth unset.\n",
     "translation": "{{.ok}} whisk auth unset.\n"
-  },
-  {
-    "id": "{{.ok}} whisk namespace unset",
-    "translation": "{{.ok}} whisk namespace unset"
   },
   {
     "id": "{{.ok}} whisk API host unset.\n",

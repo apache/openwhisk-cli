@@ -145,38 +145,6 @@ var propertySetCmd = &cobra.Command{
 					map[string]interface{}{"ok": color.GreenString("ok:"), "version": boldString(apiVersion)}))
 		}
 
-		if namespace := Flags.property.namespaceSet; len(namespace) > 0 {
-			namespaces, _, err := Client.Namespaces.List()
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "Client.Namespaces.List() failed: %s\n", err)
-				errStr := fmt.Sprintf(
-					wski18n.T("Authenticated user does not have namespace '{{.name}}'; set command failed: {{.err}}",
-						map[string]interface{}{"name": namespace, "err": err}))
-				werr = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-			} else {
-				whisk.Debug(whisk.DbgInfo, "Validating namespace '%s' is in user namespace list %#v\n", namespace, namespaces)
-				var validNamespace bool
-				for _, ns := range namespaces {
-					if ns.Name == namespace {
-						whisk.Debug(whisk.DbgInfo, "Namespace '%s' is valid\n", namespace)
-						validNamespace = true
-					}
-				}
-				if !validNamespace {
-					whisk.Debug(whisk.DbgError, "Namespace '%s' is not in the list of entitled namespaces\n", namespace)
-					errStr := fmt.Sprintf(
-						wski18n.T("Namespace '{{.name}}' is not in the list of entitled namespaces",
-							map[string]interface{}{"name": namespace}))
-					werr = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
-				} else {
-					props["NAMESPACE"] = namespace
-					okMsg += fmt.Sprintf(
-						wski18n.T("{{.ok}} whisk namespace set to {{.name}}\n",
-							map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(namespace)}))
-				}
-			}
-		}
-
 		err = WriteProps(Properties.PropsFile, props)
 		if err != nil {
 			whisk.Debug(whisk.DbgError, "writeProps(%s, %#v) failed: %s\n", Properties.PropsFile, props, err)
@@ -236,21 +204,6 @@ var propertyUnsetCmd = &cobra.Command{
 					map[string]interface{}{"ok": color.GreenString("ok:")}))
 		}
 
-		if Flags.property.namespace {
-			delete(props, "NAMESPACE")
-			okMsg += fmt.Sprintf(
-				wski18n.T("{{.ok}} whisk namespace unset",
-					map[string]interface{}{"ok": color.GreenString("ok:")}))
-			if len(DefaultNamespace) > 0 {
-				okMsg += fmt.Sprintf(
-					wski18n.T("; the default value of {{.default}} will be used.\n",
-						map[string]interface{}{"default": boldString(DefaultNamespace)}))
-			} else {
-				okMsg += fmt.Sprint(
-					wski18n.T("; there is no default value that can be used.\n"))
-			}
-		}
-
 		if Flags.property.apihost {
 			delete(props, "APIHOST")
 			okMsg += fmt.Sprintf(
@@ -305,8 +258,8 @@ var propertyGetCmd = &cobra.Command{
 			case "raw":
 				outputFormat = "raw"
 				break
-			//case "json": For future implementation
-			//case "yaml": For future implementation
+				//case "json": For future implementation
+				//case "yaml": For future implementation
 			default:
 				errStr := fmt.Sprintf(
 					wski18n.T("Supported output format are std|raw"))
@@ -323,6 +276,7 @@ var propertyGetCmd = &cobra.Command{
 			Flags.property.apihost || Flags.property.apibuildno) {
 			Flags.property.all = true
 		}
+
 		if Flags.property.all {
 			// Currently with all only standard output format is supported.
 			if outputFormat != "std" {
@@ -332,14 +286,23 @@ var propertyGetCmd = &cobra.Command{
 				return werr
 			}
 
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIHost), boldString(Properties.APIHost))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAuth), boldString(Properties.Auth))
+			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayNamespace), boldString(getNamespace()))
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayCert), boldString(Properties.Cert))
 			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayKey), boldString(Properties.Key))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAuth), boldString(Properties.Auth))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIHost), boldString(Properties.APIHost))
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayAPIVersion), boldString(Properties.APIVersion))
-			fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayNamespace), boldString(Properties.Namespace))
 			fmt.Fprintf(color.Output, "%s\t%s\n", wski18n.T(propDisplayCLIVersion), boldString(Properties.CLIVersion))
 		} else {
+			if Flags.property.apihost {
+				printProperty(Properties.APIHost, propDisplayAPIHost, outputFormat)
+			}
+			if Flags.property.auth {
+				printProperty(Properties.Auth, propDisplayAuth, outputFormat)
+			}
+			if Flags.property.namespace {
+				printProperty(getNamespace(), propDisplayNamespace, outputFormat)
+			}
 			if Flags.property.cert {
 				printProperty(Properties.Cert, propDisplayCert, outputFormat)
 			}
@@ -349,17 +312,8 @@ var propertyGetCmd = &cobra.Command{
 			if Flags.property.cliversion {
 				printProperty(Properties.CLIVersion, propDisplayCLIVersion, outputFormat, "%s\t%s\n")
 			}
-			if Flags.property.apihost {
-				printProperty(Properties.APIHost, propDisplayAPIHost, outputFormat)
-			}
-			if Flags.property.auth {
-				printProperty(Properties.Auth, propDisplayAuth, outputFormat)
-			}
 			if Flags.property.apiversion {
 				printProperty(Properties.APIVersion, propDisplayAPIVersion, outputFormat, "%s\t%s\n")
-			}
-			if Flags.property.namespace {
-				printProperty(Properties.Namespace, propDisplayNamespace, outputFormat)
 			}
 		}
 
@@ -418,15 +372,12 @@ func init() {
 	propertySetCmd.Flags().StringVar(&Flags.Global.Key, "key", "", wski18n.T(propDisplayKey))
 	propertySetCmd.Flags().StringVar(&Flags.property.apihostSet, "apihost", "", wski18n.T("whisk API `HOST`"))
 	propertySetCmd.Flags().StringVar(&Flags.property.apiversionSet, "apiversion", "", wski18n.T("whisk API `VERSION`"))
-	propertySetCmd.Flags().StringVar(&Flags.property.namespaceSet, "namespace", "", wski18n.T("whisk `NAMESPACE`"))
 
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.cert, "cert", false, wski18n.T(propDisplayCert))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.key, "key", false, wski18n.T(propDisplayKey))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.auth, "auth", false, wski18n.T("authorization key"))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apihost, "apihost", false, wski18n.T(propDisplayAPIHost))
 	propertyUnsetCmd.Flags().BoolVar(&Flags.property.apiversion, "apiversion", false, wski18n.T(propDisplayAPIVersion))
-	propertyUnsetCmd.Flags().BoolVar(&Flags.property.namespace, "namespace", false, wski18n.T(propDisplayNamespace))
-
 }
 
 func SetDefaultProperties() {
@@ -527,14 +478,6 @@ func loadProperties() error {
 		Properties.APIHost = apiHost
 	}
 
-	if namespace, hasProp := props["NAMESPACE"]; hasProp && len(namespace) > 0 {
-		Properties.Namespace = namespace
-	}
-
-	if namespace := os.Getenv("WHISK_NAMESPACE"); len(namespace) > 0 {
-		Properties.Namespace = namespace
-	}
-
 	return nil
 }
 
@@ -558,13 +501,6 @@ func parseConfigFlags(cmd *cobra.Command, args []string) error {
 		Properties.Auth = auth
 		if Client != nil {
 			Client.Config.AuthToken = auth
-		}
-	}
-
-	if namespace := Flags.property.namespaceSet; len(namespace) > 0 {
-		Properties.Namespace = namespace
-		if Client != nil {
-			Client.Config.Namespace = namespace
 		}
 	}
 
@@ -617,5 +553,15 @@ func printProperty(propertyName string, displayText string, formatType string, f
 	default:
 		// In case of any other type for now print in std format.
 		fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(displayText), boldString(propertyName))
+	}
+}
+
+func getNamespace() string {
+	var namespaces, _, err = Client.Namespaces.List()
+	whisk.Debug(whisk.DbgError, "Client.Namespaces.List() failed: %s\n", err)
+	if err != nil {
+		return "_"
+	} else {
+		return namespaces[0].Name
 	}
 }

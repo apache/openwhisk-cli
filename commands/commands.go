@@ -41,7 +41,7 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 
 	// Determine if the parent command will require the API host to be set
 	apiHostRequired := (cmd.Parent().Name() == "property" && cmd.Name() == "get" && (Flags.property.auth ||
-		Flags.property.cert || Flags.property.key || Flags.property.apihost || Flags.property.namespace ||
+		Flags.property.cert || Flags.property.key || Flags.property.apihost ||
 		Flags.property.apiversion || Flags.property.cliversion)) ||
 		(cmd.Parent().Name() == "property" && cmd.Name() == "set" && (len(Flags.property.apihostSet) > 0 ||
 			len(Flags.property.apiversionSet) > 0 || len(Flags.Global.Auth) > 0)) ||
