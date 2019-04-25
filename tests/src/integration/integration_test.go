@@ -22,7 +22,6 @@ package tests
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
@@ -331,7 +330,7 @@ func initInvalidArgs() {
 var wsk *common.Wsk = common.NewWsk()
 var tmpProp = common.GetRepoPath() + "/wskprops.tmp"
 
-// Test case to set apihost, auth, and namespace.
+// Test case to set apihost and auth.
 func TestSetAPIHostAuthNamespace(t *testing.T) {
 	common.CreateFile(tmpProp)
 	common.WriteFile(tmpProp, []string{})
@@ -339,21 +338,15 @@ func TestSetAPIHostAuthNamespace(t *testing.T) {
 	os.Setenv("WSK_CONFIG_FILE", tmpProp)
 	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
-	namespace, _ := wsk.ListNamespaces()
-	namespaces := strings.Split(strings.TrimSpace(string(namespace)), "\n")
-	expectedNamespace := string(namespaces[len(namespaces)-1])
 	fmt.Println(wsk.Wskprops.APIHost)
 	if wsk.Wskprops.APIHost != "" && wsk.Wskprops.AuthKey != "" {
-		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost,
-			"--auth", wsk.Wskprops.AuthKey, "--namespace", expectedNamespace)
+		stdout, err := wsk.RunCommand("property", "set", "--apihost", wsk.Wskprops.APIHost, "--auth", wsk.Wskprops.AuthKey)
 		ouputString := string(stdout)
-		assert.Equal(t, nil, err, "The command property set --apihost --auth --namespace failed to run.")
+		assert.Equal(t, nil, err, "The command property set --apihost --auth failed to run.")
 		assert.Contains(t, ouputString, "ok: whisk auth set. Run 'wsk property get --auth' to see the new value.",
-			"The output of the command property set --apihost --auth --namespace does not contain \"whisk auth set\".")
+			"The output of the command property set --apihost --auth does not contain \"whisk auth set\".")
 		assert.Contains(t, ouputString, "ok: whisk API host set to "+wsk.Wskprops.APIHost,
-			"The output of the command property set --apihost --auth --namespace does not contain \"whisk API host set\".")
-		assert.Contains(t, ouputString, "ok: whisk namespace set to "+expectedNamespace,
-			"The output of the command property set --apihost --auth --namespace does not contain \"whisk namespace set\".")
+			"The output of the command property set --apihost --auth does not contain \"whisk API host set\".")
 	}
 	common.DeleteFile(tmpProp)
 }
