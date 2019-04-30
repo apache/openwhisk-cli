@@ -21,20 +21,12 @@ import java.time.Instant
 
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-
-import common.ActivationResult
-import common.TestHelpers
-import common.TestUtils
+import common.{ActivationResult, TestHelpers, TestUtils, WhiskProperties, Wsk, WskProps, WskTestHelpers}
 import common.TestUtils._
-import common.Wsk
-import common.WskProps
-import common.WskTestHelpers
 import spray.json._
 import spray.json.DefaultJsonProtocol._
-
 import org.apache.openwhisk.http.Messages
 
 @RunWith(classOf[JUnitRunner])
@@ -43,6 +35,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   implicit val wskprops = WskProps()
   val wsk = new Wsk
   val defaultAction = Some(TestUtils.getTestActionFilename("hello.js"))
+  val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true);
 
   behavior of "Wsk CLI"
 
@@ -311,9 +304,15 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       wsk.action
         .get(name, fieldFilter = Some("parameters"))
         .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")
-      wsk.action
-        .get(name, fieldFilter = Some("annotations"))
-        .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"provide-api-key",\\s+"value":\\s+false\\s+\\},\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
+      if (requireAPIKeyAnnotation) {
+        wsk.action
+          .get(name, fieldFilter = Some("annotations"))
+          .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"provide-api-key",\\s+"value":\\s+false\\s+\\},\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
+      } else {
+        wsk.action
+          .get(name, fieldFilter = Some("annotations"))
+          .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
+      }
       wsk.action
         .get(name, fieldFilter = Some("limits")) //
         .stdout should include regex (s"""$successMsg limits\n\\{\\s+"timeout":\\s+60000,\\s+"memory":\\s+256,\\s+"logs":\\s+10,\\s+"concurrency":\\s+1\\s+\\}""")

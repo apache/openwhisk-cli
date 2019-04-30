@@ -64,8 +64,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   val apiHostCheck = true
 
   // Some action invocation environments will not have an api key; so allow this check to be conditionally skipped
-  val apiKeyCheck = true
-
   val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true);
 
   behavior of "Wsk CLI usage"
@@ -520,7 +518,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val namespace = wsk.namespace.whois()
     val name = "context"
 
-    if (apiKeyCheck) {
+    if (requireAPIKeyAnnotation) {
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
         action.create(
           name,
@@ -541,7 +539,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       if (apiHostCheck) {
         fields("api_host") shouldBe WhiskProperties.getApiHostForAction
       }
-      if (apiKeyCheck) {
+      if (requireAPIKeyAnnotation) {
         fields("api_key") shouldBe wskprops.authKey
       }
       fields("namespace") shouldBe namespace
@@ -659,18 +657,21 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
 
     wsk.action.create(name, file, web = Some("true"), update = true)
-
+    val expectedExistingAnnotations = 
+      Seq(
+        JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
+        JsObject("key" -> JsString(origKey), "value" -> origValue),
+        JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
+        JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
+        JsObject("key" -> JsString(createKey), "value" -> createValue),
+        JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) ++ { 
+          if (requireAPIKeyAnnotation) JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)) else Seq.Empty 
+        }
+    
     val existinAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existinAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
-    removeCLIHeader(existinAnnots).parseJson shouldBe JsArray(
-      JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString(origKey), "value" -> origValue),
-      JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
-      JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString(createKey), "value" -> createValue),
-      JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
-      JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+    removeCLIHeader(existinAnnots).parseJson shouldBe expectedExistingAnnotations.convertTo[JsArray[JsObject]]
 
     wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots)
 
