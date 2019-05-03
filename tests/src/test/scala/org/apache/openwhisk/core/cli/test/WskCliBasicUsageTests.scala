@@ -66,7 +66,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
   // Some action invocation environments will not have an api key; so allow this check to be conditionally skipped
   val apiKeyCheck = true
 
-  val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true);
+  val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true)
 
   behavior of "Wsk CLI usage"
 
@@ -653,6 +653,24 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val createAnnots = Map(createKey -> createValue, origKey -> origValue)
     val updateAnnots =
       Map(updateKey -> updateValue, origKey -> overwrittenValue)
+    val baseAnnotations =
+      Parameters("web-export", JsTrue) ++
+        Parameters("raw-http", JsFalse) ++
+        Parameters("final", JsTrue) ++
+        Parameters("exec", "nodejs:6")
+    val createAnnotations = if (requireAPIKeyAnnotation) {
+      baseAnnotations ++
+        Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse) ++
+        Parameters(createKey, createValue) ++
+        Parameters(origKey, origValue)
+    } else {
+      baseAnnotations ++
+        Parameters(createKey, createValue) ++
+        Parameters(origKey, origValue)
+    }
+    val updateAnnotations = baseAnnotations ++ Parameters(updateKey, updateValue) ++ Parameters(
+      origKey,
+      overwrittenValue)
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
       action.create(name, file, annotations = createAnnots)
@@ -660,30 +678,18 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
     wsk.action.create(name, file, web = Some("true"), update = true)
 
-    val existinAnnots =
-      wsk.action.get(name, fieldFilter = Some("annotations")).stdout
-    assert(existinAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
-    removeCLIHeader(existinAnnots).parseJson shouldBe JsArray(
-      JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString(origKey), "value" -> origValue),
-      JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
-      JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString(createKey), "value" -> createValue),
-      JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
-      JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+    val existingAnnots = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
+    assert(existingAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
+    removeCLIHeader(existingAnnots).parseJson.convertTo[Set[JsObject]] shouldBe createAnnotations.toJsArray
+      .convertTo[Set[JsObject]]
 
     wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots)
 
     val updatedAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(updatedAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
-    removeCLIHeader(updatedAnnots).parseJson shouldBe JsArray(
-      JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString(origKey), "value" -> overwrittenValue),
-      JsObject("key" -> JsString(updateKey), "value" -> updateValue),
-      JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
-      JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
-      JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+    removeCLIHeader(updatedAnnots).parseJson.convertTo[Set[JsObject]] shouldBe updateAnnotations.toJsArray
+      .convertTo[Set[JsObject]]
   }
 
   it should "ensure action update creates an action with --web flag" in withAssetCleaner(wskprops) {
@@ -696,24 +702,22 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       }
 
       val baseAnnotations =
-        Parameters("web-export", JsBoolean(true)) ++
-          Parameters("raw-http", JsBoolean(false)) ++
-          Parameters("final", JsBoolean(true))
+        Parameters("web-export", JsTrue) ++
+          Parameters("raw-http", JsFalse) ++
+          Parameters("final", JsTrue) ++
+          Parameters("exec", "nodejs:6")
 
       val testAnnotations = if (requireAPIKeyAnnotation) {
         baseAnnotations ++
-          Parameters(WhiskAction.provideApiKeyAnnotationName, JsBoolean(false)) ++
-          Parameters("exec", "nodejs:6")
+          Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
       } else {
-        baseAnnotations ++
-          Parameters("exec", "nodejs:6")
+        baseAnnotations
       }
 
       val action = wsk.action.get(name)
       removeCLIHeader(action.stdout).parseJson.asJsObject
         .fields("annotations")
-        .convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray
-        .convertTo[Set[JsObject]]
+        .convertTo[Set[JsObject]] shouldBe testAnnotations.toJsArray.convertTo[Set[JsObject]]
   }
 
   it should "reject action create and update with invalid --web flag input" in withAssetCleaner(wskprops) {
@@ -864,7 +868,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     var stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var existingAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
-    println("existingAnnotations: " + existingAnnotations)
     existingAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true))) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false))) shouldBe true
@@ -877,7 +880,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var updatedAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
-    println("updatedAnnotations: " + updatedAnnotations)
     updatedAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) shouldBe true
     updatedAnnotations.contains(JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true))) shouldBe true
     updatedAnnotations.contains(JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false))) shouldBe true
@@ -1181,6 +1183,59 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     wsk.action
       .get(seqName, saveAs = Some(seqName), expectedExitCode = MISUSE_EXIT)
       .stderr should include("Cannot save action sequences")
+  }
+
+  it should "create an action, and get its individual fields" in withAssetCleaner(wskprops) {
+    val name = "actionFields"
+    val paramInput = Map("payload" -> "test".toJson)
+    val successMsg = s"ok: got action $name, displaying field"
+    val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true)
+    val expectedParam = JsObject("payload" -> JsString("test"))
+    val ns = wsk.namespace.whois()
+    val expectedExec = JsObject("kind" -> "nodejs:6".toJson, "binary" -> JsFalse)
+    val expectedParams = Parameters("payload", "test")
+    val baseAnnotations =
+      Parameters("exec", "nodejs:6")
+    val expectedAnnots = if (requireAPIKeyAnnotation) {
+      baseAnnotations ++
+        Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
+    } else {
+      baseAnnotations
+    }
+    val expectedLimits =
+      JsObject("timeout" -> 60000.toJson, "memory" -> 256.toJson, "logs" -> 10.toJson, "concurrency" -> 1.toJson)
+
+    (wp, assetHelper) =>
+      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
+        action.create(name, defaultAction, parameters = paramInput)
+      }
+
+      wsk.action.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
+      wsk.action.get(name, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
+      wsk.action
+        .get(name, fieldFilter = Some("namespace"))
+        .stdout should include regex (s"""(?i)$successMsg namespace\n"$ns"""")
+      wsk.action.get(name, fieldFilter = Some("invalid"), expectedExitCode = MISUSE_EXIT).stderr should include(
+        "error: Invalid field filter 'invalid'.")
+      wsk.action.get(name, fieldFilter = Some("publish")).stdout should include(s"$successMsg publish\nfalse")
+
+      val exec = wsk.action.get(name, fieldFilter = Some("exec")).stdout
+      assert(exec.startsWith(s"$successMsg exec"))
+      removeCLIHeader(exec).parseJson.asJsObject shouldBe expectedExec
+
+      val params = wsk.action.get(name, fieldFilter = Some("parameters")).stdout
+      assert(params.startsWith(s"$successMsg parameters"))
+      removeCLIHeader(params).parseJson.convertTo[Set[JsObject]] shouldBe expectedParams.toJsArray
+        .convertTo[Set[JsObject]]
+
+      val annots = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
+      assert(annots.startsWith(s"$successMsg annotations"))
+      removeCLIHeader(annots).parseJson.convertTo[Set[JsObject]] shouldBe expectedAnnots.toJsArray
+        .convertTo[Set[JsObject]]
+
+      val limits = wsk.action.get(name, fieldFilter = Some("limits")).stdout
+      assert(limits.startsWith(s"$successMsg limits"))
+      removeCLIHeader(limits).parseJson.asJsObject shouldBe expectedLimits
   }
 
   behavior of "Wsk packages"
