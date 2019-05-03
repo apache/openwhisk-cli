@@ -657,19 +657,30 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
 
     wsk.action.create(name, file, web = Some("true"), update = true)
+<<<<<<< HEAD
     val expectedExistingAnnotations =
+=======
+    val expectedExistingAnnotations = 
+>>>>>>> a10f41fb31f4364c5cdc4b750d0a4cdb9a35a8da
       Seq(
         JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(origKey), "value" -> origValue),
         JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
         JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(createKey), "value" -> createValue),
+<<<<<<< HEAD
         JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) ++ {
         if (requireAPIKeyAnnotation)
           JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false))
         else Seq.Empty
       }
 
+=======
+        JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) ++ { 
+          if (requireAPIKeyAnnotation) JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)) else Seq.Empty 
+        }
+    
+>>>>>>> a10f41fb31f4364c5cdc4b750d0a4cdb9a35a8da
     val existinAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existinAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
