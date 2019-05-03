@@ -657,18 +657,19 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
 
     wsk.action.create(name, file, web = Some("true"), update = true)
-    val expectedExistingAnnotations =
+    val expectedBaseAnnotations =
       Seq(
         JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(origKey), "value" -> origValue),
         JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
         JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(createKey), "value" -> createValue),
-        JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6"))) ++ {
-        if (requireAPIKeyAnnotation)
-          Seq(JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)))
-        else Seq.Empty
-      }
+        JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+    val expectedExistingAnnotations: Seq[JsObject] =
+      if (requireAPIKeyAnnotation)
+        expectedBaseAnnotations ++ Seq(
+          JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)))
+      else expectedBaseAnnotations
 
     val existinAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
@@ -2071,12 +2072,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     (wp, assetHelper) =>
       val file = Some(TestUtils.getTestActionFilename("hello.js"))
 
-      def testLimit(
-        timeout: Option[Duration] = None,
-        memory: Option[ByteSize] = None,
-        logs: Option[ByteSize] = None,
-        concurrency: Option[Int] = None,
-        ec: Int = SUCCESS_EXIT) = {
+      def testLimit(timeout: Option[Duration] = None,
+                    memory: Option[ByteSize] = None,
+                    logs: Option[ByteSize] = None,
+                    concurrency: Option[Int] = None,
+                    ec: Int = SUCCESS_EXIT) = {
         // Limits to assert, standard values if CLI omits certain values
         val limits = JsObject(
           "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
