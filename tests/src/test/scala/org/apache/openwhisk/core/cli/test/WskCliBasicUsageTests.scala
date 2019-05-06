@@ -694,10 +694,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
   }
 
-  def convertToJsArray[T](seq: Seq[T])(implicit formatter: JsonWriter[T]): JsArray = {
-    JsArray(seq.map(p => formatter.write(p))(breakOut): Vector[JsValue])
-  }
-
   it should "ensure action update creates an action with --web flag" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "webaction"
