@@ -674,7 +674,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val existinAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existinAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
-    removeCLIHeader(existinAnnots).parseJson shouldBe expectedExistingAnnotations.convertTo[JsArray[JsObject]]
+    removeCLIHeader(existinAnnots).parseJson shouldBe expectedExistingAnnotations.toArray[JsObject]
 
     wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots)
 
