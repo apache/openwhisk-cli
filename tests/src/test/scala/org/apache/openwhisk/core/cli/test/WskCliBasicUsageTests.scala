@@ -657,24 +657,28 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
 
     wsk.action.create(name, file, web = Some("true"), update = true)
-    val expectedBaseAnnotations =
-      Seq(
+    val expectedExistingAnnotations = if (requireAPIKeyAnnotation) {
+      JsArray(
+        JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
+        JsObject("key" -> JsString(origKey), "value" -> origValue),
+        JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
+        JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
+        JsObject("key" -> JsString(createKey), "value" -> createValue),
+        JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)),
+        JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+    } else {
+      JsArray(
         JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(origKey), "value" -> origValue),
         JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
         JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
         JsObject("key" -> JsString(createKey), "value" -> createValue),
         JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
-    val expectedExistingAnnotations: Seq[JsObject] =
-      if (requireAPIKeyAnnotation)
-        expectedBaseAnnotations ++ Seq(
-          JsObject("key" -> JsString(WhiskAction.provideApiKeyAnnotationName), "value" -> JsBoolean(false)))
-      else expectedBaseAnnotations
-
+    }
     val existinAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existinAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
-    removeCLIHeader(existinAnnots).parseJson shouldBe expectedExistingAnnotations.toArray[JsObject]
+    removeCLIHeader(existinAnnots).parseJson shouldBe expectedExistingAnnotations
 
     wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots)
 
@@ -688,6 +692,10 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false)),
       JsObject("key" -> JsString("final"), "value" -> JsBoolean(true)),
       JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:6")))
+  }
+
+  def convertToJsArray[T](seq: Seq[T])(implicit formatter: JsonWriter[T]): JsArray = {
+    JsArray(seq.map(p => formatter.write(p))(breakOut): Vector[JsValue])
   }
 
   it should "ensure action update creates an action with --web flag" in withAssetCleaner(wskprops) {
