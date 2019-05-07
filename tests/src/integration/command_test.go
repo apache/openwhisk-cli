@@ -82,7 +82,7 @@ func TestShowAPIVersion(t *testing.T) {
 // Test case to verify the default namespace _.
 func TestDefaultNamespace(t *testing.T) {
 	common.CreateFile(tmpProp)
-	common.WriteFile(tmpProp, []string{"NAMESPACE="})
+	common.WriteFile(tmpProp, []string{"APIHOST=xyz"})
 
 	os.Setenv("WSK_CONFIG_FILE", tmpProp)
 	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
@@ -101,7 +101,7 @@ func TestValidateDefaultProperties(t *testing.T) {
 	os.Setenv("WSK_CONFIG_FILE", tmpProp)
 	assert.Equal(t, os.Getenv("WSK_CONFIG_FILE"), tmpProp, "The environment variable WSK_CONFIG_FILE has not been set.")
 
-	stdout, err := wsk.RunCommand("property", "unset", "--auth", "--apihost", "--apiversion", "--namespace")
+	stdout, err := wsk.RunCommand("property", "unset", "--auth", "--apihost", "--apiversion")
 	assert.Equal(t, nil, err, "The command property unset failed to run.")
 	outputString := string(stdout)
 	assert.Contains(t, outputString, "ok: whisk auth unset",
@@ -110,8 +110,6 @@ func TestValidateDefaultProperties(t *testing.T) {
 		"The output of the command does not contain \"ok: whisk API host unset\".")
 	assert.Contains(t, outputString, "ok: whisk API version unset",
 		"The output of the command does not contain \"ok: whisk API version unset\".")
-	assert.Contains(t, outputString, "ok: whisk namespace unset",
-		"The output of the command does not contain \"ok: whisk namespace unset\".")
 
 	stdout, err = wsk.RunCommand("property", "get", "--auth")
 	assert.Equal(t, nil, err, "The command property get --auth failed to run.")
@@ -122,11 +120,6 @@ func TestValidateDefaultProperties(t *testing.T) {
 	assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
 	assert.Equal(t, common.PropDisplayAPIHost, common.RemoveRedundentSpaces(string(stdout)),
 		"The output of the command does not equal to "+common.PropDisplayAPIHost)
-
-	stdout, err = wsk.RunCommand("property", "get", "--namespace")
-	assert.Equal(t, nil, err, "The command property get --namespace failed to run.")
-	assert.Equal(t, common.PropDisplayNamespace+" _", common.RemoveRedundentSpaces(string(stdout)),
-		"The output of the command does not equal to "+common.PropDisplayNamespace+" _")
 
 	common.DeleteFile(tmpProp)
 }

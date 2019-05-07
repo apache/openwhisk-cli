@@ -86,7 +86,7 @@ var sdkInstallCmd = &cobra.Command{
 			} else {
 				err = WskCmd.GenBashCompletionFile(BASH_AUTOCOMPLETE_FILENAME)
 				if err != nil {
-					whisk.Debug(whisk.DbgError, "GenBashCompletionFile('%s`) error: \n", BASH_AUTOCOMPLETE_FILENAME, err)
+					whisk.Debug(whisk.DbgError, "GenBashCompletionFile('%s`) error: %s\n", BASH_AUTOCOMPLETE_FILENAME, err)
 					errStr := wski18n.T("Unable to generate '{{.name}}': {{.err}}",
 						map[string]interface{}{"name": BASH_AUTOCOMPLETE_FILENAME, "err": err})
 					werr := whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)

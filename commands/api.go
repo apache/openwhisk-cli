@@ -205,7 +205,7 @@ var apiCreateCmd = &cobra.Command{
 			}
 			api, qname, err = parseApi(cmd, args)
 			if err != nil {
-				whisk.Debug(whisk.DbgError, "parseApi(%s, %s) error: %s\n", cmd, args, err)
+				whisk.Debug(whisk.DbgError, "parseApi(%s, %s) error: %s\n", cmd.Name(), args, err)
 				errMsg := wski18n.T("Unable to parse api command arguments: {{.err}}",
 					map[string]interface{}{"err": err})
 				whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
@@ -653,7 +653,7 @@ func genFilteredList(resultApi *whisk.RetApi, apiPath string, apiVerb string) []
 							actionName = "/" + opv.XOpenWhisk.Namespace + "/" + opv.XOpenWhisk.ActionName
 						}
 						orderInfo = AssignListInfo(actionName, op, apiName, basePath, path, baseUrl+path)
-						whisk.Debug(whisk.DbgInfo, "Appening to orderInfoArr: %s %s\n", orderInfo.RelPath)
+						whisk.Debug(whisk.DbgInfo, "Appening to orderInfoArr: %s\n", orderInfo.RelPath)
 						orderInfoArr = append(orderInfoArr, orderInfo)
 					}
 				}
@@ -692,7 +692,7 @@ func genFilteredRow(resultApi *whisk.RetApi, apiPath string, apiVerb string, max
 						}
 						orderInfo = AssignRowInfo(actionName[0:min(len(actionName), maxActionNameSize)], op, apiName[0:min(len(apiName), maxApiNameSize)], basePath, path, baseUrl+path)
 						orderInfo.FmtString = fmtString
-						whisk.Debug(whisk.DbgInfo, "Appening to orderInfoArr: %s %s\n", orderInfo.RelPath)
+						whisk.Debug(whisk.DbgInfo, "Appening to orderInfoArr: %s\n", orderInfo.RelPath)
 						orderInfoArr = append(orderInfoArr, orderInfo)
 					}
 				}
@@ -987,7 +987,7 @@ func parseSwaggerApi(configfile string, namespace string) (*whisk.Api, error) {
 	}
 
 	if swaggerObj.BasePath == "" || swaggerObj.SwaggerName == "" || swaggerObj.Info == nil || swaggerObj.Paths == nil {
-		whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n", configfile, err)
+		whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n")
 		errMsg := wski18n.T("Swagger file is invalid (missing basePath, info, paths, or swagger fields)")
 		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
@@ -995,7 +995,7 @@ func parseSwaggerApi(configfile string, namespace string) (*whisk.Api, error) {
 	}
 
 	if _, ok := isValidBasepath(swaggerObj.BasePath); !ok {
-		whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n", configfile, err)
+		whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n")
 		errMsg := wski18n.T("Swagger file basePath must start with a leading slash (/)")
 		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
 			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)

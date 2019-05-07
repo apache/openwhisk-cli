@@ -64,7 +64,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
     val tmpwskprops = File.createTempFile("wskprops", ".tmp")
     val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
     val stdout = wsk
-      .cli(Seq("property", "unset", "--auth", "--cert", "--key", "--apihost", "--apiversion", "--namespace"), env = env)
+      .cli(Seq("property", "unset", "--auth", "--cert", "--key", "--apihost", "--apiversion"), env = env)
       .stdout
     try {
       stdout should include regex ("ok: whisk auth unset")
@@ -72,7 +72,6 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       stdout should include regex ("ok: client key unset")
       stdout should include regex ("ok: whisk API host unset")
       stdout should include regex ("ok: whisk API version unset")
-      stdout should include regex ("ok: whisk namespace unset")
 
       wsk
         .cli(Seq("property", "get", "--auth"), env = env)
@@ -86,9 +85,6 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       wsk
         .cli(Seq("property", "get", "--apihost"), env = env)
         .stdout should include regex ("""(?i)whisk API host\s*$""") // default = empty string
-      wsk
-        .cli(Seq("property", "get", "--namespace"), env = env)
-        .stdout should include regex ("""(?i)whisk namespace\s*_$""") // default = _
     } finally {
       tmpwskprops.delete()
     }
@@ -147,28 +143,16 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
     }
   }
 
-  it should "set apihost, auth, and namespace" in {
+  it should "set apihost, auth" in {
     val tmpwskprops = File.createTempFile("wskprops", ".tmp")
     try {
       val namespace = wsk.namespace.whois()
       val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
       val stdout = wsk
-        .cli(
-          Seq(
-            "property",
-            "set",
-            "-i",
-            "--apihost",
-            wskprops.apihost,
-            "--auth",
-            wskprops.authKey,
-            "--namespace",
-            namespace),
-          env = env)
+        .cli(Seq("property", "set", "-i", "--apihost", wskprops.apihost, "--auth", wskprops.authKey), env = env)
         .stdout
-      stdout should include(s"ok: whisk auth set")
       stdout should include(s"ok: whisk API host set to ${wskprops.apihost}")
-      stdout should include(s"ok: whisk namespace set to ${namespace}")
+      stdout should include(s"ok: whisk auth set")
     } finally {
       tmpwskprops.delete()
     }
@@ -196,16 +180,13 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
               "--cert",
               wskprops.cert,
               "--key",
-              wskprops.key,
-              "--namespace",
-              namespace),
+              wskprops.key),
             env = env)
           .stdout
+        stdout should include(s"ok: whisk API host set to ${wskprops.apihost}")
+        stdout should include(s"ok: whisk auth set")
         stdout should include(s"ok: client cert set")
         stdout should include(s"ok: client key set")
-        stdout should include(s"ok: whisk auth set")
-        stdout should include(s"ok: whisk API host set to ${wskprops.apihost}")
-        stdout should include(s"ok: whisk namespace set to ${namespace}")
       } finally {
         tmpwskprops.delete()
       }
@@ -228,28 +209,12 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
             "--cert",
             "invalid-cert.pem",
             "--key",
-            "invalid-key.pem",
-            "--namespace",
-            namespace),
+            "invalid-key.pem"),
           env = env)
         thrown.getMessage should include("cannot validate certificate")
       } finally {
         tmpwskprops.delete()
       }
-    }
-  }
-
-  it should "ensure default namespace is used when a blank namespace is set" in {
-    val tmpwskprops = File.createTempFile("wskprops", ".tmp")
-    try {
-      val writer = new BufferedWriter(new FileWriter(tmpwskprops))
-      writer.write(s"NAMESPACE=")
-      writer.close()
-      val env = Map("WSK_CONFIG_FILE" -> tmpwskprops.getAbsolutePath())
-      val stdout = wsk.cli(Seq("property", "get", "-i", "--namespace"), env = env).stdout
-      stdout should include regex ("whisk namespace\\s+_")
-    } finally {
-      tmpwskprops.delete()
     }
   }
 

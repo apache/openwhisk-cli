@@ -83,7 +83,7 @@ func createOrUpdate(Client *whisk.Client, fqn *QualifiedName, trigger *whisk.Tri
 	_, _, err := Client.Triggers.Insert(trigger, overwrite)
 
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "Client.Triggers.Insert(%+v, %s) failed: %s\n", trigger, overwrite, err)
+		whisk.Debug(whisk.DbgError, "Client.Triggers.Insert(%+v, %t) failed: %s\n", trigger, overwrite, err)
 		var errStr string
 		if !overwrite {
 			errStr = wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",

@@ -75,7 +75,7 @@ func getParameters(params []string, keyValueFormat bool, annotation bool) interf
 
 	parameters, err = getJSONFromStrings(params, keyValueFormat)
 	if err != nil {
-		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %s) failed: %s\n", params, keyValueFormat, err)
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %t) failed: %s\n", params, keyValueFormat, err)
 		var errStr string
 
 		if !annotation {
