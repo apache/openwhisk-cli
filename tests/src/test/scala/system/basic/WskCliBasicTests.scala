@@ -289,42 +289,6 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       }
   }
 
-  it should "create an action, and get its individual fields" in withAssetCleaner(wskprops) {
-    val name = "actionFields"
-    val paramInput = Map("payload" -> "test".toJson)
-    val successMsg = s"ok: got action $name, displaying field"
-
-    (wp, assetHelper) =>
-      assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, defaultAction, parameters = paramInput)
-      }
-
-      val expectedParam = JsObject("payload" -> JsString("test"))
-      val ns = wsk.namespace.whois()
-
-      wsk.action.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
-      wsk.action.get(name, fieldFilter = Some("version")).stdout should include(s"""$successMsg version\n"0.0.1"""")
-      wsk.action.get(name, fieldFilter = Some("exec")).stdout should include(successMsg)
-      wsk.action
-        .get(name, fieldFilter = Some("exec"))
-        .stdout should include regex (s"""$successMsg exec\n\\{\\s+"kind":\\s+"nodejs:6",\\s+"binary":\\s+false\\s+\\}""")
-      wsk.action
-        .get(name, fieldFilter = Some("parameters"))
-        .stdout should include regex (s"""$successMsg parameters\n\\[\\s+\\{\\s+"key":\\s+"payload",\\s+"value":\\s+"test"\\s+\\}\\s+\\]""")
-      wsk.action
-        .get(name, fieldFilter = Some("annotations"))
-        .stdout should include regex (s"""$successMsg annotations\n\\[\\s+\\{\\s+"key":\\s+"provide-api-key",\\s+"value":\\s+false\\s+\\},\\s+\\{\\s+"key":\\s+"exec",\\s+"value":\\s+"nodejs:6"\\s+\\}\\s+\\]""")
-      wsk.action
-        .get(name, fieldFilter = Some("limits")) //
-        .stdout should include regex (s"""$successMsg limits\n\\{\\s+"timeout":\\s+60000,\\s+"memory":\\s+256,\\s+"logs":\\s+10,\\s+"concurrency":\\s+1\\s+\\}""")
-      wsk.action
-        .get(name, fieldFilter = Some("namespace"))
-        .stdout should include regex (s"""(?i)$successMsg namespace\n"$ns"""")
-      wsk.action.get(name, fieldFilter = Some("invalid"), expectedExitCode = MISUSE_EXIT).stderr should include(
-        "error: Invalid field filter 'invalid'.")
-      wsk.action.get(name, fieldFilter = Some("publish")).stdout should include(s"""$successMsg publish\nfalse""")
-  }
-
   /**
    * Tests creating an action from a malformed js file. This should fail in
    * some way - preferably when trying to create the action. If not, then
