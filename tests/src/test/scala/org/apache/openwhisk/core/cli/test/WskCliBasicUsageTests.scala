@@ -620,7 +620,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         val webEnabled = flag.toLowerCase == "true" || flag.toLowerCase == "yes"
         val rawEnabled = flag.toLowerCase == "raw"
 
-        wsk.action.create(name, file, web = Some(flag), update = true, kind = "nodejs:10")
+        wsk.action.create(name, file, web = Some(flag), update = true, kind = Some("nodejs:10"))
 
         val action = wsk.action.get(name)
 
@@ -673,17 +673,23 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       overwrittenValue)
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, file, annotations = createAnnots, kind = "nodejs:10")
+      action.create(name, file, annotations = createAnnots, kind = Some("nodejs:10"))
     }
 
-    wsk.action.create(name, file, web = Some("true"), update = true, kind = "nodejs:10")
+    wsk.action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:10"))
 
     val existingAnnots = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existingAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
     removeCLIHeader(existingAnnots).parseJson.convertTo[Set[JsObject]] shouldBe createAnnotations.toJsArray
       .convertTo[Set[JsObject]]
 
-    wsk.action.create(name, file, web = Some("true"), update = true, annotations = updateAnnots, kind = "nodejs:10")
+    wsk.action.create(
+      name,
+      file,
+      web = Some("true"),
+      update = true,
+      annotations = updateAnnots,
+      kind = Some("nodejs:10"))
 
     val updatedAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
@@ -698,7 +704,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val file = Some(TestUtils.getTestActionFilename("echo.js"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, file, web = Some("true"), update = true, kind = "nodejs:10")
+        action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:10"))
       }
 
       val baseAnnotations =
@@ -776,7 +782,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       // -web true --web-secure true -> annotation "require-whisk-auth" value is an int
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, file, web = Some("true"), websecure = Some("true"), kind = "nodejs:10")
+        action.create(name, file, web = Some("true"), websecure = Some("true"), kind = Some("nodejs:10"))
       }
       var stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       var secretJsVar = removeCLIHeader(stdout).parseJson
@@ -793,7 +799,13 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       secretIsInt shouldBe true
 
       // -web true --web-secure string -> annotation "require-whisk-auth" with a value of string
-      wsk.action.create(name, file, web = Some("true"), websecure = Some(s"$secretStr"), update = true, kind = "nodejs:10")
+      wsk.action.create(
+        name,
+        file,
+        web = Some("true"),
+        websecure = Some(s"$secretStr"),
+        update = true,
+        kind = Some("nodejs:10"))
       stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       val actualAnnotations =
         removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
@@ -804,7 +816,13 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       actualAnnotations.contains(JsObject("key" -> JsString("require-whisk-auth"), "value" -> JsString(s"$secretStr"))) shouldBe true
 
       // Updating web action multiple times with --web-secure true should not change the "require-whisk-auth" numeric value
-      wsk.action.create(name, file, web = Some("true"), websecure = Some("true"), update = true, kind = "nodejs:10")
+      wsk.action.create(
+        name,
+        file,
+        web = Some("true"),
+        websecure = Some("true"),
+        update = true,
+        kind = Some("nodejs:10"))
       stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       val secretNumJsVar = removeCLIHeader(stdout).parseJson
         .convertTo[JsArray]
@@ -812,7 +830,13 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         .find({
           _.convertTo[JsObject].getFields("key").head == JsString("require-whisk-auth")
         })
-      wsk.action.create(name, file, web = Some("true"), websecure = Some("true"), update = true, kind = "nodejs:10")
+      wsk.action.create(
+        name,
+        file,
+        web = Some("true"),
+        websecure = Some("true"),
+        update = true,
+        kind = Some("nodejs:10"))
       removeCLIHeader(stdout).parseJson
         .convertTo[JsArray]
         .elements
@@ -861,10 +885,10 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val secretStr = "my-secret"
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, file, web = Some("true"), annotations = createAnnots, kind = "nodejs:10")
+      action.create(name, file, web = Some("true"), annotations = createAnnots, kind = Some("nodejs:10"))
     }
 
-    wsk.action.create(name, file, websecure = Some(secretStr), update = true, kind = "nodejs:10")
+    wsk.action.create(name, file, websecure = Some(secretStr), update = true, kind = Some("nodejs:10"))
     var stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var existingAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
@@ -876,7 +900,13 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     existingAnnotations.contains(JsObject("key" -> JsString(createKey), "value" -> createValue)) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString(origKey), "value" -> origValue)) shouldBe true
 
-    wsk.action.create(name, file, websecure = Some(secretStr), update = true, annotations = updateAnnots, kind = "nodejs:10")
+    wsk.action.create(
+      name,
+      file,
+      websecure = Some(secretStr),
+      update = true,
+      annotations = updateAnnots,
+      kind = Some("nodejs:10"))
     stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var updatedAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
@@ -1207,7 +1237,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
     (wp, assetHelper) =>
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, defaultAction, parameters = paramInput, kind = "nodejs:10")
+        action.create(name, defaultAction, parameters = paramInput, kind = Some("nodejs:10"))
       }
 
       wsk.action.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
