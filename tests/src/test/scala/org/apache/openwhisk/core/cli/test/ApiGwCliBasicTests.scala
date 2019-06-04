@@ -17,29 +17,22 @@
 
 package org.apache.openwhisk.core.cli.test
 
-import com.jayway.restassured.RestAssured
-
 import java.io.File
 import java.io.BufferedWriter
 import java.io.FileWriter
 
 import org.junit.runner.RunWith
-
 import org.scalatest.junit.JUnitRunner
-
-import com.jayway.restassured.config.RestAssuredConfig
-import com.jayway.restassured.config.SSLConfig
-
 import common.TestUtils._
 import common.TestUtils
 import common.WhiskProperties
 import common.{TestUtils, WhiskProperties, WskProps}
+import io.restassured.RestAssured
+import io.restassured.config.{RestAssuredConfig, SSLConfig}
 
 import scala.concurrent.duration.DurationInt
 import scala.util.matching.Regex
-
 import org.apache.commons.io.FileUtils
-
 import spray.json._
 import spray.json.DefaultJsonProtocol._
 
@@ -222,7 +215,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
   def getSslConfig(): RestAssuredConfig = {
     // force RestAssured to allow all hosts in SSL certificates
     new RestAssuredConfig()
-      .sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
+      .sslConfig(new SSLConfig().allowAllHostnames().keyStore("keystore", WhiskProperties.getSslCertificateChallenge))
   }
 
   def validateParameter(parameter: JsObject,

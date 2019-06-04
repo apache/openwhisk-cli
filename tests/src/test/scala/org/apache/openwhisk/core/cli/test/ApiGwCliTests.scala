@@ -17,16 +17,13 @@
 
 package org.apache.openwhisk.core.cli.test
 
-import com.jayway.restassured.RestAssured
-
 import common.{TestUtils, Wsk}
 import common.TestUtils._
-
+import io.restassured.RestAssured
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.concurrent.duration.DurationInt
-
 import spray.json._
 
 /**
