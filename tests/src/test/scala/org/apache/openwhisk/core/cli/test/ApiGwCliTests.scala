@@ -17,7 +17,7 @@
 
 package org.apache.openwhisk.core.cli.test
 
-import com.jayway.restassured.RestAssured
+import io.restassured.RestAssured
 
 import common.{TestUtils, Wsk}
 import common.TestUtils._

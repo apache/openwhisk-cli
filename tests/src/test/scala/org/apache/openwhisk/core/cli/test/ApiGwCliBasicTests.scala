@@ -17,7 +17,7 @@
 
 package org.apache.openwhisk.core.cli.test
 
-import com.jayway.restassured.RestAssured
+import io.restassured.RestAssured
 
 import java.io.File
 import java.io.BufferedWriter
@@ -27,8 +27,8 @@ import org.junit.runner.RunWith
 
 import org.scalatest.junit.JUnitRunner
 
-import com.jayway.restassured.config.RestAssuredConfig
-import com.jayway.restassured.config.SSLConfig
+import io.restassured.config.RestAssuredConfig
+import io.restassured.config.SSLConfig
 
 import common.TestUtils._
 import common.TestUtils
@@ -222,7 +222,7 @@ abstract class ApiGwCliBasicTests extends BaseApiGwTests {
   def getSslConfig(): RestAssuredConfig = {
     // force RestAssured to allow all hosts in SSL certificates
     new RestAssuredConfig()
-      .sslConfig(new SSLConfig().keystore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
+      .sslConfig(new SSLConfig().keyStore("keystore", WhiskProperties.getSslCertificateChallenge).allowAllHostnames())
   }
 
   def validateParameter(parameter: JsObject,
