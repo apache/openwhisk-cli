@@ -525,7 +525,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         action.create(
           name,
           Some(TestUtils.getTestActionFilename("helloContext.js")),
-          annotations = Map(WhiskAction.provideApiKeyAnnotationName -> JsBoolean(true)))
+          annotations = Map(Annotations.ProvideApiKeyAnnotationName -> JsBoolean(true)))
       }
     } else {
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
@@ -629,7 +629,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           Parameters("final", JsBoolean(webEnabled || rawEnabled)) ++
           Parameters("exec", "nodejs:10")
         val testAnnotations = if (requireAPIKeyAnnotation) {
-          baseAnnotations ++ Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
+          baseAnnotations ++ Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse)
         } else baseAnnotations
 
         removeCLIHeader(action.stdout).parseJson.asJsObject
@@ -660,7 +660,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         Parameters("exec", "nodejs:10")
     val createAnnotations = if (requireAPIKeyAnnotation) {
       baseAnnotations ++
-        Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse) ++
+        Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse) ++
         Parameters(createKey, createValue) ++
         Parameters(origKey, origValue)
     } else {
@@ -715,7 +715,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       val testAnnotations = if (requireAPIKeyAnnotation) {
         baseAnnotations ++
-          Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
+          Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse)
       } else {
         baseAnnotations
       }
@@ -1228,7 +1228,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       Parameters("exec", "nodejs:10")
     val expectedAnnots = if (requireAPIKeyAnnotation) {
       baseAnnotations ++
-        Parameters(WhiskAction.provideApiKeyAnnotationName, JsFalse)
+        Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse)
     } else {
       baseAnnotations
     }
