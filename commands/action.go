@@ -40,7 +40,7 @@ import (
 
 const (
 	MEMORY_LIMIT      = 256
-	TIMEOUT_LIMIT     = 60000
+	TIMEOUT_LIMIT     = 600000
 	LOGSIZE_LIMIT     = 10
 	CONCURRENCY_LIMIT = 1
 	ACTIVATION_ID     = "activationId"

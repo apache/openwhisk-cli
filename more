@@ -1,0 +1,13 @@
+./commands/property.go:		// get [1;36;40m[Kcurrent[m[K props
+./commands/sdk.go:	fmt.Println(wski18n.T("The docker skeleton is now installed at the [1;36;40m[Kcurrent[m[K directory."))
+./commands/sdk.go:		// 2. Untar the contents into the [1;36;40m[Kcurrent[m[K folder
+./commands/package.go:		[1;36;40m[Kcurrent[m[KNamespace := Client.Config.Namespace
+./commands/package.go:			Client.Config.Namespace = [1;36;40m[Kcurrent[m[KNamespace
+./commands/action.go: * If the [1;36;40m[Kcurrent[m[K web security setting and existing setting are the "same", keep the existing value
+./commands/action.go: * If the [1;36;40m[Kcurrent[m[K web security setting is "false", remove any existing setting
+./commands/action.go:	actionCreateCmd.Flags().IntVarP(&Flags.action.concurrency, CONCURRENCY_FLAG, "c", CONCURRENCY_LIMIT, wski18n.T("the maximum intra-container con[1;36;40m[Kcurrent[m[K activation `LIMIT` for the action"))
+./commands/action.go:	actionUpdateCmd.Flags().IntVarP(&Flags.action.concurrency, CONCURRENCY_FLAG, "c", CONCURRENCY_LIMIT, wski18n.T("the maximum intra-container con[1;36;40m[Kcurrent[m[K activation `LIMIT` for the action"))
+./commands/util.go:	// get [1;36;40m[Kcurrent[m[K props
+./commands/wsk.go:	Short:         wski18n.T("list entities in the [1;36;40m[Kcurrent[m[K namespace"),
+./commands/activation.go:	Short:         wski18n.T("poll continuously for log messages from [1;36;40m[Kcurrent[m[Kly running actions"),
+./commands/commands.go:	// Display an error if the parent command requires an API host to be set, and the [1;36;40m[Kcurrent[m[K API host is not valid
