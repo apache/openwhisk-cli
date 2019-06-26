@@ -277,7 +277,7 @@ func stripTimestamp(log string) (strippedLog string) {
 	// the timestamp expected format is YYYY-MM-DDTHH:MM:SS.[0-9]+Z
 	// an optional " stdout" or " stderr" stream identifier
 	// and the rest as the log line
-    regex := regexp.MustCompile("\\d{4}-[01]{1}\\d{1}-[0-3]{1}\\d{1}T[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}.\\d+Z( (stdout|stderr):)?\\s(.*)")
+	regex := regexp.MustCompile("\\d{4}-[01]{1}\\d{1}-[0-3]{1}\\d{1}T[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}.\\d+Z( (stdout|stderr):)?\\s(.*)")
 	match := regex.FindStringSubmatch(log)
 
 	if len(match) > 3 && len(match[3]) > 0 {
