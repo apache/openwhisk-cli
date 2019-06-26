@@ -109,4 +109,5 @@ sleep 30
 #
 #  Finally, run the integration test for the CLI
 #
+./gradlew --console=plain --info goTest -PgoTags=unit
 ./gradlew --console=plain --info goTest -PgoTags=integration
