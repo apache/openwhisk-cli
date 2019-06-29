@@ -101,6 +101,7 @@ type FlagsStruct struct {
 		exit         int
 		last         bool
 		strip        bool
+		logs         bool
 	}
 
 	// rule

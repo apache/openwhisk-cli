@@ -165,8 +165,9 @@ var activationGetCmd = &cobra.Command{
 						"status":    activation.Response.Status,
 						"time":      time.Unix(activation.End/1000, 0)}))
 			printJSON(activation.Response.Result)
+		} else if Flags.activation.logs {
+			printStrippedActivationLogs(activation.Logs)
 		} else {
-
 			if len(field) > 0 {
 				fmt.Fprintf(color.Output,
 					wski18n.T("{{.ok}} got activation {{.id}}, displaying field {{.field}}\n",
@@ -456,6 +457,7 @@ func init() {
 
 	activationGetCmd.Flags().BoolVarP(&Flags.common.summary, "summary", "s", false, wski18n.T("summarize activation details"))
 	activationGetCmd.Flags().BoolVarP(&Flags.activation.last, "last", "l", false, wski18n.T("retrieves the last activation"))
+	activationGetCmd.Flags().BoolVarP(&Flags.activation.logs, "logs", "g", false, wski18n.T("emit only the logs, stripped of time stamps and stream identifier"))
 
 	activationLogsCmd.Flags().BoolVarP(&Flags.activation.last, "last", "l", false, wski18n.T("retrieves the last activation"))
 	activationLogsCmd.Flags().BoolVarP(&Flags.activation.strip, "strip", "r", false, wski18n.T("strip timestamp and stream information"))
