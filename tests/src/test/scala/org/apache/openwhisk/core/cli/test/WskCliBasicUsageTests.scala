@@ -2161,9 +2161,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         // Limits to assert, standard values if CLI omits certain values
         val limits = JsObject(
           "timeout" -> timeout.getOrElse(STD_DURATION).toMillis.toJson,
-          "memory" -> memory.getOrElse(stdMemory).toMB.toInt.toJson,
-          "logs" -> logs.getOrElse(stdLogSize).toMB.toInt.toJson,
-          "concurrency" -> concurrency.getOrElse(stdConcurrent).toJson)
+          "memory" -> memory.getOrElse(STD_MEMORY).toMB.toInt.toJson,
+          "logs" -> logs.getOrElse(STD_LOGSIZE).toMB.toInt.toJson,
+          "concurrency" -> concurrency.getOrElse(STD_CONCURRENT).toJson)
 
         val name = "ActionLimitTests" + Instant.now.toEpochMilli
         val createResult =
@@ -2201,9 +2201,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       // Assert for valid permutations that the values are set correctly
       for {
         time <- Seq(None, Some(MIN_DURATION), Some(MAX_DURATION))
-        mem <- Seq(None, Some(minMemory), Some(maxMemory))
-        log <- Seq(None, Some(minLogSize), Some(maxLogSize))
-        concurrency <- Seq(None, Some(minConcurrent), Some(maxConcurrent))
+        mem <- Seq(None, Some(MIN_MEMORY), Some(MAX_MEMORY))
+        log <- Seq(None, Some(MIN_LOGSIZE), Some(MAX_LOGSIZE))
+        concurrency <- Seq(None, Some(MIN_CONCURRENT), Some(MAX_CONCURRENT))
       } testLimit(time, mem, log, concurrency)
 
       // Assert that invalid permutation are rejected
