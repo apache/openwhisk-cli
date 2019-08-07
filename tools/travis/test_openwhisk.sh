@@ -25,17 +25,17 @@ set -e
 #
 #    ./gradlew releaseBinaries
 #
-#  Also at this point, you should already have incubator-openwhisk pulled down
+#  Also at this point, you should already have the openwhisk main repo. pulled down
 #  from gradle in the parent directory, using a command such as:
 #
-#    git clone --depth 3 https://github.com/apache/incubator-openwhisk.git
+#    git clone --depth 3 https://github.com/apache/openwhisk.git
 #
 #  To be clear, your directory structure will look something like...
 #
 #      $HOMEDIR
-#       |- incubator-openwhisk
-#       |- incubator-openwhisk-cli (This project)
-#       |- incubator-openwhisk-utilities (For scancode)
+#       |- openwhisk
+#       |- openwhisk-cli (This project)
+#       |- openwhisk-utilities (For scancode)
 #
 #  The idea is to only build once and to be transparent about building in
 #  the Travis script.  To that end, some of the other builds that had been
@@ -54,13 +54,13 @@ export TRAVIS_BUILD_DIR
 
 # For the gradle builds.
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
-OPENWHISK_HOME="$( cd "${OPENWHISK_HOME:-$HOMEDIR/incubator-openwhisk}" && pwd )"
+OPENWHISK_HOME="$( cd "${OPENWHISK_HOME:-$HOMEDIR/openwhisk}" && pwd )"
 export OPENWHISK_HOME
 
 #
 #  Run scancode using the ASF Release configuration
 #
-UTILDIR="$( cd "${UTILDIR:-$HOMEDIR/incubator-openwhisk-utilities}" && pwd )"
+UTILDIR="$( cd "${UTILDIR:-$HOMEDIR/openwhisk-utilities}" && pwd )"
 export UTILDIR
 cd $UTILDIR
 scancode/scanCode.py --config scancode/ASF-Release.cfg $TRAVIS_BUILD_DIR

@@ -59,7 +59,7 @@ task deleteKeystore(type: Delete) {
 task createKeystore(dependsOn: deleteKeystore) {
     doLast {
         Properties props = new Properties()
-        def owPath = System.getenv("OPENWHISK_HOME") ?: '../incubator-openwhisk'
+        def owPath = System.getenv("OPENWHISK_HOME") ?: '../openwhisk'
         props.load(new FileInputStream(file(owPath + '/whisk.properties')))
         keystorePath.parentFile.mkdirs()
         def cmd = ['keytool', '-import', '-alias', 'Whisk', '-noprompt', '-trustcacerts', '-file', file(props['whisk.ssl.cert']), '-keystore', keystorePath, '-storepass', 'openwhisk']

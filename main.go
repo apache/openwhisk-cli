@@ -22,9 +22,9 @@ import (
 	goi18n "github.com/nicksnyder/go-i18n/i18n"
 	"os"
 
-	"github.com/apache/incubator-openwhisk-cli/commands"
-	"github.com/apache/incubator-openwhisk-cli/wski18n"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-cli/commands"
+	"github.com/apache/openwhisk-cli/wski18n"
+	"github.com/apache/openwhisk-client-go/whisk"
 )
 
 // CLI_BUILD_TIME holds the time of the CLI build.  During gradle builds,
