@@ -3,85 +3,85 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "vwG1BfskucmP9YJf8zXm6E6gITw=",
+			"checksumSHA1": "upP6n3vm+l0xwq1EswdwVQSHDOg=",
 			"path": "github.com/apache/openwhisk-client-go/whisk",
 			"revision": "d8ccb1442651beee6a9245913e3ca0cb182888b1",
 			"revisionTime": "2019-06-29T18:26:08Z"
 		},
 		{
-			"checksumSHA1": "4NY5lFykxXaoN+JNMxo179L79sU=",
+			"checksumSHA1": "uN1QmjP7Z6Rlkw73uOAQrtNKQR0=",
 			"path": "github.com/apache/openwhisk-client-go/wski18n",
 			"revision": "d8ccb1442651beee6a9245913e3ca0cb182888b1",
 			"revisionTime": "2019-06-29T18:26:08Z"
 		},
 		{
-			"checksumSHA1": "9W8qCTt3LnfrN3XV0wBv+YfowHU=",
+			"checksumSHA1": "jgCQbGeq+qGCWmBQOcl0LF6Dy0E=",
 			"path": "github.com/apache/openwhisk-wskdeploy/cmd",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "zoY15nrCfmU+4Xsk2dzrpviEPuU=",
+			"checksumSHA1": "pm8VdiNPSunE7DPNZI2r7xiu61A=",
 			"path": "github.com/apache/openwhisk-wskdeploy/conductor",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "o7oqPbymhiZ4x/ajT3zHKYmizkU=",
+			"checksumSHA1": "yIvnsPSPzMew+mPmYrw/E4JFFNI=",
 			"path": "github.com/apache/openwhisk-wskdeploy/dependencies",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "3M3Dd5jXZUAYrHdKjAbTGhQpx2c=",
+			"checksumSHA1": "4fgQb6yiH0E3tfiP24lDcV5P5kU=",
 			"path": "github.com/apache/openwhisk-wskdeploy/deployers",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "SF2iutNA9FZqcK2RKBhMWvZWyec=",
+			"checksumSHA1": "4Gafv3A6u35vHM/8fVUCN5P4Krs=",
 			"path": "github.com/apache/openwhisk-wskdeploy/parsers",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "0pxUt7OAYYSxhEzJAmRyUgwTW4Q=",
+			"checksumSHA1": "6CrktZhh//fCW0dvuibw3VZksBk=",
 			"path": "github.com/apache/openwhisk-wskdeploy/runtimes",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "Is46iYPQpNn/El8K+wu13z+j9c8=",
+			"checksumSHA1": "9JlneR//KAmnD2INB3UnDXxjsSc=",
 			"path": "github.com/apache/openwhisk-wskdeploy/utils",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "pPW5QDgsHH/Ckz++Li+r0Qhj8WA=",
+			"checksumSHA1": "8X3D/AEFXHV0PkZSoJeXyCLKi3U=",
 			"path": "github.com/apache/openwhisk-wskdeploy/webaction",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "lUDv3myF33Wcf7bQ7xctTWaS7vk=",
+			"checksumSHA1": "k7/MiIC0+Qfy5yRJ9ivBfphho+A=",
 			"path": "github.com/apache/openwhisk-wskdeploy/wskderrors",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "kEwvrkKJTrmgPx4bypQM1jUPsFs=",
+			"checksumSHA1": "hzfJyO3o/11C7UXzuQlxvDODcIk=",
 			"path": "github.com/apache/openwhisk-wskdeploy/wskenv",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "49/yKwDIzgWDi7Kz+EhljIzGJdc=",
+			"checksumSHA1": "2FUwVbZLu70t3okks4UarnhGK8M=",
 			"path": "github.com/apache/openwhisk-wskdeploy/wski18n",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
 		},
 		{
-			"checksumSHA1": "y8Rck9vRpJdrkxHBYZHxPTXuTs0=",
+			"checksumSHA1": "M+Uh58tCycL/sg2tidyiGt8WsdQ=",
 			"path": "github.com/apache/openwhisk-wskdeploy/wskprint",
 			"revision": "cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2",
 			"revisionTime": "2019-07-02T12:38:22Z"
@@ -91,6 +91,12 @@
 			"path": "github.com/cloudfoundry/jibber_jabber",
 			"revision": "bcc4c8345a21301bf47c032ff42dd1aae2fe3027",
 			"revisionTime": "2015-11-20T18:32:58Z"
+		},
+		{
+			"checksumSHA1": "CSPbwbyzqA6sfORicn4HFtIhF/c=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "d8f796af33cc11cb798c1aaeb27a4ebc5099927d",
+			"revisionTime": "2018-08-30T19:11:22Z"
 		},
 		{
 			"checksumSHA1": "AANTVr9CVVyzsgviODY6Wi2thuM=",
@@ -375,6 +381,12 @@
 			"revisionTime": "2019-01-13T21:29:17Z"
 		},
 		{
+			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "5d4384ee4fb2527b0a1256a821ebfc92f91efefc",
+			"revisionTime": "2018-12-26T10:54:42Z"
+		},
+		{
 			"checksumSHA1": "FZ0r4TzEy9UxXLkFVXFygApni4M=",
 			"path": "github.com/spf13/cobra",
 			"revision": "6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d",
@@ -385,6 +397,12 @@
 			"path": "github.com/spf13/pflag",
 			"revision": "5ccb023bc27df288a957c5e994cd44fd19619465",
 			"revisionTime": "2016-10-24T13:13:51Z"
+		},
+		{
+			"checksumSHA1": "/7bZ0f2fM9AAsLf3nMca6Gtlm6E=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "221dbe5ed46703ee255b1da0dec05086f5035f62",
+			"revisionTime": "2019-05-17T17:51:56Z"
 		},
 		{
 			"checksumSHA1": "qyU58wqixJNIOwqz2CXE2eMBNTk=",
