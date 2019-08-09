@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/incubator-openwhisk-cli/wski18n"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-cli/wski18n"
+	"github.com/apache/openwhisk-client-go/whisk"
 
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"

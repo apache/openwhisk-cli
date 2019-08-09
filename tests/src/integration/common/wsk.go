@@ -17,7 +17,7 @@
 package common
 
 import (
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-client-go/whisk"
 	"os"
 	"os/exec"
 )

@@ -24,7 +24,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-cli/tests/src/integration/common"
+	"github.com/apache/openwhisk-cli/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 )
 

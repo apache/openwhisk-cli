@@ -19,7 +19,7 @@
 
 # OpenWhisk Command-line Interface `wsk`
 
-[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-cli)
+[![Build Status](https://travis-ci.org/apache/openwhisk-cli.svg?branch=master)](https://travis-ci.org/apache/openwhisk-cli)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
 [![Twitter](https://img.shields.io/twitter/follow/openwhisk.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=openwhisk)
@@ -29,7 +29,7 @@ provides a consistent interface to interact with OpenWhisk services.
 
 # Where to download the binary of OpenWhisk CLI
 
-The OpenWhisk CLI is available on the [releases page](https://github.com/apache/incubator-openwhisk-cli/releases). We
+The OpenWhisk CLI is available on the [releases page](https://github.com/apache/openwhisk-cli/releases). We
 currently have binaries available for Linux, Mac OS and Windows under i386 and
 amd64 architectures. Linux versions are also available under Linux on Z, Power
 and 64-bit ARM architectures. You can download the binary, which fits your
@@ -115,8 +115,8 @@ typing:
 
 ```
 $ cd $GOPATH
-$ go get github.com/apache/incubator-openwhisk-cli
-$ cd $GOPATH/src/github.com/apache/incubator-openwhisk-cli
+$ go get github.com/apache/openwhisk-cli
+$ cd $GOPATH/src/github.com/apache/openwhisk-cli
 ```
 
 The CLI internationalization should be generated dynamically using the
@@ -136,7 +136,7 @@ $ govendor sync     # Download and install packages with specified dependencies.
 ```
 
 NOTE: As a temporary workaround, you have to remove a redundant instance of `spf13/cobra`
-in the vendor folder. See this [issue](https://github.com/apache/incubator-openwhisk-cli/issues/398) for details.
+in the vendor folder. See this [issue](https://github.com/apache/openwhisk-cli/issues/398) for details.
 ```
 $ rm -rf vendor/github.com/spf13
 ```
@@ -186,7 +186,3 @@ Travis CI is used as a continuous delivery service for Linux and Mac.
 Currently Travis CI supports the environments of Linux and Mac,
 but it is not available for Windows. We will add support of AppVeyor CI in
 future to run test cases and build the binary for Windows.
-
-# Disclaimer
-
-Apache OpenWhisk Command-line Interface (CLI) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
