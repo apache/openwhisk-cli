@@ -19,6 +19,14 @@
 
 # Changelog
 
+## v1.0.0
+  * Allow log stripping to tolerate a missing stream identifier. (#444)
+  * Add --logs options on activation get to return stripped logs as a convenience. (#445)
+  * RestAssured fixes (#441)
+  * Remove namespace property from wskprops (#434)
+  * "wsk property get" can now return raw output for specific properties  (#430)
+  * Add dynamic column sizing to wsk activation list command (#427)
+
 ## v0.10.0
 
 * Integrate wskdeploy via `project` subcommand
