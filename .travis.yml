@@ -16,7 +16,6 @@
 #
 
 language: go
-jdk: openjdk8
 
 matrix:
   include:
@@ -25,6 +24,7 @@ matrix:
       group: deprecated-2017Q3
       go: "1.9.3"
       services: docker
+      jdk: openjdk8
 
 env:
   global:
