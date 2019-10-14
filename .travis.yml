@@ -16,6 +16,7 @@
 #
 
 language: go
+jdk: openjdk8
 
 matrix:
   include:
