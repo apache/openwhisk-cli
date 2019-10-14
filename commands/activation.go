@@ -402,7 +402,7 @@ var activationPollCmd = &cobra.Command{
 					reported[activation.ActivationID] = true
 				}
 				if activation.Start > pollSince {
-					pollSince = activation.Start
+					pollSince = activation.Start + 1
 				}
 			}
 			time.Sleep(time.Second * 2)
