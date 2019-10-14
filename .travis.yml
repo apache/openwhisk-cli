@@ -24,6 +24,7 @@ matrix:
       go: "1.9.3"
       services: docker
       dist: xenial
+      jdk: openjdk8
 
 env:
   global:
