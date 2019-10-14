@@ -47,7 +47,7 @@ before_install:
 
 install:
   - cd $TRAVIS_BUILD_DIR/..
-  - pip install --upgrade pip setuptools
+  - pip install --user --upgrade pip setuptools
 
 before_script:
   - cd $TRAVIS_BUILD_DIR
