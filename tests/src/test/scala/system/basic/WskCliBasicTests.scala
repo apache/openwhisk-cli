@@ -874,7 +874,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
   behavior of "Wsk Namespace CLI"
 
   def WskNsCLI_RetListOneNs_test(wsk: Wsk, wp: WskProps): Unit = {
-    val lines = wsk.namespace.list()(wp).stdout.lines.toSeq
+    val lines = wsk.namespace.list()(wp).stdout.linesIterator.toSeq
     lines should have size 2
     lines.head shouldBe "namespaces"
     lines(1).trim should not be empty

@@ -98,13 +98,13 @@ $ANSIBLE_CMD routemgmt.yml
 
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliTests*
+./gradlew --console=plain :tests:test --tests=*ApiGwCliTests*
 sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliRoutemgmtActionTests*
+./gradlew --console=plain :tests:test --tests=*ApiGwCliRoutemgmtActionTests*
 sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*ApiGwCliEndToEndTests*
+./gradlew --console=plain :tests:test --tests=*ApiGwCliEndToEndTests*
 sleep 30
-./gradlew --console=plain :tests:test -Dtest.single=*Wsk*Tests*
+./gradlew --console=plain :tests:test --tests=*Wsk*Tests*
 
 #
 #  Finally, run the integration test for the CLI
