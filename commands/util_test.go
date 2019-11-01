@@ -26,19 +26,21 @@ import (
 
 func TestStripTimestamp(t *testing.T) {
 	logs := map[string]string{
-		"2018-05-02T19:33:32.829992819Z stdout: this is stdout stderr: this is still stdout": "this is stdout stderr: this is still stdout",
-		"2018-05-02T19:33:32.829992819Z stderr: this is stderr stdout: this is still stderr": "this is stderr stdout: this is still stderr",
-		"2018-05-02T19:33:32.89Z stdout: this is stdout":                                     "this is stdout",
-		"2018-05-02T19:33:32.89Z this is a msg":                                              "this is a msg",
-		"2018-05-02T19:33:32.89Z  this is a msg":                                             " this is a msg",
-		"anything stdout: this is stdout":                                                    "anything stdout: this is stdout",
-		"anything stderr: this is stderr":                                                    "anything stderr: this is stderr",
-		"stdout: this is stdout":                                                             "stdout: this is stdout",
-		"stderr: this is stderr":                                                             "stderr: this is stderr",
-		"this is stdout":                                                                     "this is stdout",
-		"this is stderr":                                                                     "this is stderr",
-		"something":                                                                          "something",
-		"":                                                                                   ""}
+		"2018-05-02T19:33:32.829992819Z stdout: this is stdout stderr: this is still stdout":  "this is stdout stderr: this is still stdout",
+		"2018-05-02T19:33:32.829992819Z stderr: this is stderr stdout: this is still stderr":  "this is stderr stdout: this is still stderr",
+		"2018-05-02T19:33:32.829992819Z  stdout: this is stdout stderr: this is still stdout": "this is stdout stderr: this is still stdout",
+		"2018-05-02T19:33:32.829992819Z  stderr: this is stderr stdout: this is still stderr": "this is stderr stdout: this is still stderr",
+		"2018-05-02T19:33:32.89Z stdout: this is stdout":                                      "this is stdout",
+		"2018-05-02T19:33:32.89Z this is a msg":                                               "this is a msg",
+		"2018-05-02T19:33:32.89Z  this is a msg":                                              " this is a msg",
+		"anything stdout: this is stdout":                                                     "anything stdout: this is stdout",
+		"anything stderr: this is stderr":                                                     "anything stderr: this is stderr",
+		"stdout: this is stdout":                                                              "stdout: this is stdout",
+		"stderr: this is stderr":                                                              "stderr: this is stderr",
+		"this is stdout":                                                                      "this is stdout",
+		"this is stderr":                                                                      "this is stderr",
+		"something":                                                                           "something",
+		"":                                                                                    ""}
 	assert := assert.New(t)
 
 	for log, expected := range logs {
