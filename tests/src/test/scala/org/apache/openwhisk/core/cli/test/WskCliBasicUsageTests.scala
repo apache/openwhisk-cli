@@ -442,7 +442,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           kind = Some("foobar"),
           expectedExitCode = BAD_REQUEST)
       }
-      rr.stderr should include regex "kind 'foobar' not in Set"
+      rr.stderr should include regex "The request content was malformed"
   }
 
   it should "report error when creating an action with zip but without kind" in withAssetCleaner(wskprops) {
