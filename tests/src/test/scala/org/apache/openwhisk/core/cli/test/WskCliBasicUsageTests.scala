@@ -443,7 +443,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           kind = Some(runtimeParam),
           expectedExitCode = BAD_REQUEST)
       }
-      rr.stderr should include regex (s"""The specified runtime $runtimeParam is not supported by this platform""")
+      rr.stderr should include regex (s"""The specified runtime '$runtimeParam' is not supported by this platform""")
   }
 
   it should "report error when creating an action with zip but without kind" in withAssetCleaner(wskprops) {
