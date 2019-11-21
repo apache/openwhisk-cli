@@ -435,8 +435,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "report error when creating an action with unknown kind" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
+      val runtimeParam = "foobar"
       val rr = assetHelper.withCleaner(wsk.action, "invalid kind", confirmDelete = false) { (action, name) =>
-        val runtimeParam = "foobar"
         action.create(
           name,
           Some(TestUtils.getTestActionFilename("echo.js")),
