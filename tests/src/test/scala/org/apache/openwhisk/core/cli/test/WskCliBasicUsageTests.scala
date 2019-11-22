@@ -435,14 +435,15 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
   it should "report error when creating an action with unknown kind" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
+      val runtimeParam = "foobar"
       val rr = assetHelper.withCleaner(wsk.action, "invalid kind", confirmDelete = false) { (action, name) =>
         action.create(
           name,
           Some(TestUtils.getTestActionFilename("echo.js")),
-          kind = Some("foobar"),
+          kind = Some(runtimeParam),
           expectedExitCode = BAD_REQUEST)
       }
-      rr.stderr should include regex "The request content was malformed"
+      rr.stderr should include regex (s"""The specified runtime '$runtimeParam' is not supported by this platform""")
   }
 
   it should "report error when creating an action with zip but without kind" in withAssetCleaner(wskprops) {
