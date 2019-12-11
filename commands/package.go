@@ -103,7 +103,9 @@ var packageBindCmd = &cobra.Command{
 			Binding:     binding,
 		}
 
-		_, _, err = Client.Packages.Insert(p, false)
+		overwrite := Flags.common.overwrite
+
+		_, _, err = Client.Packages.Insert(p, overwrite)
 		if err != nil {
 			whisk.Debug(whisk.DbgError, "Client.Packages.Insert(%#v, false) failed: %s\n", p, err)
 			errStr := wski18n.T("Binding creation failed: {{.err}}", map[string]interface{}{"err": err})
@@ -522,6 +524,7 @@ func init() {
 	packageBindCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
 	packageBindCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	packageBindCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
+	packageBindCmd.Flags().BoolVarP(&Flags.common.overwrite, "overwrite", "o", false, wski18n.T("overwrite bind"))
 
 	packageListCmd.Flags().IntVarP(&Flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of packages from the result"))
 	packageListCmd.Flags().IntVarP(&Flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of packages from the collection"))
