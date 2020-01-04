@@ -27,6 +27,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -873,7 +874,11 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 	} else {
 		whisk.Debug(whisk.DbgInfo, "Setting %v annotation; prior secret %v new secret %v\n",
 			WEB_SECURE_ANNOT, reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
-		annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
+		if newSecretIsInt {
+			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: strconv.FormatInt(secureSecret.(int64), 10)})
+		} else {
+			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
+		}
 	}
 
 	return annotations
