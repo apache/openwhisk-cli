@@ -1561,6 +1561,37 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
   }
 
+  it should "not delete a trigger when feed deletion fails" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+    val actionName = withTimestamp("feed-action-fails-delete")
+    val triggerName = withTimestamp("feedDeleteTest")
+    val feedActionCreateParams = Map("statusCode" -> JsNumber(200))
+    val feedActionPath = new File(".").getAbsolutePath() + "/src/dat/feed-action-fails-delete.js"
+
+    assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
+      action.create(actionName, Some(feedActionPath))
+    }
+
+    try {
+      wsk.trigger.create(triggerName, feed = Some(actionName), parameters = feedActionCreateParams)
+      wsk.trigger.delete(triggerName, expectedExitCode = ERROR_EXIT).stderr should include(
+        """Unable to delete trigger""")
+    } finally {
+      wsk.cli(
+        Seq(
+          "trigger",
+          "delete",
+          s"$triggerName",
+          "--auth",
+          wskprops.authKey,
+          "--apihost",
+          wskprops.apihost,
+          "--apiversion",
+          wskprops.apiversion,
+          "-i",
+          "-f"))
+    }
+  }
+
   it should "invoke a feed action with the correct lifecyle event when creating, retrieving and deleting a feed trigger" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val actionName = withTimestamp("echo")
