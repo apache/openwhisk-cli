@@ -62,7 +62,6 @@ before_script:
 
 script:
   - cd $TRAVIS_BUILD_DIR/../openwhisk
-  - jdk_switcher use openjdk8
   - ./gradlew install tests:buildArtifacts
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_VERSION="latest"
