@@ -459,7 +459,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       createResult.stderr should include regex "requires specifying the action kind"
   }
 
-  it should "Ensure that Java actions cannot be created without a specified main method" in withAssetCleaner(wskprops) {
+  ignore should "Ensure that Java actions cannot be created without a specified main method" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val name = "helloJavaWithNoMainSpecified"
       val file = Some(TestUtils.getTestActionFilename("helloJava.jar"))
