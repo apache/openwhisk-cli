@@ -241,7 +241,7 @@ class WskConfigTests extends TestHelpers with WskTestHelpers {
       val rr = wsk.cli(Seq("property", "get", "--apibuild", "-i"), env = env)
       rr.stdout should not include regex("""whisk API build\s*Unknown""")
       rr.stderr should not include regex("Unable to obtain API build information")
-      rr.stdout should include regex ("""(?i)whisk API build\s+201.*""")
+      rr.stdout should include regex ("""(?i)whisk API build\s+20.*""")
     } finally {
       tmpwskprops.delete()
     }
