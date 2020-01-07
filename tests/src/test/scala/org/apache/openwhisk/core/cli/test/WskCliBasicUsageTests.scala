@@ -459,18 +459,18 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       createResult.stderr should include regex "requires specifying the action kind"
   }
 
-  it should "Ensure that Java actions cannot be created without a specified main method" in withAssetCleaner(wskprops) {
-    (wp, assetHelper) =>
-      val name = "helloJavaWithNoMainSpecified"
-      val file = Some(TestUtils.getTestActionFilename("helloJava.jar"))
+  ignore should "Ensure that Java actions cannot be created without a specified main method" in withAssetCleaner(
+    wskprops) { (wp, assetHelper) =>
+    val name = "helloJavaWithNoMainSpecified"
+    val file = Some(TestUtils.getTestActionFilename("helloJava.jar"))
 
-      val createResult = assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
-        action.create(name, file, expectedExitCode = ANY_ERROR_EXIT)
-      }
+    val createResult = assetHelper.withCleaner(wsk.action, name, confirmDelete = false) { (action, _) =>
+      action.create(name, file, expectedExitCode = ANY_ERROR_EXIT)
+    }
 
-      val output = s"${createResult.stdout}\n${createResult.stderr}"
+    val output = s"${createResult.stdout}\n${createResult.stderr}"
 
-      output should include("main")
+    output should include("main")
   }
 
   it should "Ensure that zipped actions are encoded and uploaded as NodeJS actions" in withAssetCleaner(wskprops) {
