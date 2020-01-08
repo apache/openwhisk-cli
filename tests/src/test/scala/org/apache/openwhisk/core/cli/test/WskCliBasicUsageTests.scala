@@ -1672,6 +1672,32 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       stdoutNoDescOrParams should include regex (s"(?i)trigger ${qualtrgNoDescOrParams}\\s*\\(parameters: none defined\\)")
   }
 
+  it should "not create a trigger with timeout error when feed fails to initialize" in withAssetCleaner(guestWskProps) {
+    (wp, assetHelper) =>
+      val samplePackage = "samplePackage"
+      val guestNamespace = guestWskProps.namespace
+
+      assetHelper.withCleaner(wsk.pkg, samplePackage) { (pkg, _) =>
+        pkg.create(samplePackage, shared = Some(true))(wp)
+      }
+
+      val sampleFeed = s"$samplePackage/sampleFeed"
+      assetHelper.withCleaner(wsk.action, sampleFeed) {
+        val file = Some(TestUtils.getTestActionFilename("empty.js"))
+        (action, _) =>
+          action.create(sampleFeed, file, kind = Some("nodejs:default"))(wp)
+      }
+
+      val fullyQualifiedFeedName = s"/$guestNamespace/$sampleFeed"
+      withAssetCleaner(defaultWskProps) { (wp, assetHelper) =>
+        assetHelper.withCleaner(wsk.trigger, "badfeed", confirmDelete = false) { (trigger, name) =>
+          trigger.create(name, feed = Some(fullyQualifiedFeedName), expectedExitCode = TIMEOUT)(wp)
+        }
+        // with several active controllers race condition with cache invalidation might occur, thus retry
+        retry(wsk.trigger.get("badfeed", expectedExitCode = NOT_FOUND)(wp))
+      }
+  }
+
   behavior of "Wsk entity list formatting"
 
   it should "create, and list a package with a long name" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
