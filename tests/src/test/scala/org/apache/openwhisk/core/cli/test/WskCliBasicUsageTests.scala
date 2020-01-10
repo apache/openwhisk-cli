@@ -1672,10 +1672,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       stdoutNoDescOrParams should include regex (s"(?i)trigger ${qualtrgNoDescOrParams}\\s*\\(parameters: none defined\\)")
   }
 
-  it should "not create a trigger with timeout error when feed fails to initialize" in withAssetCleaner(guestWskProps) {
+  it should "not create a trigger with timeout error when feed fails to initialize" in withAssetCleaner(wskprops) {
     (wp, assetHelper) =>
       val samplePackage = "samplePackage"
-      val guestNamespace = guestWskProps.namespace
+      val guestNamespace = wskprops.namespace
+      val defaultWskProps = WskProps()
 
       assetHelper.withCleaner(wsk.pkg, samplePackage) { (pkg, _) =>
         pkg.create(samplePackage, shared = Some(true))(wp)
