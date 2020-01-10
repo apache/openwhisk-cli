@@ -1689,6 +1689,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           action.create(sampleFeed, file, kind = Some("nodejs:default"))(wp)
       }
 
+      val original_overrides = wp.overrides
+      wp.overrides = overrides ++ Seq("-d")
       val fullyQualifiedFeedName = s"/$guestNamespace/$sampleFeed"
       withAssetCleaner(defaultWskProps) { (wp, assetHelper) =>
         assetHelper.withCleaner(wsk.trigger, "badfeed", confirmDelete = false) { (trigger, name) =>
@@ -1697,6 +1699,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         // with several active controllers race condition with cache invalidation might occur, thus retry
         retry(wsk.trigger.get("badfeed", expectedExitCode = NOT_FOUND)(wp))
       }
+      wp.overrides = original_overrides
   }
 
   behavior of "Wsk entity list formatting"
