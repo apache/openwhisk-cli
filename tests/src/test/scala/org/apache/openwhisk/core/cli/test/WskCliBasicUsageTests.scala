@@ -1678,6 +1678,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val guestNamespace = wskprops.namespace
       val defaultWskProps = WskProps()
 
+      val original_overrides = wp.overrides
+      wp.overrides = overrides ++ Seq("-d")
+      val original_defaultWskProps_overrides = defaultWskProps.overrides
+      defaultWskProps.overrides = overrides ++ Seq("-d")
+
       assetHelper.withCleaner(wsk.pkg, samplePackage) { (pkg, _) =>
         pkg.create(samplePackage, shared = Some(true))(wp)
       }
@@ -1689,8 +1694,6 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
           action.create(sampleFeed, file, kind = Some("nodejs:default"))(wp)
       }
 
-      val original_overrides = wp.overrides
-      wp.overrides = overrides ++ Seq("-d")
       val fullyQualifiedFeedName = s"/$guestNamespace/$sampleFeed"
       withAssetCleaner(defaultWskProps) { (wp, assetHelper) =>
         assetHelper.withCleaner(wsk.trigger, "badfeed", confirmDelete = false) { (trigger, name) =>
@@ -1700,6 +1703,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         retry(wsk.trigger.get("badfeed", expectedExitCode = NOT_FOUND)(wp))
       }
       wp.overrides = original_overrides
+      defaultWskProps.overrides = original_defaultWskProps_overrides
   }
 
   behavior of "Wsk entity list formatting"
