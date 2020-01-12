@@ -1679,9 +1679,9 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val defaultWskProps = WskProps()
 
       val original_overrides = wp.overrides
-      wp.overrides = overrides ++ Seq("-d")
+      wp.overrides = wp.overrides ++ Seq("-d")
       val original_defaultWskProps_overrides = defaultWskProps.overrides
-      defaultWskProps.overrides = overrides ++ Seq("-d")
+      defaultWskProps.overrides = defaultWskProps.overrides ++ Seq("-d")
 
       assetHelper.withCleaner(wsk.pkg, samplePackage) { (pkg, _) =>
         pkg.create(samplePackage, shared = Some(true))(wp)
