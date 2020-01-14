@@ -83,21 +83,6 @@ class WskSdkTests extends TestHelpers with WskTestHelpers {
     }
   }
 
-  it should "download iOS sdk" in {
-    val dir = File.createTempFile("wskinstall", ".tmp")
-    dir.delete()
-    dir.mkdir() should be(true)
-
-    wsk.cli(wskprops.overrides ++ Seq("sdk", "install", "iOS"), workingDir = dir).stdout should include(
-      "Downloaded OpenWhisk iOS starter app. Unzip 'OpenWhiskIOSStarterApp.zip' and open the project in Xcode.")
-
-    val sdk = new File(dir, "OpenWhiskIOSStarterApp.zip")
-    sdk.exists() should be(true)
-    sdk.isFile() should be(true)
-    FileUtils.sizeOf(sdk) should be > 20000L
-    FileUtils.deleteDirectory(dir)
-  }
-
   it should "install the bash auto-completion bash script" in {
     // Use a temp dir for testing to not disturb user's local folder
     val dir = File.createTempFile("wskinstall", ".tmp")
