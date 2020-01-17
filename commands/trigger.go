@@ -20,6 +20,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/apache/openwhisk-cli/wski18n"
 	"github.com/apache/openwhisk-client-go/whisk"
@@ -286,6 +287,30 @@ var triggerDeleteCmd = &cobra.Command{
 				err = configureFeed(qualifiedName.GetEntityName(), fullFeedName, getParameters(Flags.common.param, false, false))
 				if err != nil {
 					whisk.Debug(whisk.DbgError, "configureFeed(%s, %s) failed: %s\n", qualifiedName.GetEntityName(), fullFeedName, err)
+
+					// If the trigger feed does not exist, it's deleted! This error message will look like
+					//      "could not find trigger /NAMESPACE_ID/TRIGGER_NAME in the database"
+					// OR if the feed action is not present, there's no way to clean up the feed
+					//     "The requested resource does not exist"
+					// likewise, if the feed action has no code, there's no way to clean up the feed
+					//     "Missing main/no code to execute"
+					if strings.Contains(err.Error(), "could not find trigger") {
+						whisk.Debug(whisk.DbgWarn, "trigger feed is already deleted for trigger %s\n", qualifiedName.GetEntityName())
+					} else if strings.Contains(err.Error(), "The requested resource does not exist") {
+						whisk.Debug(whisk.DbgWarn, "trigger feed action '%s' does not exist\n", fullFeedName)
+					} else if strings.Contains(err.Error(), "no code to execute") {
+						whisk.Debug(whisk.DbgWarn, "trigger feed action '%s' does not contain valid code\n", fullFeedName)
+					} else {
+						errStr := wski18n.T("Unable to delete trigger '{{.name}}': {{.err}}",
+							map[string]interface{}{"name": qualifiedName.GetEntityName(), "err": err})
+
+						if !Flags.common.force {
+							werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+							return werr
+						} else {
+							whisk.Debug(whisk.DbgInfo, "trigger delete is forced despite feed deletion failure\n")
+						}
+					}
 				}
 
 				Flags.common.param = origParams
@@ -370,7 +395,7 @@ func configureFeed(triggerName string, feedName string, parameters interface{}) 
 	if err != nil {
 		whisk.Debug(whisk.DbgError, "Invoke of action '%s' failed: %s\n", feedName, err)
 		errStr := wski18n.T(FEED_CONFIGURATION_FAILURE, map[string]interface{}{"feedname": feedName, "trigname": triggerName, "err": err})
-		err = whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	} else {
 		whisk.Debug(whisk.DbgInfo, "Successfully configured trigger feed via feed action '%s'\n", feedName)
 	}
@@ -404,6 +429,8 @@ func init() {
 	triggerUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 
 	triggerGetCmd.Flags().BoolVarP(&Flags.trigger.summary, "summary", "s", false, wski18n.T("summarize trigger details; parameters with prefix \"*\" are bound"))
+
+	triggerDeleteCmd.Flags().BoolVarP(&Flags.common.force, "force", "f", false, wski18n.T("force trigger deletion even when feed deletion fails"))
 
 	triggerFireCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	triggerFireCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
@@ -477,6 +504,7 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 			printFailedBlockingInvocationResponse(*feedName, false, res, err)
 
 			reason := wski18n.T(FEED_CONFIGURATION_FAILURE, map[string]interface{}{"feedname": feedName.GetFullQualifiedName(), "err": err})
+
 			errStr := wski18n.T("Unable to create trigger '{{.name}}': {{.err}}",
 				map[string]interface{}{"name": trigger.Name, "err": reason})
 			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)

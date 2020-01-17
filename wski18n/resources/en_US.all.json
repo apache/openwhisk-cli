@@ -683,6 +683,10 @@
     "translation": "Unable to configure feed '{{.feedname}}': {{.err}}"
   },
   {
+    "id": "force trigger deletion even when feed deletion fails",
+    "translation": "force trigger deletion even when feed deletion fails"
+  },
+  {
     "note-to-translators": "DO NOT TRANSLATE THE 'yes' AND 'no'.  THOSE ARE FIXED CLI ARGUMENT VALUES",
     "id": "trigger visibility `SCOPE`; yes = shared, no = private",
     "translation": "trigger visibility `SCOPE`; yes = shared, no = private"

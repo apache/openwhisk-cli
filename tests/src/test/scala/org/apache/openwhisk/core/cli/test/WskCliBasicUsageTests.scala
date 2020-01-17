@@ -1561,6 +1561,37 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     }
   }
 
+  it should "not delete a trigger when feed deletion fails" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
+    val actionName = withTimestamp("feed-action-fails-delete")
+    val triggerName = withTimestamp("feedDeleteTest")
+    val feedActionCreateParams = Map("statusCode" -> JsNumber(200))
+    val feedActionPath = new File(".").getAbsolutePath() + "/src/dat/feed-action-fails-delete.js"
+
+    assetHelper.withCleaner(wsk.action, actionName) { (action, _) =>
+      action.create(actionName, Some(feedActionPath))
+    }
+
+    try {
+      wsk.trigger.create(triggerName, feed = Some(actionName), parameters = feedActionCreateParams)
+      wsk.trigger.delete(triggerName, expectedExitCode = ERROR_EXIT).stderr should include(
+        """Unable to delete trigger""")
+    } finally {
+      wsk.cli(
+        Seq(
+          "trigger",
+          "delete",
+          s"$triggerName",
+          "--auth",
+          wskprops.authKey,
+          "--apihost",
+          wskprops.apihost,
+          "--apiversion",
+          wskprops.apiversion,
+          "-i",
+          "-f"))
+    }
+  }
+
   it should "invoke a feed action with the correct lifecyle event when creating, retrieving and deleting a feed trigger" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val actionName = withTimestamp("echo")
@@ -1639,6 +1670,40 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       stdoutNoDescPkg should include regex (s"(?i)trigger ${qualtrgNoDesc}: ${descFromParams} paramName1 and paramName2\\s*\\(parameters: paramName1, paramName2\\)")
       stdoutNoParamsPkg should include regex (s"(?i)trigger ${qualtrgNoParams}: ${trgDesc}\\s*\\(parameters: none defined\\)")
       stdoutNoDescOrParams should include regex (s"(?i)trigger ${qualtrgNoDescOrParams}\\s*\\(parameters: none defined\\)")
+  }
+
+  it should "not create a trigger with timeout error when feed fails to initialize" in withAssetCleaner(wskprops) {
+    (wp, assetHelper) =>
+      val samplePackage = "samplePackage"
+      val guestNamespace = wskprops.namespace
+      val defaultWskProps = WskProps()
+
+      val original_overrides = wp.overrides
+      wp.overrides = wp.overrides ++ Seq("-d")
+      val original_defaultWskProps_overrides = defaultWskProps.overrides
+      defaultWskProps.overrides = defaultWskProps.overrides ++ Seq("-d")
+
+      assetHelper.withCleaner(wsk.pkg, samplePackage) { (pkg, _) =>
+        pkg.create(samplePackage, shared = Some(true))(wp)
+      }
+
+      val sampleFeed = s"$samplePackage/sampleFeed"
+      assetHelper.withCleaner(wsk.action, sampleFeed) {
+        val file = Some(TestUtils.getTestActionFilename("empty.js"))
+        (action, _) =>
+          action.create(sampleFeed, file, kind = Some("nodejs:default"))(wp)
+      }
+
+      val fullyQualifiedFeedName = s"/$guestNamespace/$sampleFeed"
+      withAssetCleaner(defaultWskProps) { (wp, assetHelper) =>
+        assetHelper.withCleaner(wsk.trigger, "badfeed", confirmDelete = false) { (trigger, name) =>
+          trigger.create(name, feed = Some(fullyQualifiedFeedName), expectedExitCode = TIMEOUT)(wp)
+        }
+        // with several active controllers race condition with cache invalidation might occur, thus retry
+        retry(wsk.trigger.get("badfeed", expectedExitCode = NOT_FOUND)(wp))
+      }
+      wp.overrides = original_overrides
+      defaultWskProps.overrides = original_defaultWskProps_overrides
   }
 
   behavior of "Wsk entity list formatting"

@@ -67,6 +67,7 @@ type FlagsStruct struct {
 		detail     bool
 		format     string
 		nameSort   bool // sorts list alphabetically by entity name
+		force      bool
 	}
 
 	property struct {
