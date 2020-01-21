@@ -794,7 +794,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         })
       var secretIsInt =
         secretJsVar.get.convertTo[JsObject].getFields("value").head match {
-          case JsNumber(x) => true
+          case JsString(x) => true
           case _           => false
         }
       secretIsInt shouldBe true

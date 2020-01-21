@@ -866,7 +866,7 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 		_, existingSecretIsInt = existingSecret.(json.Number)
 	}
 
-	if existingSecretIsInt && newSecretIsInt {
+	if (newSecretIsInt && existingSecretIsInt) || (newSecretIsInt && existingSecretCanConvertToInt(existingSecret)) {
 		whisk.Debug(whisk.DbgInfo, "Retaining existing secret number\n")
 	} else if existingSecret != nil && disableSecurity {
 		whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
@@ -882,6 +882,14 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 	}
 
 	return annotations
+}
+
+func existingSecretCanConvertToInt(secret interface{}) bool {
+	if underlyingString, ok := secret.(string); ok {
+		_, convertErr := strconv.ParseInt(underlyingString, 10, 64)
+		return convertErr == nil
+	}
+	return false
 }
 
 //
