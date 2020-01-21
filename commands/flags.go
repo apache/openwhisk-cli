@@ -112,7 +112,9 @@ type FlagsStruct struct {
 
 	// trigger
 	trigger struct {
-		summary bool
+		summary      bool
+		feedParam    []string
+		triggerParam []string
 	}
 
 	//sdk

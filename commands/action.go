@@ -27,7 +27,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -866,7 +865,7 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 		_, existingSecretIsInt = existingSecret.(json.Number)
 	}
 
-	if (newSecretIsInt && existingSecretIsInt) || (newSecretIsInt && existingSecretCanConvertToInt(existingSecret)) {
+	if existingSecretIsInt && newSecretIsInt {
 		whisk.Debug(whisk.DbgInfo, "Retaining existing secret number\n")
 	} else if existingSecret != nil && disableSecurity {
 		whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
@@ -874,22 +873,10 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 	} else {
 		whisk.Debug(whisk.DbgInfo, "Setting %v annotation; prior secret %v new secret %v\n",
 			WEB_SECURE_ANNOT, reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
-		if newSecretIsInt {
-			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: strconv.FormatInt(secureSecret.(int64), 10)})
-		} else {
-			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
-		}
+		annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
 	}
 
 	return annotations
-}
-
-func existingSecretCanConvertToInt(secret interface{}) bool {
-	if underlyingString, ok := secret.(string); ok {
-		_, convertErr := strconv.ParseInt(underlyingString, 10, 64)
-		return convertErr == nil
-	}
-	return false
 }
 
 //

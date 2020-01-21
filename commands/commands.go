@@ -19,6 +19,7 @@ package commands
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"runtime"
@@ -131,9 +132,11 @@ func getValueFromArgs(args []string, argIndex int, parsedArgs []string) ([]strin
 	return parsedArgs, args, whiskErr
 }
 
-func parseArgs(args []string) ([]string, []string, []string, error) {
+func parseArgs(args []string) ([]string, []string, []string, []string, []string, error) {
 	var paramArgs []string
 	var annotArgs []string
+	var feedParamArgs []string
+	var triggerParamArgs []string
 	var whiskErr error
 
 	i := 0
@@ -147,14 +150,14 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
 					map[string]interface{}{"err": whiskErr})
 				whiskErr = whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
 					whisk.DISPLAY_USAGE)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 
 			filename := paramArgs[len(paramArgs)-1]
 			paramArgs[len(paramArgs)-1], whiskErr = ReadFile(filename)
 			if whiskErr != nil {
 				whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", filename, whiskErr)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 		} else if args[i] == "-A" || args[i] == "--annotation-file" {
 			annotArgs, args, whiskErr = getValueFromArgs(args, i, annotArgs)
@@ -164,14 +167,14 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
 					map[string]interface{}{"err": whiskErr})
 				whiskErr = whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
 					whisk.DISPLAY_USAGE)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 
 			filename := annotArgs[len(annotArgs)-1]
 			annotArgs[len(annotArgs)-1], whiskErr = ReadFile(filename)
 			if whiskErr != nil {
 				whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", filename, whiskErr)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 		} else if args[i] == "-p" || args[i] == "--param" {
 			paramArgs, args, whiskErr = getKeyValueArgs(args, i, paramArgs)
@@ -181,9 +184,10 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
 					map[string]interface{}{"err": whiskErr})
 				whiskErr = whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
 					whisk.DISPLAY_USAGE)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 		} else if args[i] == "-a" || args[i] == "--annotation" {
+			fmt.Println("4")
 			annotArgs, args, whiskErr = getKeyValueArgs(args, i, annotArgs)
 			if whiskErr != nil {
 				whisk.Debug(whisk.DbgError, "getKeyValueArgs(%#v, %d) failed: %s\n", args, i, whiskErr)
@@ -191,7 +195,23 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
 					map[string]interface{}{"err": whiskErr})
 				whiskErr = whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
 					whisk.DISPLAY_USAGE)
-				return nil, nil, nil, whiskErr
+				return nil, nil, nil, nil, nil, whiskErr
+			}
+		} else if args[i] == "-F" || args[i] == "--feed-param" {
+			feedParamArgs, args, whiskErr = getKeyValueArgs(args, i, feedParamArgs)
+			if whiskErr != nil {
+				whisk.Debug(whisk.DbgError, "getKeyValueArgs(%#v, %d) failed: %s\n", args, i, whiskErr)
+				whiskErr = whisk.MakeWskError(whiskErr, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
+					whisk.DISPLAY_USAGE)
+				return nil, nil, nil, nil, nil, whiskErr
+			}
+		} else if args[i] == "-T" || args[i] == "--trigger-param" {
+			triggerParamArgs, args, whiskErr = getKeyValueArgs(args, i, triggerParamArgs)
+			if whiskErr != nil {
+				whisk.Debug(whisk.DbgError, "getKeyValueArgs(%#v, %d) failed: %s\n", args, i, whiskErr)
+				whiskErr = whisk.MakeWskError(whiskErr, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG,
+					whisk.DISPLAY_USAGE)
+				return nil, nil, nil, nil, nil, whiskErr
 			}
 		} else {
 			i++
@@ -200,16 +220,18 @@ func parseArgs(args []string) ([]string, []string, []string, error) {
 
 	whisk.Debug(whisk.DbgInfo, "Found param args '%s'.\n", paramArgs)
 	whisk.Debug(whisk.DbgInfo, "Found annotations args '%s'.\n", annotArgs)
+	whisk.Debug(whisk.DbgInfo, "Found feed param args '%s'.\n", feedParamArgs)
+	whisk.Debug(whisk.DbgInfo, "Found trigger param args '%s'.\n", triggerParamArgs)
 	whisk.Debug(whisk.DbgInfo, "Arguments with param args removed '%s'.\n", args)
 
-	return args, paramArgs, annotArgs, nil
+	return args, paramArgs, annotArgs, feedParamArgs, triggerParamArgs, nil
 }
 
 func Execute() error {
 	var err error
 
 	whisk.Debug(whisk.DbgInfo, "wsk args: %#v\n", os.Args)
-	os.Args, Flags.common.param, Flags.common.annotation, err = parseArgs(os.Args)
+	os.Args, Flags.common.param, Flags.common.annotation, Flags.trigger.feedParam, Flags.trigger.triggerParam, err = parseArgs(os.Args)
 
 	if err != nil {
 		whisk.Debug(whisk.DbgError, "parseParams(%s) failed: %s\n", os.Args, err)
