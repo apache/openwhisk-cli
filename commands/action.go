@@ -877,6 +877,7 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr, 
 	//There is no existing action. So we create require-whisk-auth value based on user input.
 	if existingAction == nil {
 		whisk.Debug(whisk.DbgInfo, "Creating secure secret for user based on their input.\n")
+		//Users indicated secret value on command line.
 		if userProvidedSecret != nil {
 			whisk.Debug(whisk.DbgInfo, "Setting %v annotation; new secret %v\n", WEB_SECURE_ANNOT, userProvidedSecret)
 			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: getNewSecret(userProvidedSecret)})
