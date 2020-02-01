@@ -454,7 +454,7 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 	annotations := getParameters(annotationArray, true, true)
 
 	//simplestTrigger indicates user are creating a trigger without any feed or parameters
-	simplestTrigger := (len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0)
+	simplestTrigger := len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0
 
 	//if users are 1. creating a trigger without any feed or parameters
 	//             2. creating a trigger using --param flag
@@ -652,7 +652,7 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 	}
 
 	//simplestTrigger indicates user are updating a trigger without any feed or parameters
-	simplestTrigger := (len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0)
+	simplestTrigger := len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0
 
 	//if users are 1. creating a trigger without any feed or parameters
 	//             2. creating a trigger using --param flag
