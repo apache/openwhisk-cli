@@ -20,7 +20,6 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/apache/openwhisk-cli/wski18n"
 	"github.com/apache/openwhisk-client-go/whisk"
@@ -398,13 +397,15 @@ func init() {
 	triggerCreateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	triggerCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	triggerCreateCmd.Flags().StringVarP(&Flags.common.feed, "feed", "f", "", wski18n.T("trigger feed `ACTION_NAME`"))
-	triggerCreateCmd.Flags().StringSliceVarP(&Flags.trigger.feedParam, "feed-param", "F", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+	triggerCreateCmd.Flags().StringSliceVarP(&Flags.trigger.feedParam, "feed-param", "F", []string{}, wski18n.T("feed parameter values in `KEY VALUE` format"))
+	triggerCreateCmd.Flags().StringSliceVarP(&Flags.trigger.triggerParam, "trigger-param", "T", []string{}, wski18n.T("trigger parameter values in `KEY VALUE` format"))
 
 	triggerUpdateCmd.Flags().StringSliceVarP(&Flags.common.annotation, "annotation", "a", []string{}, wski18n.T("annotation values in `KEY VALUE` format"))
 	triggerUpdateCmd.Flags().StringVarP(&Flags.common.annotFile, "annotation-file", "A", "", wski18n.T("`FILE` containing annotation values in JSON format"))
 	triggerUpdateCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	triggerUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
-	triggerUpdateCmd.Flags().StringSliceVarP(&Flags.trigger.feedParam, "feed-param", "F", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
+	triggerUpdateCmd.Flags().StringSliceVarP(&Flags.trigger.feedParam, "feed-param", "F", []string{}, wski18n.T("feed parameter values in `KEY VALUE` format"))
+	triggerUpdateCmd.Flags().StringSliceVarP(&Flags.trigger.triggerParam, "trigger-param", "T", []string{}, wski18n.T("trigger parameter values in `KEY VALUE` format"))
 
 	triggerGetCmd.Flags().BoolVarP(&Flags.trigger.summary, "summary", "s", false, wski18n.T("summarize trigger details; parameters with prefix \"*\" are bound"))
 
@@ -429,43 +430,37 @@ type Trigger struct {
 }
 
 func (t *Trigger) Create(Client *whisk.Client, args []string) error {
-
 	if whiskErr := CheckArgs(args, 1, 1, "Trigger create",
 		wski18n.T("A trigger name is required.")); whiskErr != nil {
 		return whiskErr
 	}
 
-	triggerName, err := NewQualifiedName(args[0])
-	if err != nil {
-		return NewQualifiedNameError(args[0], err)
-	}
-
-	annotationArray := Flags.common.annotation
-	authToken := Client.Config.AuthToken
-
-	// if a feed is specified, create additional parameters which must be passed to the feed
-	feedQualifiedName, additionalFeedParams := feedParameters(Flags.common.feed, FEED_CREATE, triggerName, authToken)
-
-	// if a feed is specified, add feed annotation the annotations declared on the command line
-	// TODO: add test to ensure that generated annotation has precedence
-	if feedQualifiedName != nil {
-		annotationArray = append(annotationArray, getFormattedJSON("feed", feedQualifiedName.GetFullQualifiedName()))
-	}
-	annotations := getParameters(annotationArray, true, true)
-
-	//simplestTrigger indicates user are creating a trigger without any feed or parameters
-	simplestTrigger := len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0
-
-	//if users are 1. creating a trigger without any feed or parameters
-	//             2. creating a trigger using --param flag
-	//then we use the old way to create the trigger.
-	if len(Flags.common.param) > 0 || simplestTrigger {
-		if len(Flags.trigger.feedParam) > 0 || len(Flags.trigger.triggerParam) > 0 {
-			whisk.Debug(whisk.DbgError, "User tries to mix use of --param with --feed-param and --trigger-param")
-			errMsg := fmt.Sprintf("Incorrect usage. Cannot combine --feed-param or --trigger-param flag with --param flag\n")
-			fmt.Fprintf(os.Stderr, "%s%s", color.RedString("error: "), errors.New(errMsg))
-			return nil
+	//1. if the command line arguments user provides contains only --param flags
+	//2. if the command line arguments user provides contains no --param flags at all
+	//we should process the trigger create command in the old way.
+	if userIndicatesToUseOldTriggerCommand() {
+		triggerName, err := NewQualifiedName(args[0])
+		if err != nil {
+			return NewQualifiedNameError(args[0], err)
 		}
+
+		//if user also issued new trigger command then we stop execution
+		if triggerUsageErr := userIssuedNewTriggerCmd(); triggerUsageErr != nil {
+			return triggerUsageErr
+		}
+
+		annotationArray := Flags.common.annotation
+		authToken := Client.Config.AuthToken
+
+		// if a feed is specified, create additional parameters which must be passed to the feed
+		feedQualifiedName, additionalFeedParams := feedParameters(Flags.common.feed, FEED_CREATE, triggerName, authToken)
+
+		// if a feed is specified, add feed annotation the annotations declared on the command line
+		// TODO: add test to ensure that generated annotation has precedence
+		if feedQualifiedName != nil {
+			annotationArray = append(annotationArray, getFormattedJSON("feed", feedQualifiedName.GetFullQualifiedName()))
+		}
+		annotations := getParameters(annotationArray, true, true)
 
 		// the feed receives all the parameters that are specified on the command line so we merge
 		// the feed lifecycle parameters with the command line ones
@@ -518,16 +513,38 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 				map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(trigger.Name)}))
 		return nil
 	}
+	//1. if user's input command line argument contains either --feed-param or --trigger-param
+	//2. if user's input command line argument contains both --feed-param and --trigger-param
+	//then we process trigger create command in a different way
+	return CreateExtendedVersion(Client, args)
+}
 
-	//if users are using either --feed-param or --trigger-param flag,
-	//then we know the users are trying to separate trigger and feed params and
-	//we use the enhanced way to create trigger
+//CreateExtendedVersion only executes when users indicate to create triggers with --feed-param
+//or --trigger-param flags.
+func CreateExtendedVersion(Client *whisk.Client, args []string) error {
+	triggerName, err := NewQualifiedName(args[0])
+	if err != nil {
+		return NewQualifiedNameError(args[0], err)
+	}
 
+	annotationArray := Flags.common.annotation
+	authToken := Client.Config.AuthToken
+
+	// if a feed is specified, create additional parameters which must be passed to the feed
+	feedQualifiedName, additionalFeedParams := feedParameters(Flags.common.feed, FEED_CREATE, triggerName, authToken)
+
+	// if a feed is specified, add feed annotation the annotations declared on the command line
+	// TODO: add test to ensure that generated annotation has precedence
+	if feedQualifiedName != nil {
+		annotationArray = append(annotationArray, getFormattedJSON("feed", feedQualifiedName.GetFullQualifiedName()))
+	}
+	annotations := getParameters(annotationArray, true, true)
+
+	//if trigger contains no feed but user tries to update feed parameter, then we issue error.
 	if feedQualifiedName == nil && len(Flags.trigger.feedParam) > 0 {
-		//trigger without feed names cannot have a feed param
-		errMsg := fmt.Sprintf("Incorrect usage. trigger without a feed cannot have feed parameters. \n")
-		fmt.Fprintf(os.Stderr, "%s%s", color.RedString("error: "), errors.New(errMsg))
-		return nil
+		whisk.Debug(whisk.DbgError, "Incorrect usage. trigger without a feed cannot have feed parameters.")
+		errStr := wski18n.T("Incorrect usage. trigger without a feed cannot have feed parameters.")
+		return whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	}
 
 	triggerParams := getParameters(Flags.trigger.triggerParam, true, false)
@@ -573,18 +590,19 @@ func (t *Trigger) Create(Client *whisk.Client, args []string) error {
 	fmt.Fprintf(color.Output,
 		wski18n.T("{{.ok}} created trigger {{.name}}\n",
 			map[string]interface{}{"ok": color.GreenString("ok:"), "name": boldString(trigger.Name)}))
+
 	return nil
 }
 
 func (t *Trigger) Update(Client *whisk.Client, args []string) error {
-	var err error
-	var fullFeedName string
-	var qualifiedName = new(QualifiedName)
-
 	if whiskErr := CheckArgs(args, 1, 1, "Trigger update",
 		wski18n.T("A trigger name is required.")); whiskErr != nil {
 		return whiskErr
 	}
+
+	var err error
+	var fullFeedName string
+	var qualifiedName = new(QualifiedName)
 
 	if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
 		return NewQualifiedNameError(args[0], err)
@@ -592,45 +610,12 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 
 	Client.Namespace = qualifiedName.GetNamespace()
 
-	// Convert the trigger's list of default parameters from a string into []KeyValue
-	// The 1 or more --param arguments have all been combined into a single []string
-	// e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
-
-	whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
-	parameters, err := getJSONFromStrings(Flags.common.param, true)
-	if err != nil {
-		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
-		errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-			map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
-		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-		return werr
-	}
-
-	whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.trigger.triggerParam)
-	triggerParameters, err := getJSONFromStrings(Flags.trigger.triggerParam, true)
-	if err != nil {
-		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
-		errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
-			map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
-		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-		return werr
-	}
-
-	whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
-	annotations, err := getJSONFromStrings(Flags.common.annotation, true)
-
-	if err != nil {
-		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
-		errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
-			map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
-		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-		return werr
-	}
-
 	retTrigger, httpResp, err := Client.Triggers.Get(qualifiedName.GetEntityName())
-
 	if err != nil && httpResp.StatusCode == 404 {
-		t.Create(Client, args)
+		triggerCreateErr := t.Create(Client, args)
+		if triggerCreateErr != nil {
+			return triggerCreateErr
+		}
 		return nil
 	} else if err != nil {
 		whisk.Debug(whisk.DbgError, "Client.Triggers.Get(%s) failed: %s\n", qualifiedName.GetEntityName(), err)
@@ -640,29 +625,47 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 		return werr
 	}
 
-	// Get full feed name from trigger get request as it is needed to get the feed
-	if retTrigger != nil && retTrigger.Annotations != nil {
-		fullFeedName = getValueString(retTrigger.Annotations, "feed")
-	}
+	//1. if the command line arguments user provides contains only --param flags
+	//2. if the command line arguments user provides contains no --param flags at all
+	//we should process the trigger update command in the old way.
+	if userIndicatesToUseOldTriggerCommand() {
+		//if user also issued new trigger command then we stop execution
+		if triggerUsageErr := userIssuedNewTriggerCmd(); triggerUsageErr != nil {
+			return triggerUsageErr
+		}
 
-	trigger := &whisk.Trigger{
-		Name:        qualifiedName.GetEntityName(),
-		Parameters:  parameters.(whisk.KeyValueArr),
-		Annotations: annotations.(whisk.KeyValueArr),
-	}
+		// Convert the trigger's list of default parameters from a string into []KeyValue
+		// The 1 or more --param arguments have all been combined into a single []string
+		// e.g.   --p arg1,arg2 --p arg3,arg4   ->  [arg1, arg2, arg3, arg4]
+		whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.common.param)
+		parameters, err := getJSONFromStrings(Flags.common.param, true)
+		if err != nil {
+			whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
+			errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
+				map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
+			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+			return werr
+		}
 
-	//simplestTrigger indicates user are updating a trigger without any feed or parameters
-	simplestTrigger := len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0
+		whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+		annotations, err := getJSONFromStrings(Flags.common.annotation, true)
+		if err != nil {
+			whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
+			errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
+				map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
+			werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+			return werr
+		}
 
-	//if users are 1. creating a trigger without any feed or parameters
-	//             2. creating a trigger using --param flag
-	//then we use the old way to create the trigger.
-	if len(Flags.common.param) > 0 || simplestTrigger {
-		if len(Flags.trigger.feedParam) > 0 || len(Flags.trigger.triggerParam) > 0 {
-			whisk.Debug(whisk.DbgError, "User tries to mix use of --param with --feed-param and --trigger-param")
-			errMsg := fmt.Sprintf("Incorrect usage. Cannot combine --feed-param or --trigger-param flag with --param flag\n")
-			fmt.Fprintf(os.Stderr, "%s%s", color.RedString("error: "), errors.New(errMsg))
-			return nil
+		trigger := &whisk.Trigger{
+			Name:        qualifiedName.GetEntityName(),
+			Parameters:  parameters.(whisk.KeyValueArr),
+			Annotations: annotations.(whisk.KeyValueArr),
+		}
+
+		// Get full feed name from trigger get request as it is needed to get the feed
+		if retTrigger != nil && retTrigger.Annotations != nil {
+			fullFeedName = getValueString(retTrigger.Annotations, "feed")
 		}
 
 		if len(fullFeedName) > 0 {
@@ -698,8 +701,54 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 
 		return nil
 	}
+	//1. if user's input command line argument contains either --feed-param or --trigger-param
+	//2. if user's input command line argument contains both --feed-param and --trigger-param
+	//then we process trigger update command in a different way
+	return UpdateExtendedVersion(Client, args, retTrigger)
+}
 
-	trigger.Parameters = triggerParameters.(whisk.KeyValueArr)
+//UpdateExtendedVersion only executes when users indicate to update triggers with --feed-param
+//or --trigger-param flags.
+func UpdateExtendedVersion(Client *whisk.Client, args []string, retTrigger *whisk.Trigger) error {
+	var fullFeedName string
+	var qualifiedName = new(QualifiedName)
+	var err error
+
+	if qualifiedName, err = NewQualifiedName(args[0]); err != nil {
+		return NewQualifiedNameError(args[0], err)
+	}
+
+	whisk.Debug(whisk.DbgInfo, "Parsing parameters: %#v\n", Flags.trigger.triggerParam)
+	triggerParameters, err := getJSONFromStrings(Flags.trigger.triggerParam, true)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.param, err)
+		errStr := wski18n.T("Invalid parameter argument '{{.param}}': {{.err}}",
+			map[string]interface{}{"param": fmt.Sprintf("%#v", Flags.common.param), "err": err})
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return werr
+	}
+
+	whisk.Debug(whisk.DbgInfo, "Parsing annotations: %#v\n", Flags.common.annotation)
+	annotations, err := getJSONFromStrings(Flags.common.annotation, true)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, true) failed: %s\n", Flags.common.annotation, err)
+		errStr := wski18n.T("Invalid annotation argument '{{.annotation}}': {{.err}}",
+			map[string]interface{}{"annotation": fmt.Sprintf("%#v", Flags.common.annotation), "err": err})
+		werr := whisk.MakeWskErrorFromWskError(errors.New(errStr), err, whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return werr
+	}
+
+	trigger := &whisk.Trigger{
+		Name:        qualifiedName.GetEntityName(),
+		Parameters:  triggerParameters.(whisk.KeyValueArr),
+		Annotations: annotations.(whisk.KeyValueArr),
+	}
+
+	// Get full feed name from trigger get request as it is needed to get the feed
+	if retTrigger != nil && retTrigger.Annotations != nil {
+		fullFeedName = getValueString(retTrigger.Annotations, "feed")
+	}
+
 	_, _, err = Client.Triggers.Insert(trigger, true)
 	if err != nil {
 		whisk.Debug(whisk.DbgError, "Client.Triggers.Insert(%+v,true) failed: %s\n", trigger, err)
@@ -747,4 +796,20 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 
 func feedParameterChanged(triggerParam []string) bool {
 	return len(triggerParam) > 0
+}
+
+//if users are 1. creating a trigger without any feed or parameters
+//             2. creating a trigger using --param flag
+//then we use the old way to create the trigger.
+func userIndicatesToUseOldTriggerCommand() bool {
+	return len(Flags.common.param) > 0 || (len(Flags.trigger.feedParam) == 0 && len(Flags.common.param) == 0 && len(Flags.trigger.triggerParam) == 0)
+}
+
+func userIssuedNewTriggerCmd() error {
+	if len(Flags.trigger.feedParam) > 0 || len(Flags.trigger.triggerParam) > 0 {
+		whisk.Debug(whisk.DbgError, "User tries to mix use of --param with --feed-param and --trigger-param")
+		errStr := wski18n.T("Incorrect usage. Cannot combine --feed-param or --trigger-param flag with --param flag")
+		return whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+	}
+	return nil
 }

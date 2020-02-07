@@ -19,7 +19,6 @@ package commands
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"runtime"
@@ -187,7 +186,6 @@ func parseArgs(args []string) ([]string, []string, []string, []string, []string,
 				return nil, nil, nil, nil, nil, whiskErr
 			}
 		} else if args[i] == "-a" || args[i] == "--annotation" {
-			fmt.Println("4")
 			annotArgs, args, whiskErr = getKeyValueArgs(args, i, annotArgs)
 			if whiskErr != nil {
 				whisk.Debug(whisk.DbgError, "getKeyValueArgs(%#v, %d) failed: %s\n", args, i, whiskErr)
