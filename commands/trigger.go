@@ -538,6 +538,7 @@ func CreateExtendedVersion(Client *whisk.Client, args []string) error {
 	if feedQualifiedName != nil {
 		annotationArray = append(annotationArray, getFormattedJSON("feed", feedQualifiedName.GetFullQualifiedName()))
 	}
+
 	annotations := getParameters(annotationArray, true, true)
 
 	//if trigger contains no feed but user tries to update feed parameter, then we issue error.
