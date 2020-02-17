@@ -505,7 +505,6 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
         Seq("trigger", "update", triggerName, "-F", "feedParam", "feedParamVal", "--auth", wskprops.authKey) ++ wskprops.overrides,
         expectedExitCode = ERROR_EXIT)
       .stderr should include("this trigger does not contain a feed")
-    val stderr = wsk.trigger.delete(triggerName, expectedExitCode = SUCCESS_EXIT).stderr
   }
 
   it should "return error message when creating or updating feed with both --param and --trigger-param/--feed-param flags" in withAssetCleaner(
