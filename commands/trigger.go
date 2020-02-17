@@ -600,4 +600,5 @@ func (t *Trigger) Update(Client *whisk.Client, args []string) error {
 	}
 
 	return nil
+
 }
