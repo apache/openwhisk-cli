@@ -500,6 +500,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
     assetHelper.withCleaner(wsk.trigger, triggerName) { (trigger, _) =>
       trigger.create(triggerName, parameters = params)
     }
+    
     wsk
       .cli(
         Seq("trigger", "update", triggerName, "-F", "feedParam", "feedParamVal", "--auth", wskprops.authKey) ++ wskprops.overrides,
