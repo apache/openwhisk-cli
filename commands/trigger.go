@@ -543,8 +543,8 @@ func CreateExtendedVersion(Client *whisk.Client, args []string) error {
 
 	//if trigger contains no feed but user tries to update feed parameter, then we issue error.
 	if feedQualifiedName == nil && len(Flags.trigger.feedParam) > 0 {
-		whisk.Debug(whisk.DbgError, "Incorrect usage. trigger without a feed cannot have feed parameters.")
-		errStr := wski18n.T("Incorrect usage. trigger without a feed cannot have feed parameters.")
+		whisk.Debug(whisk.DbgError, "Incorrect usage. trigger without a feed cannot have feed parameters")
+		errStr := wski18n.T("Incorrect usage. trigger without a feed cannot have feed parameters")
 		return whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	}
 
@@ -804,8 +804,8 @@ func userIndicatesToUseOldTriggerCommand() bool {
 
 func userIssuedNewTriggerCmd() error {
 	if len(Flags.trigger.feedParam) > 0 || len(Flags.trigger.triggerParam) > 0 {
-		whisk.Debug(whisk.DbgError, "User tries to mix use of --param with --feed-param and --trigger-param")
-		errStr := wski18n.T("Incorrect usage. Cannot combine --feed-param or --trigger-param flag with --param flag")
+		whisk.Debug(whisk.DbgError, "User tries to mix use of --param or --param-file flags with --feed-param or --trigger-param")
+		errStr := wski18n.T("Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag")
 		return whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	}
 	return nil

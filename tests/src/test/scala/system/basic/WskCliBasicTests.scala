@@ -507,7 +507,7 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
       .stderr should include("this trigger does not contain a feed")
   }
 
-  it should "return error message when creating or updating feed with both --param and --trigger-param/--feed-param flags" in withAssetCleaner(
+  it should "return error message when creating feed with both --param and --trigger-param/--feed-param flags" in withAssetCleaner(
     wskprops) { (wp, assetHelper) =>
     val triggerName = withTimestamp("t1tor1")
     val ns = wsk.namespace.whois()
@@ -529,7 +529,63 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
             wskprops.authKey) ++ wskprops.overrides,
           expectedExitCode = NOT_ALLOWED)
         .stderr
-    stderr should include("Cannot combine --feed-param or --trigger-param flag with --param flag")
+    stderr should include(
+      "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag")
+  }
+
+  it should "return error message when updating feed with both --param and --trigger-param/--feed-param flags" in withAssetCleaner(
+    wskprops) { (wp, assetHelper) =>
+    val triggerName = withTimestamp("t1tor1")
+    val ns = wsk.namespace.whois()
+
+    var stderr =
+      wsk
+        .cli(
+          Seq(
+            "trigger",
+            "update",
+            triggerName,
+            "-p",
+            "a",
+            "A",
+            "-T",
+            "feedParam",
+            "feedParamVal",
+            "--auth",
+            wskprops.authKey) ++ wskprops.overrides,
+          expectedExitCode = NOT_ALLOWED)
+        .stderr
+    stderr should include(
+      "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag")
+  }
+
+  it should "return error message when creating feed with both --param-file and --trigger-param/--feed-param flags" in withAssetCleaner(
+    wskprops) { (wp, assetHelper) =>
+    val triggerName = withTimestamp("t1tor1")
+    val ns = wsk.namespace.whois()
+    val filePathString = TestUtils.getTestActionFilename("argCheck.js")
+
+    var stderr =
+      wsk
+        .cli(
+          Seq(
+            "trigger",
+            "create",
+            triggerName,
+            "--param-file",
+            filePathString,
+            "-F",
+            "feedParam",
+            "feedParamVal",
+            "-T",
+            "triggerParam",
+            "triggerParamVal",
+            "--auth",
+            wskprops.authKey) ++ wskprops.overrides,
+          expectedExitCode = NOT_ALLOWED)
+        .stderr
+    stderr should include(
+      "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag")
   }
 
   it should "create, and get a trigger summary" in withAssetCleaner(wskprops) { (wp, assetHelper) =>
