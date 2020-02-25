@@ -1608,7 +1608,7 @@
     "translation": "feed parameter values in `KEY VALUE` format"
   },
   {
-    "id": "Incorrect usage. trigger without a feed cannot have feed parameters", 
-    "translation": "Incorrect usage. trigger without a feed cannot have feed parameters"
+    "id": "Incorrect usage. Trigger without a feed cannot have feed parameters", 
+    "translation": "Incorrect usage. Trigger without a feed cannot have feed parameters"
   }
 ]
