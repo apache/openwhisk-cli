@@ -1594,5 +1594,21 @@
   {
     "id": "CMD_DESC_LONG_EXPORT",
     "translation": "Exports managed project assets from OpenWhisk to manifest and function files.\n\nThe most common way to run export:\n$ wsk project export --projectname PROJECT --manifest path/to/exported-manifest.yaml"
+  },
+  {
+    "id": "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag", 
+    "translation": "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag"
+  },
+  {
+    "id": "trigger parameter values in `KEY VALUE` format", 
+    "translation": "trigger parameter values in `KEY VALUE` format"
+  },
+  {
+    "id": "feed parameter values in `KEY VALUE` format", 
+    "translation": "feed parameter values in `KEY VALUE` format"
+  },
+  {
+    "id": "Incorrect usage. Trigger without a feed cannot have feed parameters", 
+    "translation": "Incorrect usage. Trigger without a feed cannot have feed parameters"
   }
 ]
