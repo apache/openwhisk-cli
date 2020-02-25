@@ -543,8 +543,7 @@ func CreateExtendedVersion(Client *whisk.Client, args []string) error {
 
 	//if trigger contains no feed but user tries to update feed parameter, then we issue error.
 	if feedQualifiedName == nil && len(Flags.trigger.feedParam) > 0 {
-		whisk.Debug(whisk.DbgError, "Incorrect usage. trigger without a feed cannot have feed parameters")
-		errStr := wski18n.T("Incorrect usage. trigger without a feed cannot have feed parameters")
+		errStr := wski18n.T("Incorrect usage. Trigger without a feed cannot have feed parameters")
 		return whisk.MakeWskError(errors.New(errStr), whisk.NOT_ALLOWED, whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
 	}
 
