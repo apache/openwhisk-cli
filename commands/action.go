@@ -1288,6 +1288,7 @@ func init() {
 	actionCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
+	actionCreateCmd.Flags().StringSliceVarP(&Flags.common.env, "env", "e", nil, wski18n.T("environment values in `KEY VALUE` format"))
 
 	actionUpdateCmd.Flags().BoolVar(&Flags.action.native, "native", false, wski18n.T("treat ACTION as native action (zip file provides a compatible executable to run)"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.docker, "docker", "", wski18n.T("use provided docker image (a path on DockerHub) to run the action"))
@@ -1305,11 +1306,13 @@ func init() {
 	actionUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
+	actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.env, "env", "e", nil, wski18n.T("environment values in `KEY VALUE` format"))
 
 	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionInvokeCmd.Flags().BoolVarP(&Flags.common.blocking, "blocking", "b", false, wski18n.T("blocking invoke"))
 	actionInvokeCmd.Flags().BoolVarP(&Flags.action.result, "result", "r", false, wski18n.T("blocking invoke; show only activation result (unless there is a failure)"))
+	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.env, "env", "e", nil, wski18n.T("environment values in `KEY VALUE` format"))
 
 	actionGetCmd.Flags().BoolVarP(&Flags.common.summary, "summary", "s", false, wski18n.T("summarize action details; parameters with prefix \"*\" are bound, \"**\" are bound and finalized"))
 	actionGetCmd.Flags().BoolVarP(&Flags.action.url, "url", "r", false, wski18n.T("get action url"))
