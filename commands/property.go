@@ -471,6 +471,10 @@ func loadProperties() error {
 	}
 
 	if apiHost, hasProp := props["APIHOST"]; hasProp {
+		if last := len(apiHost) - 1; last >= 0 && apiHost[last] == '/' {
+			apiHost = apiHost[:last]
+		}
+
 		Properties.APIHost = apiHost
 	}
 
