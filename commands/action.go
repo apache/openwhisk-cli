@@ -26,7 +26,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -439,6 +439,11 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		}
 
 		action.Annotations = annotations.(whisk.KeyValueArr)
+		var requireWhiskAuth = action.Annotations.FindKeyValue(WEB_SECURE_ANNOT)
+		_, isNumberFormat := action.Annotations[requireWhiskAuth].Value.(json.Number)
+		if requireWhiskAuth > -1 && isNumberFormat {
+			action.Annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: string(action.Annotations[requireWhiskAuth].Value.(json.Number))})
+		}
 	}
 
 	if len(Flags.action.kind) > 0 && len(Flags.action.docker) > 0 {
@@ -573,7 +578,7 @@ func augmentWebSecureArg(cmd *cobra.Command, args []string, originalAction *whis
 				augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(getWebSecureAnnotations(existingAction))
 			}
 		}
-		augmentedAction.Annotations = updateWebSecureAnnotation(Flags.action.websecure, augmentedAction.Annotations)
+		augmentedAction.Annotations = updateWebSecureAnnotation(Flags.action.websecure, augmentedAction.Annotations, existingAction)
 	}
 
 	whisk.Debug(whisk.DbgInfo, "augmentWebSecureArg: Augmented action struct: %#v\n", augmentedAction)
@@ -849,49 +854,76 @@ func getWebSecureAnnotations(action *whisk.Action) whisk.KeyValueArr {
 	return webKvArr[0:j]
 }
 
+func getNewSecret(secret interface{}) string {
+	_, isJSONNum := secret.(json.Number)
+	_, isInt := secret.(int64)
+	if isJSONNum {
+		return string(secret.(json.Number))
+	} else if isInt {
+		return strconv.FormatInt(secret.(int64), 10)
+	}
+	return secret.(string)
+}
+
 /*
  * Update the existing annotations with the web security annotation
  * If the current web security setting and existing setting are the "same", keep the existing value
  *   -> checking for the same "--web-secure true" setting means just checking if the two values are integers
  * If the current web security setting is "false", remove any existing setting
  */
-func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) whisk.KeyValueArr {
-	secureSecret := webSecureSecret(websecure) // will be false when "--web-secure false"
-	existingSecret := annotations.GetValue(WEB_SECURE_ANNOT)
-	_, disableSecurity := secureSecret.(bool)
-	_, newSecretIsInt := secureSecret.(int64)
-	var existingSecretIsInt bool = false
-	if existingSecret != nil {
-		_, existingSecretIsInt = existingSecret.(json.Number)
-	}
-
-	if existingSecretIsInt && newSecretIsInt {
-		whisk.Debug(whisk.DbgInfo, "Retaining existing secret number\n")
-	} else if existingSecret != nil && disableSecurity {
-		whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
-		annotations = deleteKey(WEB_SECURE_ANNOT, annotations)
+func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr, existingAction *whisk.Action) whisk.KeyValueArr {
+	secureSecret, secureSecretIsRandomlyGenerated := webSecureSecret(websecure)
+	userProvidedSecret := annotations.GetValue(WEB_SECURE_ANNOT)
+	//There is no existing action. So we create require-whisk-auth value based on user input.
+	if existingAction == nil {
+		whisk.Debug(whisk.DbgInfo, "Creating secure secret for user based on their input\n")
+		//Users indicated secret value on command line.
+		if userProvidedSecret != nil {
+			whisk.Debug(whisk.DbgInfo, "Setting %v annotation; new secret %v\n", WEB_SECURE_ANNOT, userProvidedSecret)
+			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: getNewSecret(userProvidedSecret)})
+			return annotations
+		}
+		whisk.Debug(whisk.DbgInfo, "Setting %v annotation; new secret %v\n", WEB_SECURE_ANNOT, secureSecret)
+		annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: getNewSecret(secureSecret)})
 	} else {
-		whisk.Debug(whisk.DbgInfo, "Setting %v annotation; prior secret %v new secret %v\n",
-			WEB_SECURE_ANNOT, reflect.TypeOf(existingSecret), reflect.TypeOf(secureSecret))
-		annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: secureSecret})
+		existingSecret := existingAction.Annotations.GetValue(WEB_SECURE_ANNOT)
+		_, disableSecurity := secureSecret.(bool)
+		if existingSecret != nil && disableSecurity {
+			whisk.Debug(whisk.DbgInfo, "disabling web-secure; deleting annotation: %v\n", WEB_SECURE_ANNOT)
+			annotations = deleteKey(WEB_SECURE_ANNOT, annotations)
+			return annotations
+		}
+		//if existingAction secret is not the same with annotations secret, this means user updated the secret using annotation
+		if existingSecret != annotations.GetValue(WEB_SECURE_ANNOT) {
+			whisk.Debug(whisk.DbgInfo, "User updates action using --web-secure true -a require-whisk-auth secureKkeyVal. Setting %v annotation; new secret %v\n", WEB_SECURE_ANNOT, annotations.GetValue(WEB_SECURE_ANNOT))
+			annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: getNewSecret(annotations.GetValue(WEB_SECURE_ANNOT))})
+		} else {
+			//new secret is randomly generated, then user typed true
+			if secureSecretIsRandomlyGenerated {
+				whisk.Debug(whisk.DbgInfo, "User updates action using --web-secure true without explicitly setting require-whisk-auth annotation. Retaining original action require-whisk-auth value\n")
+			} else {
+				//new secret is not randomly generated, then user typed string.
+				whisk.Debug(whisk.DbgInfo, "User updates action using --web-secure string. Setting %v annotation; new secret %v\n", WEB_SECURE_ANNOT, secureSecret)
+				annotations = annotations.AddOrReplace(&whisk.KeyValue{Key: WEB_SECURE_ANNOT, Value: getNewSecret(secureSecret)})
+			}
+		}
 	}
-
 	return annotations
 }
 
 //
-// Generate a secret according to the --web-secure setting
-//  true:   return a random int64
-//  false:  return false, meaning no secret was returned
-//  string: return the same string
-func webSecureSecret(webSecureMode string) interface{} {
+// Generate a secret according to the --web-secure setting and return an indication of whether a random number is generated as secure key
+//  true:   return a random int64 and true
+//  false:  return false and false
+//  string: return the same string and false
+func webSecureSecret(webSecureMode string) (interface{}, bool) {
 	switch strings.ToLower(webSecureMode) {
 	case "true":
-		return genWebActionSecureKey()
+		return genWebActionSecureKey(), true
 	case "false":
-		return false
+		return false, false
 	default:
-		return webSecureMode
+		return webSecureMode, false
 	}
 }
 
