@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fatih/color"
 	homedir "github.com/mitchellh/go-homedir"
@@ -471,11 +472,7 @@ func loadProperties() error {
 	}
 
 	if apiHost, hasProp := props["APIHOST"]; hasProp {
-		if last := len(apiHost) - 1; last >= 0 && apiHost[last] == '/' {
-			apiHost = apiHost[:last]
-		}
-
-		Properties.APIHost = apiHost
+		Properties.APIHost = strings.TrimRight(apiHost, "/")
 	}
 
 	if apiHost := os.Getenv("WHISK_APIHOST"); len(apiHost) > 0 {
