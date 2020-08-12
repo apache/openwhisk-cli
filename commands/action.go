@@ -480,6 +480,9 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		return nil, noArtifactError()
 	}
 
+	if update {
+		action.DelAnnotations = Flags.action.delAnnotation
+	}
 	whisk.Debug(whisk.DbgInfo, "Parsed action struct: %#v\n", action)
 	return action, err
 }
@@ -1305,6 +1308,7 @@ func init() {
 	actionUpdateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
+	actionUpdateCmd.Flags().StringArrayVar(&Flags.action.delAnnotation, "del-annotation", []string{}, wski18n.T("del annotation"))
 
 	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
