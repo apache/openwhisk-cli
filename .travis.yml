@@ -21,7 +21,7 @@ matrix:
   include:
     - os: linux
       sudo: required
-      go: "1.14"
+      go: "1.15"
       services: docker
       dist: xenial
 
