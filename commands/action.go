@@ -576,6 +576,13 @@ func augmentWebSecureArg(cmd *cobra.Command, args []string, originalAction *whis
 				augmentedAction.Annotations = augmentedAction.Annotations.AppendKeyValueArr(getWebSecureAnnotations(existingAction))
 			}
 		}
+		// when "--web-secure false", need to delete require-whisk-auth annotation
+		secureSecret := webSecureSecret(Flags.action.websecure) // will be false when "--web-secure false"
+		existingSecret := augmentedAction.Annotations.GetValue(WEB_SECURE_ANNOT)
+		_, disableSecurity := secureSecret.(bool)
+		if existingSecret != nil && disableSecurity {
+			augmentedAction.DelAnnotations = []string{"require-whisk-auth"}
+		}
 		augmentedAction.Annotations = updateWebSecureAnnotation(Flags.action.websecure, augmentedAction.Annotations)
 	}
 

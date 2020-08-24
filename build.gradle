@@ -53,11 +53,11 @@ dependencies {
         build(['name':'github.com/mitchellh/go-homedir', 'version':'1111e456ffea841564ac0fa5f69c26ef44dafec9', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n/...', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
         build(['name':'github.com/spf13/cobra', 'version':'1238ba19d24b0b9ceee2094e1cb31947d45c3e86', 'transitive':false])
-        build(['name':'github.com/spf13/pflag', 'version':'367864438f1b1a3c7db4da06a2f55b144e6784e0', 'transitive':false])
+        build(['name':'github.com/spf13/pflag', 'version':'81378bbcd8a1005f72b1e8d7579e5dd7b2d612ab', 'transitive':false])
         build(['name':'golang.org/x/sys/unix', 'version':'7f918dd405547ecb864d14a8ecbbfe205b5f930f', 'transitive':false])
         build(['name':'gopkg.in/yaml.v2', 'version':'eb3733d160e74a9c7e442f435eb3bea458e1d19f', 'transitive':false])
         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
-        build(['name':'github.com/apache/openwhisk-client-go/whisk','version':'d8ccb1442651beee6a9245913e3ca0cb182888b1','transitive':false])
+        build(['name':'github.com/apache/openwhisk-client-go/whisk','version':'44551f1f3b715e87c0319b55762d50c71d214460','transitive':false])
         build(['name':'github.com/apache/openwhisk-wskdeploy','version':'cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2','transitive':false])
         // END - Imported from Godeps
         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'

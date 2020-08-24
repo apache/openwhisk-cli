@@ -669,7 +669,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         Parameters(createKey, createValue) ++
         Parameters(origKey, origValue)
     }
-    val updateAnnotations = baseAnnotations ++ Parameters(updateKey, updateValue) ++ Parameters(
+    val updateAnnotations = createAnnotations ++ Parameters(updateKey, updateValue) ++ Parameters(
       origKey,
       overwrittenValue)
 
