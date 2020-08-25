@@ -1416,6 +1416,10 @@
     "translation": "secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"
   },
   {
+    "id": "the list of annotations to be deleted from the action, e.g. --del-annotation key1 --del-annotation key2",
+    "translation": "the list of annotations to be deleted from the action, e.g. --del-annotation key1 --del-annotation key2"
+  },
+  {
     "id": "The --web-secure option is only valid when the --web option is enabled.",
     "translation": "The --web-secure option is only valid when the --web option is enabled."
   },
