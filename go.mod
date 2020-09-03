@@ -1,4 +1,4 @@
-module github.com/apache/openwhisk-cli
+module github.com/ibm-functions/openwhisk-cli
 
 go 1.14
 
