@@ -5,13 +5,13 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/apache/openwhisk-client-go/whisk",
-			"Comment": "1.0.0-1-gee5b870",
-			"Rev": "ee5b8709787cd37201c42e38040e9709f6d1e9c8"
+			"Comment": "1.1.0-3-g17d5563",
+			"Rev": "17d556327cd39cb6d6854667fa75c35ef9f2e6f1"
 		},
 		{
 			"ImportPath": "github.com/apache/openwhisk-client-go/wski18n",
-			"Comment": "1.0.0-1-gee5b870",
-			"Rev": "ee5b8709787cd37201c42e38040e9709f6d1e9c8"
+			"Comment": "1.1.0-3-g17d5563",
+			"Rev": "17d556327cd39cb6d6854667fa75c35ef9f2e6f1"
 		},
 		{
 			"ImportPath": "github.com/apache/openwhisk-wskdeploy/cmd",
