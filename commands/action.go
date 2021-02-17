@@ -56,6 +56,7 @@ const (
 	PHP_EXT           = ".php"
 	BAL_BIN_EXT       = ".balx"
 	RUBY_EXT          = ".rb"
+	RUST_EXT          = ".rs"
 	GO_EXT            = ".go"
 	NODE_JS           = "nodejs"
 	PYTHON            = "python"
@@ -63,6 +64,7 @@ const (
 	SWIFT             = "swift"
 	PHP               = "php"
 	RUBY              = "ruby"
+	RUST              = "rust"
 	GO                = "go"
 	BAL               = "ballerina"
 	DEFAULT           = "default"
@@ -644,6 +646,8 @@ func getExec(args []string, params ActionFlags) (*whisk.Exec, error) {
 		exec.Kind = fmt.Sprintf("%s:%s", PHP, DEFAULT)
 	} else if ext == RUBY_EXT {
 		exec.Kind = fmt.Sprintf("%s:%s", RUBY, DEFAULT)
+	} else if ext == RUST_EXT {
+		exec.Kind = fmt.Sprintf("%s:%s", RUST, DEFAULT)
 	} else if ext == GO_EXT {
 		exec.Kind = fmt.Sprintf("%s:%s", GO, DEFAULT)
 	} else if ext == BAL_BIN_EXT {
@@ -693,6 +697,8 @@ func getKindExtension(runtime string) (extension string) {
 		extension = fmt.Sprintf(".%s", runtime)
 	case RUBY:
 		extension = RUBY_EXT
+	case RUST:
+		extension = RUST_EXT
 	case GO:
 		extension = GO_EXT
 	}
