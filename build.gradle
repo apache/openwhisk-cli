@@ -34,47 +34,55 @@ subprojects {
   scalafmt.configFilePath = gradle.scalafmt.config
 }
 
+// Gogradle Config:
+// https://github.com/gogradle/gogradle/blob/master/docs/getting-started.md#configuration
 golang {
     packagePath = 'github.com/apache/openwhisk-cli' as String
     buildTags = (rootProject.findProperty('goTags')?:'').split(',')
-    goVersion = '1.9.3'
+    //goVersion = '1.9.3'
 }
 
-dependencies {
-    golang {
-        // BEGIN - Imported from Godeps
-        build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
-        build(['name':'github.com/fatih/color', 'version':'570b54cabe6b8eb0bc2dfce68d964677d63b5260', 'transitive':false])
-        build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
-        build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
-        build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
-        build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
-        build(['name':'github.com/mattn/go-isatty', 'version':'a5cdd64afdee435007ee3e9f6ed4684af949d568', 'transitive':false])
-        build(['name':'github.com/mitchellh/go-homedir', 'version':'1111e456ffea841564ac0fa5f69c26ef44dafec9', 'transitive':false])
-        build(['name':'github.com/nicksnyder/go-i18n/i18n/...', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
-        build(['name':'github.com/spf13/cobra', 'version':'1238ba19d24b0b9ceee2094e1cb31947d45c3e86', 'transitive':false])
-        build(['name':'github.com/spf13/pflag', 'version':'81378bbcd8a1005f72b1e8d7579e5dd7b2d612ab', 'transitive':false])
-        build(['name':'golang.org/x/sys/unix', 'version':'7f918dd405547ecb864d14a8ecbbfe205b5f930f', 'transitive':false])
-        build(['name':'gopkg.in/yaml.v2', 'version':'eb3733d160e74a9c7e442f435eb3bea458e1d19f', 'transitive':false])
-        build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
-        build(['name':'github.com/apache/openwhisk-client-go/whisk','version':'44551f1f3b715e87c0319b55762d50c71d214460','transitive':false])
-        build(['name':'github.com/apache/openwhisk-wskdeploy','version':'cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2','transitive':false])
-        // END - Imported from Godeps
-        test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
-        test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
-        test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
-        test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
-        test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
+// The `gogradle` plugin was designed to work with `govendor` and `godeps` tools
+// We must disable its tasks that attempt to "fetch" dependencies
+// into a "/vendor" directory and use them to build the project (which will fail)
+installDependencies.enabled = false
+resolveBuildDependencies.enabled = false
 
-        test name:'github.com/onsi/ginkgo', version:'00054c0bb96fc880d4e0be1b90937fad438c5290', transitive: false
-        test name:'github.com/hpcloud/tail',version: 'a1dbeea552b7c8df4b542c66073e393de198a800', transitive: false
-        test name:'gopkg.in/tomb.v1', version:'c131134a1947e9afd9cecfe11f4c6dff0732ae58', transitive: false
-        test name:'gopkg.in/fsnotify/fsnotify.v1', version:'7be54206639f256967dd82fa767397ba5f8f48f5', transitive: false
-        test name:'github.com/onsi/gomega', version:'c893efa28eb45626cdaa76c9f653b62488858837', transitive: false
-        test name:'golang.org/x/net/html', version:'b68f30494add4df6bd8ef5e82803f308e7f7c59c', transitive: false
-        test name:'golang.org/x/text', version:'ece95c760240037f89ebcbdd7155ac8cb52e38fa', transitive: false
-    }
-}
+// dependencies {
+//     golang {
+//         // BEGIN - Imported from Godeps
+//         build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
+//         build(['name':'github.com/fatih/color', 'version':'570b54cabe6b8eb0bc2dfce68d964677d63b5260', 'transitive':false])
+//         build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
+//         build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
+//         build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
+//         build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
+//         build(['name':'github.com/mattn/go-isatty', 'version':'a5cdd64afdee435007ee3e9f6ed4684af949d568', 'transitive':false])
+//         build(['name':'github.com/mitchellh/go-homedir', 'version':'1111e456ffea841564ac0fa5f69c26ef44dafec9', 'transitive':false])
+//         build(['name':'github.com/nicksnyder/go-i18n/i18n/...', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
+//         build(['name':'github.com/spf13/cobra', 'version':'1238ba19d24b0b9ceee2094e1cb31947d45c3e86', 'transitive':false])
+//         build(['name':'github.com/spf13/pflag', 'version':'81378bbcd8a1005f72b1e8d7579e5dd7b2d612ab', 'transitive':false])
+//         build(['name':'golang.org/x/sys/unix', 'version':'7f918dd405547ecb864d14a8ecbbfe205b5f930f', 'transitive':false])
+//         build(['name':'gopkg.in/yaml.v2', 'version':'eb3733d160e74a9c7e442f435eb3bea458e1d19f', 'transitive':false])
+//         build(['name':'github.com/ghodss/yaml', 'version':'0ca9ea5df5451ffdf184b4428c902747c2c11cd7', 'transitive':false])
+//         build(['name':'github.com/apache/openwhisk-client-go/whisk','version':'44551f1f3b715e87c0319b55762d50c71d214460','transitive':false])
+//         build(['name':'github.com/apache/openwhisk-wskdeploy','version':'cbe7c52d99c1ead5172946d3aeb33adb5d5c40b2','transitive':false])
+//         // END - Imported from Godeps
+//         test name:'github.com/stretchr/testify', version:'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', transitive:false //, tag: 'v1.2.0'
+//         test name:'github.com/spf13/viper', version:'aafc9e6bc7b7bb53ddaa75a5ef49a17d6e654be5', transitive:false
+//         test name:'github.com/cpuguy83/go-md2man/md2man', version:'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', transitive:false //, tag:'v1.0.7'
+//         test name:'github.com/davecgh/go-spew/spew', version:'346938d642f2ec3594ed81d874461961cd0faa76', transitive:false //, tag:'v1.1.0'
+//         test name:'github.com/pmezard/go-difflib/difflib', version:'792786c7400a136282c1664665ae0a8db921c6c2', transitive:false
+
+//         test name:'github.com/onsi/ginkgo', version:'00054c0bb96fc880d4e0be1b90937fad438c5290', transitive: false
+//         test name:'github.com/hpcloud/tail',version: 'a1dbeea552b7c8df4b542c66073e393de198a800', transitive: false
+//         test name:'gopkg.in/tomb.v1', version:'c131134a1947e9afd9cecfe11f4c6dff0732ae58', transitive: false
+//         test name:'gopkg.in/fsnotify/fsnotify.v1', version:'7be54206639f256967dd82fa767397ba5f8f48f5', transitive: false
+//         test name:'github.com/onsi/gomega', version:'c893efa28eb45626cdaa76c9f653b62488858837', transitive: false
+//         test name:'golang.org/x/net/html', version:'b68f30494add4df6bd8ef5e82803f308e7f7c59c', transitive: false
+//         test name:'golang.org/x/text', version:'ece95c760240037f89ebcbdd7155ac8cb52e38fa', transitive: false
+//     }
+// }
 
 /*
     The OpenWhiskPlatform class is a utility class to make the rest of what
@@ -194,7 +202,7 @@ if (rootProject.hasProperty('buildPlatforms')) {
         rootProject.ext.platforms = [
             'linux-386', 'linux-amd64',
             'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
-            'darwin-386', 'darwin-amd64',
+            'darwin-amd64',
             'windows-386', 'windows-amd64'
         ].collect { new OpenWhiskPlatform(it) }
     } else {

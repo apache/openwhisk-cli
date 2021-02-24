@@ -80,12 +80,14 @@ cd $TRAVIS_BUILD_DIR
 #
 #  Set up the OpenWhisk environment for integration testing
 #
-
 cd $OPENWHISK_HOME
 
+# Install Ansible and other pre-reqs
+./tools/travis/setup.sh
+
 #  Fire up the cluster
-cd $OPENWHISK_HOME/ansible
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
+cd $OPENWHISK_HOME/ansible
 $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
