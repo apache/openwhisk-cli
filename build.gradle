@@ -210,18 +210,38 @@ if (rootProject.hasProperty('buildPlatforms')) {
     }
 }
 
+task getEnv(type: Exec) {
+  commandLine 'printenv'
+}
+
+task getGoVersion(type: Exec) {
+  commandLine  'go', 'version'
+}
+
+task getGoBinData(type: Exec) {
+    executable = 'go'
+    args = ['get', '-u', 'github.com/jteeuwen/go-bindata/...']
+}
+
+task goI18n(type: Exec) {
+    dependsOn 'getGoBinData'
+    executable = 'go-bindata'
+    args = ['-pkg', 'wski18n', '-o', 'wski18n/i18n_resources.go', 'wski18n/resources']
+}
+
 /*
     I18n support
  */
-task getGoI18n(type: com.github.blindpirate.gogradle.Go) {
-    go 'get -u github.com/jteeuwen/go-bindata/...'
-}
+// task getGoI18n(type: com.github.blindpirate.gogradle.Go) {
+//     go 'get -u github.com/jteeuwen/go-bindata/...'
+// }
 
-task goI18n(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoI18n) {
-    // WARNING:  The single quotes are intentional!  The gogradle plugin will
-    //           parse the command with the GString engine at execution time.
-    run '${GOPATH}/bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources'
-}
+// task goI18n(type: com.github.blindpirate.gogradle.Go) {
+//     // WARNING:  The single quotes are intentional!  The gogradle plugin will
+//     //           parse the command with the GString engine at execution time.
+//     dependsOn 'getGoI18n'
+//     run '${GOPATH}/bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources'
+// }
 
 //resolveBuildDependencies.dependsOn(goI18n)
 
