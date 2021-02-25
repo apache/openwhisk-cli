@@ -222,12 +222,20 @@ if (rootProject.hasProperty('buildPlatforms')) {
 task getGoBinData(type: Exec) {
     executable = 'go'
     args = ['get', '-u', 'github.com/jteeuwen/go-bindata/...']
+
+    doLast{
+      println commandLine
+    }
 }
 
 task goI18n(type: Exec) {
     dependsOn 'getGoBinData'
     executable = 'go-bindata'
     args = ['-pkg', 'wski18n', '-o', 'wski18n/i18n_resources.go', 'wski18n/resources']
+
+    doLast{
+      println commandLine
+    }
 }
 
 /*
@@ -272,6 +280,7 @@ task goLint(type: Exec) {
 }
 
 goCheck.dependsOn(goLint)
+goPrepare.dependsOn(goI18n)
 
 goBuild {
     targetPlatform = rootProject.platforms*.goPlatform
@@ -284,8 +293,6 @@ goBuild {
       '-o', cliBuildLocation+'/${GOOS}-${GOARCH}/'+buildFileName+'${GOEXE}',
       golang.packagePath ] as List<String>)
 }
-
-goBuild.dependsOn goI18n
 
 gofmt {
     gofmt "-s -w ."
