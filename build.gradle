@@ -47,6 +47,7 @@ golang {
 // into a "/vendor" directory and use them to build the project (which will fail)
 installDependencies.enabled = false
 resolveBuildDependencies.enabled = false
+resolveTestDependencies.enabled = false
 
 // dependencies {
 //     golang {
@@ -210,13 +211,13 @@ if (rootProject.hasProperty('buildPlatforms')) {
     }
 }
 
-task getEnv(type: Exec) {
-  commandLine 'printenv'
-}
+// task getEnv(type: Exec) {
+//   commandLine 'printenv'
+// }
 
-task getGoVersion(type: Exec) {
-  commandLine  'go', 'version'
-}
+// task getGoVersion(type: Exec) {
+//   commandLine  'go', 'version'
+// }
 
 task getGoBinData(type: Exec) {
     executable = 'go'
@@ -249,14 +250,25 @@ task goI18n(type: Exec) {
     Checks -- add golint and scancode to the checks run prior to build.
        The get step is needed to be sure a golint binary is available to run.
  */
-task getGoLint(type: com.github.blindpirate.gogradle.Go) {
-    go 'get -u golang.org/x/lint/golint'
+// task getGoLint(type: com.github.blindpirate.gogradle.Go) {
+//     go 'get -u golang.org/x/lint/golint'
+// }
+
+// task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
+//     // WARNING:  The single quotes are intentional!  The gogradle plugin will
+//     //           parse the command with the GString engine at execution time.
+//     run '${GOPATH}/bin/golint ' + golang.packagePath
+// }
+
+task getGoLint(type: Exec) {
+    executable = 'go'
+    args = ['get', '-u', 'golang.org/x/lint/golint']
 }
 
-task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
-    // WARNING:  The single quotes are intentional!  The gogradle plugin will
-    //           parse the command with the GString engine at execution time.
-    run '${GOPATH}/bin/golint ' + golang.packagePath
+task goLint(type: Exec) {
+    dependsOn 'getGoLint'
+    executable = 'golint'
+    args = [golang.packagePath]
 }
 
 goCheck.dependsOn(goLint)
