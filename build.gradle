@@ -253,6 +253,8 @@ goBuild {
       golang.packagePath ] as List<String>)
 }
 
+goBuild.dependsOn goI18n
+
 gofmt {
     gofmt "-s -w ."
 }
