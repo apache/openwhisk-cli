@@ -193,14 +193,9 @@ task getGoLint(type: Exec) {
 }
 
 task goLint(type: Exec) {
-
-    dependsOn 'getGoLint'
     executable = 'golint'
-    args = ['./commands/']
-
-    // doLast{
-    //   println commandLine
-    // }
+    //args = ['.', './commands/']
+    args = ['.']
 }
 
 goCheck.dependsOn(goLint)
