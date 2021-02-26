@@ -167,9 +167,9 @@ task getGoBinData(type: Exec) {
     executable = 'go'
     args = ['get', '-u', 'github.com/jteeuwen/go-bindata/...']
 
-    // doLast{
-    //   println commandLine
-    // }
+    doLast{
+      println commandLine
+    }
 }
 
 task goI18n(type: Exec) {
@@ -177,9 +177,9 @@ task goI18n(type: Exec) {
     executable = 'go-bindata'
     args = ['-pkg', 'wski18n', '-o', 'wski18n/i18n_resources.go', 'wski18n/resources']
 
-    // doLast{
-    //   println commandLine
-    // }
+    doLast{
+      println commandLine
+    }
 }
 
 /*
@@ -190,12 +190,20 @@ task goI18n(type: Exec) {
 task getGoLint(type: Exec) {
     executable = 'go'
     args = ['get', '-u', 'golang.org/x/lint/golint']
+
+    doLast{
+      println commandLine
+    }
 }
 
 task goLint(type: Exec) {
     executable = 'golint'
-    //args = ['.', './commands/']
-    args = ['.']
+    //args = ['./', './commands/']
+    args = ['./']
+
+    doLast{
+      println commandLine
+    }
 }
 
 goCheck.dependsOn(goLint)
