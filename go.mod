@@ -10,7 +10,6 @@ require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20190818114111-108c894c2c0e // indirect
-	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/mattn/go-colorable v0.1.7
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nicksnyder/go-i18n v1.10.1
