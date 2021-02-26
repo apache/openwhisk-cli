@@ -45,6 +45,8 @@ golang {
 installDependencies.enabled = false
 resolveBuildDependencies.enabled = false
 resolveTestDependencies.enabled = false
+
+// Disable "go vet" and "gofmt" as gogradle uses deprecated syntax
 goVet.enabled = false
 gofmt.enabled = false
 

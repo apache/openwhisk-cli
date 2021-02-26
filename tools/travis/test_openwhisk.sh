@@ -83,7 +83,7 @@ cd $TRAVIS_BUILD_DIR
 cd $OPENWHISK_HOME
 
 # Install Ansible and other pre-reqs
-./tools/travis/setup.sh
+#./tools/travis/setup.sh
 
 #  Fire up the cluster
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
@@ -92,10 +92,10 @@ $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
-$ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controllerProtocolForSetup=http
 $ANSIBLE_CMD properties.yml
+$ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD routemgmt.yml
 
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
