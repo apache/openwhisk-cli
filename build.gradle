@@ -34,6 +34,20 @@ subprojects {
   scalafmt.configFilePath = gradle.scalafmt.config
 }
 
+golang {
+    packagePath = 'github.com/apache/openwhisk-cli' as String
+    buildTags = (rootProject.findProperty('goTags')?:'').split(',')
+}
+
+// The `gogradle` plugin was designed to work with `govendor` and `godeps` tools
+// We must disable its tasks that attempt to "fetch" dependencies
+// into a "/vendor" directory and use them to build the project (which will fail)
+installDependencies.enabled = false
+resolveBuildDependencies.enabled = false
+resolveTestDependencies.enabled = false
+goVet.enabled = false
+gofmt.enabled = false
+
 /*
     The OpenWhiskPlatform class is a utility class to make the rest of what
     happens with platforms a bit more understandable.  A "Platform" is a tuple
