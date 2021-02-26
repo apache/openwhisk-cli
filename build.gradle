@@ -228,6 +228,7 @@ task getGoLint(type: Exec) {
 }
 
 task goLint(type: Exec) {
+    dependsOn 'getGoLint'
     executable = 'golint'
     //args = ['./', './commands/']
     args = ['./']
