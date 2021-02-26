@@ -8,6 +8,7 @@ Godeps/
 *~
 
 # IDE-related exclusions
+/.vscode/
 .idea/
 *.iml
 
@@ -22,6 +23,9 @@ wski18n/i18n_resources.go
 bin/
 tests/build/
 tests/out/
+
+# Scala
+/.metals/
 
 # Exmaples and Misc
 javascript/
