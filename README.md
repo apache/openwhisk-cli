@@ -147,7 +147,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
     ./gradlew goBuild
     ```
 
-    Upon a successful build, the `wsk` binaries can be found within the under the corresponding `build/<os>-<architecture>/` folder of your project:
+    Upon a successful build, the `wsk` binaries can be found under the corresponding `build/<os>-<architecture>/` folder of your project:
 
     ```sh
     $ ls build
@@ -192,7 +192,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
 
 #### Using your own local Gradle to build
 
-Alternatively, you can choose to [Install Gradle](https://gradle.org/install/), which you can use instead of Gradle Wrapper by using the `gradle` command instead of `gradlew`. If you wish to use you own Gradle, verify its version is `6.6` or higher:
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/), which you can use instead of Gradle Wrapper by using the `gradle` command instead of `gradlew`. If you wish to use your own Gradle, verify its version is `6.6` or higher:
 
 ```sh
 gradle -version
@@ -235,8 +235,6 @@ Integration tests are best left to the Travis build as they depend on a fully fu
 
 ---
 
----
-
 ## Contributing to the project
 
 ### Git repository setup
@@ -266,6 +264,54 @@ Integration tests are best left to the Travis build as they depend on a fully fu
     ```
 
 > Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
+
+### Adding new dependencies
+
+Please use `go get` to add new dependencies to the `go.mod` file:
+
+```sh
+go get github.com/project/libname@v1.2.0
+```
+
+> Please avoid using commit hashes for referencing non-OpenWhisk libraries.
+
+### Removing unused dependencies
+
+Please us `go tidy` to remove any unused dependencies after any significant code changes:
+
+```sh
+go mod tidy
+```
+
+### Updating dependency versions
+
+Although you might be tempted to edit the go.mod file directly, please use the recommended method of using the `go get` command:
+
+Using "latest" version:
+
+```sh
+go get github.com/project/libname
+```
+
+Using a release tag:
+
+```sah
+go get github.com/project/libname
+```
+
+Using a commit hash:
+
+```sh
+go get github.com/project/libname@aee5cab1c
+```
+
+### Updating Go version
+
+Although you could edit the version directly in the go.mod file, it is better to use the `go edit` command:
+
+```sh
+go mod edit -go=1.15
+```
 
 ---
 
