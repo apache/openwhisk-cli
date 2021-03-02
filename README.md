@@ -192,7 +192,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
 
 #### Using your own local Gradle to build
 
-Alternatively, you can choose to [Install Gradle](https://gradle.org/install/) and use it instead of the project's Gradle Wrapper.  If so, you would use the `gradle` command instead of `gradlew`. If you do elect to use your own Gradle, verify its version is `6.6` or higher:
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/) and use it instead of the project's Gradle Wrapper.  If so, you would use the `gradle` command instead of `gradlew`. If you do elect to use your own Gradle, verify it's version is `6.6` or higher:
 
 ```sh
 gradle -version
@@ -208,6 +208,8 @@ The CLI internationalization is generated dynamically using the `bindata` tool a
 $ go get -u github.com/jteeuwen/go-bindata/...
 $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
+
+> **Note**: the `go-bindata` package will automatically be installed if the `go build` command is used in the project as it is listed in `go.mod` dependency file.
 
 ### Running unit tests
 
@@ -296,7 +298,7 @@ go get github.com/project/libname
 Using a release tag:
 
 ```sah
-go get github.com/project/libname
+go get github.com/project/libname@1.1.0
 ```
 
 Using a commit hash:
