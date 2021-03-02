@@ -52,7 +52,7 @@ install:
 before_script:
   - cd $TRAVIS_BUILD_DIR
   - ./gradlew --console=plain checkScalafmtAll
-  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
+  - GO_FILES=$(find . -iname '*.go' -type f)
   - test -z "$(gofmt -s -l $(echo $GO_FILES))"
   - cd $TRAVIS_BUILD_DIR/..
   - git clone https://github.com/apache/openwhisk-utilities.git
