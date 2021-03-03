@@ -192,7 +192,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
 
 #### Using your own local Gradle to build
 
-Alternatively, you can choose to [Install Gradle](https://gradle.org/install/) and use it instead of the project's Gradle Wrapper.  If so, you would use the `gradle` command instead of `gradlew`. If you do elect to use your own Gradle, verify it's version is `6.8.1` or higher:
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/) and use it instead of the project's Gradle Wrapper.  If so, you would use the `gradle` command instead of `gradlew`. If you do elect to use your own Gradle, verify its version is `6.8.1` or higher:
 
 ```sh
 gradle -version
