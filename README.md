@@ -209,7 +209,7 @@ $ go get -u github.com/jteeuwen/go-bindata/...
 $ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources
 ```
 
-> **Note**: the `go-bindata` package will automatically be installed if the `go build` command is used in the project as it is listed in `go.mod` dependency file.
+> **Note**: the `go-bindata` package will automatically be installed if the `go build` command is used in the project as it is listed in the `go.mod` dependency file.
 
 ### Running unit tests
 
