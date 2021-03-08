@@ -59,7 +59,7 @@ We also provide instructions on how to build your own binaries from source code.
 
 You can copy the `wsk` binary to any folder, and add the folder to your system `PATH` in order to run the OpenWhisk CLI command from anywhere on your system. To get the CLI command help, execute the following:
 
-```
+```sh
 $ wsk --help
 ```
 
@@ -90,7 +90,7 @@ git clone git@github.com:apache/openwhisk-cli
 or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-cli/releases/tag/1.1.0)
 
 ```sh
-git clone --branch 1.1.0 git@github.com:apache/openwhisk-clie
+git clone --branch 1.1.0 git@github.com:apache/openwhisk-cli
 ```
 
 You can also pull the code from a fork of the repository. If you intend to become a Contributor to the project, read the section [Contributing to the project](#contributing-to-the-project) below on how to setup a fork.
@@ -226,7 +226,7 @@ $ go test -tags=unit -v
 
 All tests can be run using the Gradle script:
 
-```
+```sh
 $ ./gradlew goTest -PgoTags=unit
 $ ./gradlew goTest -PgoTags=native
 ```
@@ -272,7 +272,7 @@ Integration tests are best left to the Travis build as they depend on a fully fu
 Please use `go get` to add new dependencies to the `go.mod` file:
 
 ```sh
-go get github.com/project/libname@v1.2.0
+go get -u github.com/project/libname@v1.2.0
 ```
 
 > Please avoid using commit hashes for referencing non-OpenWhisk libraries.
@@ -289,22 +289,10 @@ go mod tidy
 
 Although you might be tempted to edit the go.mod file directly, please use the recommended method of using the `go get` command:
 
-Using "latest" version:
-
 ```sh
-go get github.com/project/libname
-```
-
-Using a release tag:
-
-```sah
-go get github.com/project/libname@1.1.0
-```
-
-Using a commit hash:
-
-```sh
-go get github.com/project/libname@aee5cab1c
+go get -u github.com/project/libname  # Using "latest" version
+go get -u github.com/project/libname@v1.1.0 # Using tagged version
+go get -u github.com/project/libname@aee5cab1c  # Using a commit hash
 ```
 
 ### Updating Go version
