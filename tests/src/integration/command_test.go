@@ -65,7 +65,7 @@ func TestHelpUsageInfoCommandLanguage(t *testing.T) {
 func TestShowCLIBuildVersion(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "get", "--cliversion")
 	assert.Equal(t, nil, err, "The command property get --cliversion failed to run.")
-	output := common.RemoveRedundentSpaces(string(stdout))
+	output := common.RemoveRedundantSpaces(string(stdout))
 	assert.NotContains(t, output, common.PropDisplayCLIVersion+" not set",
 		"The output of the command property get --cliversion contains "+common.PropDisplayCLIVersion+" not set")
 	assert.Contains(t, output, common.PropDisplayCLIVersion,
@@ -89,7 +89,7 @@ func TestDefaultNamespace(t *testing.T) {
 
 	stdout, err := wsk.RunCommand("property", "get", "-i", "--namespace")
 	assert.Equal(t, nil, err, "The command property get -i --namespace failed to run.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayNamespace+" _",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayNamespace+" _",
 		"The output of the command does not contain "+common.PropDisplayCLIVersion+" _")
 	common.DeleteFile(tmpProp)
 }
@@ -113,12 +113,12 @@ func TestValidateDefaultProperties(t *testing.T) {
 
 	stdout, err = wsk.RunCommand("property", "get", "--auth")
 	assert.Equal(t, nil, err, "The command property get --auth failed to run.")
-	assert.Equal(t, common.PropDisplayAuth, common.RemoveRedundentSpaces(string(stdout)),
+	assert.Equal(t, common.PropDisplayAuth, common.RemoveRedundantSpaces(string(stdout)),
 		"The output of the command does not equal to "+common.PropDisplayAuth)
 
 	stdout, err = wsk.RunCommand("property", "get", "--apihost")
 	assert.Equal(t, nil, err, "The command property get --apihost failed to run.")
-	assert.Equal(t, common.PropDisplayAPIHost, common.RemoveRedundentSpaces(string(stdout)),
+	assert.Equal(t, common.PropDisplayAPIHost, common.RemoveRedundantSpaces(string(stdout)),
 		"The output of the command does not equal to "+common.PropDisplayAPIHost)
 
 	common.DeleteFile(tmpProp)
@@ -180,7 +180,7 @@ func TestRejectCommAPIHostNotSet(t *testing.T) {
 
 	stdout, err := wsk.RunCommand("property", "get")
 	assert.NotEqual(t, nil, err, "The command property get --apihost --apiversion should fail to run.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)),
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)),
 		"The API host is not valid: An API host must be provided",
 		"The output of the command does not contain \"The API host is not valid: An API host must be provided\".")
 	common.DeleteFile(tmpProp)
@@ -548,7 +548,7 @@ func TestRejectCommandsNotEnoughParamsArgs(t *testing.T) {
 }
 
 // Test case to reject commands that are executed with a missing or invalid parameter or annotation file.
-func TestRejectCommandsMissingIvalidParamsAnno(t *testing.T) {
+func TestRejectCommandsMissingInvalidParamsAnno(t *testing.T) {
 	initInvalidArgsMissingInvalidParamsAnno()
 	for _, invalidArg := range invalidArgs {
 		stdout, err := wsk.RunCommand(invalidArg.Cmd...)

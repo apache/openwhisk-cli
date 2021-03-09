@@ -93,7 +93,7 @@ func DeleteFile(filePath string) {
 	checkError(err)
 }
 
-func RemoveRedundentSpaces(in string) (out string) {
+func RemoveRedundantSpaces(in string) (out string) {
 	white := false
 	for _, c := range in {
 		if unicode.IsSpace(c) {

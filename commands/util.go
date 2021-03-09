@@ -322,7 +322,7 @@ func printSummary(collection interface{}) {
 	}
 }
 
-// Used to print Action, Tigger, Package, and Rule lists
+// Used to print Action, Trigger, Package, and Rule lists
 // Param: Takes in a array of Printable interface, and the name of the command
 //          being sent to it
 // **Note**: The name should be an empty string for APIs.

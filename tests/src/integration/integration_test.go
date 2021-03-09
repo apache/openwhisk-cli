@@ -363,12 +363,12 @@ func TestShowAPIBuildVersion(t *testing.T) {
 	assert.Equal(t, nil, err, "The command property set --apihost --apiversion failed to run.")
 	stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
 	assert.Equal(t, nil, err, "The command property get -i --apibuild failed to run.")
-	println(common.RemoveRedundentSpaces(string(stdout)))
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+	println(common.RemoveRedundantSpaces(string(stdout)))
+	assert.NotContains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
 		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" Unknown")
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
+	assert.NotContains(t, common.RemoveRedundantSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
 		"The output of the command property get --apibuild does not contain"+common.PropDisplayAPIBuild+" 20")
 	common.DeleteFile(tmpProp)
 }
@@ -384,9 +384,9 @@ func TestFailShowAPIBuildVersion(t *testing.T) {
 	assert.Equal(t, nil, err, "The command property set --apihost failed to run.")
 	stdout, err := wsk.RunCommand("property", "get", "-i", "--apibuild")
 	assert.NotEqual(t, nil, err, "The command property get -i --apibuild does not raise any error.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
 		"The output of the command property get --apibuild does not contain"+common.PropDisplayAPIBuild+" Unknown")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
 }
 
@@ -401,13 +401,13 @@ func TestShowAPIBuildVersionHTTP(t *testing.T) {
 	stdout, err := wsk.RunCommand("property", "set", "--apihost", apihost)
 	assert.Equal(t, nil, err, "The command property set --apihost failed to run.")
 	stdout, err = wsk.RunCommand("property", "get", "-i", "--apibuild")
-	println(common.RemoveRedundentSpaces(string(stdout)))
+	println(common.RemoveRedundantSpaces(string(stdout)))
 	//assert.Equal(t, nil, err, "The command property get -i --apibuild failed to run.")
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
+	assert.NotContains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayAPIBuild+" Unknown",
 		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" Unknown")
-	assert.NotContains(t, common.RemoveRedundentSpaces(string(stdout)), "Unable to obtain API build information",
+	assert.NotContains(t, common.RemoveRedundantSpaces(string(stdout)), "Unable to obtain API build information",
 		"The output of the command property get --apibuild does not contain \"Unable to obtain API build information\".")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), common.PropDisplayAPIBuild+" 20",
 		"The output of the command property get --apibuild does not contain "+common.PropDisplayAPIBuild+" 20")
 	common.DeleteFile(tmpProp)
 }
@@ -422,9 +422,9 @@ func TestRejectAuthCommNoKey(t *testing.T) {
 	stdout, err := wsk.RunCommand("list", "--apihost", wsk.Wskprops.APIHost,
 		"--apiversion", wsk.Wskprops.Apiversion)
 	assert.NotEqual(t, nil, err, "The command list should fail to run.")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "usage.",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), "usage.",
 		"The output of the command does not contain \"usage.\".")
-	assert.Contains(t, common.RemoveRedundentSpaces(string(stdout)), "--auth is required",
+	assert.Contains(t, common.RemoveRedundantSpaces(string(stdout)), "--auth is required",
 		"The output of the command does not contain \"--auth is required\".")
 	common.DeleteFile(tmpProp)
 }
