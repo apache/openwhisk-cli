@@ -272,7 +272,7 @@ func lastFlag(args []string) ([]string, error) {
 			Skip:  0,
 		}
 		activations, _, err := Client.Activations.List(options)
-		if err != nil { // Checks Activations.List for errors when retrieving latest activaiton
+		if err != nil { // Checks Activations.List for errors when retrieving latest activation
 			whisk.Debug(whisk.DbgError, "Client.Activations.List(%#v) error during lastFlag: %s\n", options, err)
 			return args, err
 		}
