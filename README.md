@@ -30,7 +30,7 @@ OpenWhisk Command-line Interface (CLI) is a unified tool that provides a consist
 
 Here are some quick links to help you get started:
 
-- [Downloading released binaries](#downloading-released-binaries) for Linux, Mac OS and Windows
+- [Downloading released binaries](#downloading-released-binaries) for Linux, macOS and Windows
 - [Running the `wsk` CLI](#running-the-wsk-cli) executable
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Contributing to the project](#contributing-to-the-project) - join us!
@@ -46,10 +46,10 @@ We currently provide binaries for the following Operating Systems (OS) and archi
 Operating System | Architectures
 --- | ---
 Linux | i386, AMD64, ARM, ARM64, PPC64 (Power), S/390 and IBM Z
-Mac OS (Darwin) | 386<sup>[1](#1)</sup>, AMD64
+macOS (Darwin) | 386<sup>[1](#1)</sup>, AMD64
 Windows | 386, AMD64
 
-1. Mac OS, 32-bit (386) released versions are not available for builds using Go lang version 1.15 and greater.
+1. macOS, 32-bit (386) released versions are not available for builds using Go lang version 1.15 and greater.
 
 We also provide instructions on how to build your own binaries from source code. See [Building the project](#building-the-project).
 
@@ -71,7 +71,7 @@ To get CLI command debug information, include the `-d`, or `--debug` flag when e
 
 ### GoLang setup
 
-The Openwhisk CLI is a GoLang program so you will first need to [Download and install GoLang](https://golang.org/dl/) onto your local machine.
+The Openwhisk CLI is a GoLang program, so you will first need to [Download and install GoLang](https://golang.org/dl/) onto your local machine.
 
 > **Note** Go version 1.15 or higher is recommended
 
@@ -124,7 +124,7 @@ Supported value combinations include:
 `GOOS` | `GOARCH`
 --- | ---
 linux | 386 (32-bit), amd64 (64-bit), s390x (S/390, Z), ppc64le (Power), arm (32-bit), arm64 (64-bit)
-darwin (Mac OS) | amd64
+darwin (macOS) | amd64
 windows | 386 (32-bit), amd64 (64-bit)
 
 ### Build using Gradle
@@ -319,4 +319,4 @@ go mod edit -go=1.15
 
 ## Continuous Integration
 
-Travis CI is used as a continuous delivery service for Linux and Mac. Currently Travis CI supports the environments of Linux and Mac, but it is not available for Windows. The project would like to add AppVeyor CI in the future to run test cases for Windows.
+Travis CI is used as a continuous delivery service for Linux and Mac. Currently, Travis CI supports the environments of Linux and Mac, but it is not available for Windows. The project would like to add AppVeyor CI in the future to run test cases for Windows.

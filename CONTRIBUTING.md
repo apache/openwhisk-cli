@@ -44,17 +44,17 @@ or
 $ make deps
 ```
 
-You should be able to build the binaries with either the go command or the Gradle command, which is available in [README](https://github.com/apache/openwhisk-cli/blob/master/README.md).
+You should be able to build the binaries with either the go command, or the Gradle command, which is available in [README](https://github.com/apache/openwhisk-cli/blob/master/README.md).
 
 
 ## Proposing new features
 
-If you would like to implement a new feature, please [raise an issue](https://github.com/apache/openwhisk-cli/issues) before sending a pull request so the feature can be discussed.
+If you would like to implement a new feature, please [raise an issue](https://github.com/apache/openwhisk-cli/issues) before sending a pull request, so the feature can be discussed.
 This is to avoid you spending your valuable time working on a feature that the project developers are not willing to accept into the code base.
 
 ## Fixing bugs
 
-If you would like to fix a bug, please [raise an issue](https://github.com/apache/openwhisk-cli/issues) before sending a pull request so it can be discussed.
+If you would like to fix a bug, please [raise an issue](https://github.com/apache/openwhisk-cli/issues) before sending a pull request, so it can be discussed.
 If the fix is trivial or non controversial then this is not usually necessary.
 
 ## Merge approval
@@ -83,7 +83,7 @@ Use idomatic go. Document exported functions.
 
 # Publishing Tagged Release to Homebrew
 
- [Homebrew](https://brew.sh) is used to install `wsk` locally. Once we release a new version of `wsk` we should update its version in homebrew.
+ [Homebrew](https://brew.sh) is used to install `wsk` locally. Once we release a new version of `wsk` we should update its version in Homebrew.
 
  Get the new release SHA256 checksum by downloading the Source Code (tar.gz) from the [releases page](https://github.com/apache/openwhisk-cli/releases) and running `shasum -a 256 X.Y.Z.tar.gz` on the tarball.
 
