@@ -980,10 +980,6 @@ class WskCliBasicTests extends TestHelpers with WskTestHelpers {
     WskNsCLI_RetListOneNs_test(wsk, wskprops)
   }
 
-  it should "list entities in default namespace" in {
-    wsk.namespace.get(expectedExitCode = SUCCESS_EXIT)(wskprops).stdout should include("default")
-  }
-
   behavior of "Wsk Activation CLI"
 
   it should "create a trigger, and fire a trigger to get its individual fields from an activation" in withAssetCleaner(
