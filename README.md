@@ -131,7 +131,7 @@ windows | 386 (32-bit), amd64 (64-bit)
 
 The project includes its own packaged version of Gradle called Gradle Wrapper which is invoked using the `./gradlew` command on Linux/Unix/Mac or `gradlew.bat` on Windows.
 
-1. Gradle requires requires you to [install Java JDK version 8](https://gradle.org/install/) or higher
+1. Gradle requires you to [install Java JDK version 8](https://gradle.org/install/) or higher
 
 1. Clone the `openwhisk-cli` repo:
 

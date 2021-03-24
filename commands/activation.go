@@ -276,7 +276,7 @@ func lastFlag(args []string) ([]string, error) {
 			whisk.Debug(whisk.DbgError, "Client.Activations.List(%#v) error during lastFlag: %s\n", options, err)
 			return args, err
 		}
-		if len(activations) == 0 { // Checks to to see if there are activations available
+		if len(activations) == 0 { // Checks to see if there are activations available
 			whisk.Debug(whisk.DbgError, "No activations found in activation list\n")
 			errStr := wski18n.T("Activation list does not contain any activations.")
 			whiskErr := whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
