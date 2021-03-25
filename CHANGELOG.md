@@ -21,10 +21,12 @@
 
 ## v1.2.0
 
+- Update Whisk Deploy (openwhisk-wskdeploy) dependency to v1.2.0 (#510)
+- Prep. for potential 1.2.0 release (#498)
 - Update for travis migration (#492)
-- bump openwhisk-client-go dependency (#493)
-- remove trailing slash on apihost #481 (#485)
-- recognize .rs extension as a Rust action kind (#495)
+- Bump openwhisk-client-go dependency (#493)
+- Remove trailing slash on apihost #481 (#485)
+- Recognize .rs extension as a Rust action kind (#495)
 - Remove last Godeps, update Gogradle for gomod and Ansible setup (#496)
 - Update Gradle/Wrapper to latest version (#497)
 
