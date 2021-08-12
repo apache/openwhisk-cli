@@ -25,8 +25,12 @@ gradle.ext.openwhisk = [
 
 gradle.ext.scala = [
     version: '2.12.7',
+    depVersion  : '2.12',
     compileFlags: ['-feature', '-unchecked', '-deprecation', '-Xfatal-warnings', '-Ywarn-unused-import']
 ]
+
+gradle.ext.akka = [version : '2.6.12']
+gradle.ext.akka_http = [version : '10.2.4']
 
 gradle.ext.scalafmt = [
     version: '1.5.0',
