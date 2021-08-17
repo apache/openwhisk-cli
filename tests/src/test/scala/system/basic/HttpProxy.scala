@@ -17,16 +17,13 @@
 package system.basic
 import java.net.ServerSocket
 
-import akka.http.scaladsl.{Http, HttpsConnectionContext}
+import akka.http.scaladsl.{ConnectionContext, Http}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, Uri}
 import akka.http.scaladsl.model.Uri.Authority
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
-import com.typesafe.sslconfig.akka.AkkaSSLConfig
 import common.{WskActorSystem, WskProps}
-import common.rest.{AcceptAllHostNameVerifier, SSL}
-import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.{SSLContext, SSLEngine}
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 
@@ -43,7 +40,6 @@ import scala.concurrent.duration._
 trait HttpProxy extends WskActorSystem with ScalaFutures {
   self: Suite =>
 
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val testConfig: PatienceConfig = PatienceConfig(1.minute)
 
   def withProxy(check: (WskProps, ListBuffer[(HttpRequest, HttpResponse)]) => Unit)(implicit wp: WskProps): Unit = {
@@ -64,9 +60,11 @@ trait HttpProxy extends WskActorSystem with ScalaFutures {
       handler
     }
 
-    val binding = Http(actorSystem).bindAndHandle(handler = proxy, interface = "localhost", port = port)
+    val bindingBuilder = Http().newServerAt("localhost", port)
+    val binding = bindingBuilder.bindFlow(proxy)
+
     binding.map { b =>
-      val proxyProps = wp.copy(apihost = s"http://localhost:$port")
+      val proxyProps = wp.copy(apihost = s"https://localhost:$port")
       check(proxyProps, requests)
       b.unbind()
     }.futureValue
@@ -93,20 +91,21 @@ trait HttpProxy extends WskActorSystem with ScalaFutures {
     }
   }
 
+  private def createInsecureSslEngine(host: String, port: Int): SSLEngine = {
+    val engine = SSLContext.getDefault.createSSLEngine(host, port)
+    engine.setUseClientMode(true)
+    engine
+  }
+
   private def httpsConnectionContext() = {
-    val sslConfig = AkkaSSLConfig().mapSettings { s =>
-      s.withHostnameVerifierClass(classOf[AcceptAllHostNameVerifier].asInstanceOf[Class[HostnameVerifier]])
-    }
-    //SSL.httpsConnectionContext initializes config which is not there in cli test
-    //So inline the flow as we do not need client auth for this case
-    new HttpsConnectionContext(SSL.nonValidatingContext(false), Some(sslConfig))
+    ConnectionContext.httpsClient(createInsecureSslEngine _)
   }
 
   private def proxyRequest(req: HttpRequest, uri: Uri): HttpRequest = {
     //https://github.com/akka/akka-http/issues/64
     req
-      .copy(headers = req.headers.filterNot(h => h.is("timeout-access")))
-      .copy(uri = req.uri.copy(scheme = "", authority = Authority.Empty)) //Strip the authority as it refers to proxy
+      .withHeaders(req.headers.filterNot(h => h.is("timeout-access")))
+      .withUri(req.uri.copy(scheme = "", authority = Authority.Empty)) //Strip the authority as it refers to proxy
   }
 
   private def freePort(): Int = {
