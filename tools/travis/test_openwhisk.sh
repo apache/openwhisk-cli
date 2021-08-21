@@ -93,7 +93,7 @@ $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR  -e controller_protocol=http
+$ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR
 $ANSIBLE_CMD properties.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD routemgmt.yml
