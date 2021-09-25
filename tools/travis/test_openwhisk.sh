@@ -98,6 +98,9 @@ $ANSIBLE_CMD properties.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD routemgmt.yml
 
+# cp whisk.properties so whisk.ssl.* can be loaded for test cases
+cp $OPENWHISK_HOME/whisk.properties $TRAVIS_BUILD_DIR
+
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
 ./gradlew --console=plain :tests:test --tests=*ApiGwCliTests*
