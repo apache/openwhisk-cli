@@ -604,16 +604,20 @@ func getChildValueStrings(keyValueArr whisk.KeyValueArr, key string, childKey st
 	return res
 }
 
-func getValueFromJSONResponse(field string, response map[string]interface{}) interface{} {
+func getValueFromResponse(field string, response interface{}) interface{} {
 	var res interface{}
 
-	for key, value := range response {
-		if key == field {
-			res = value
-			break
+	if result, ok := response.(map[string]interface{}); ok {
+		for key, value := range result {
+			if key == field {
+				res = value
+				break
+			}
 		}
 	}
-
+	if result, ok := response.([]interface{}); ok {
+		res = result
+	}
 	return res
 }
 
