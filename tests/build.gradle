@@ -41,6 +41,7 @@ task testWithoutCredentials(type: Test) {
 }
 
 dependencies {
+    implementation "io.rest-assured:rest-assured:4.0.0"
     implementation "junit:junit:4.11"
     implementation "org.scala-lang:scala-library:${gradle.scala.version}"
     implementation "org.scalatest:scalatest_${gradle.scala.depVersion}:3.0.8"
