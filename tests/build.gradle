@@ -41,6 +41,7 @@ task testWithoutCredentials(type: Test) {
 }
 
 dependencies {
+    implementation "com.typesafe.akka:akka-discovery_${gradle.scala.depVersion}:${gradle.akka.version}"
     implementation "io.rest-assured:rest-assured:4.0.0"
     implementation "junit:junit:4.11"
     implementation "org.scala-lang:scala-library:${gradle.scala.version}"
