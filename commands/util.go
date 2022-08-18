@@ -617,6 +617,8 @@ func getValueFromResponse(field string, response interface{}) interface{} {
 	}
 	if result, ok := response.([]interface{}); ok {
 		res = result
+	} else {
+		res = ""
 	}
 	return res
 }
