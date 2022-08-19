@@ -3,8 +3,8 @@ module github.com/apache/openwhisk-cli
 go 1.15
 
 require (
-	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
-	github.com/apache/openwhisk-wskdeploy v0.0.0-20210316172333-03df1126c3b5
+	github.com/apache/openwhisk-client-go v0.0.0-20220811044404-a6921af2f086
+	github.com/apache/openwhisk-wskdeploy v0.0.0-20220815044620-520cbbbffb6e
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
 	github.com/fatih/color v1.10.0
