@@ -86,6 +86,7 @@ cd $OPENWHISK_HOME
 #./tools/travis/setup.sh
 
 #  Fire up the cluster
+echo 'limit_invocations_per_minute: 120' >> $OPENWHISK_HOME/ansible/environments/local/group_vars/all
 ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
 cd $OPENWHISK_HOME/ansible
 $ANSIBLE_CMD setup.yml
