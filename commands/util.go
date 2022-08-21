@@ -605,22 +605,18 @@ func getChildValueStrings(keyValueArr whisk.KeyValueArr, key string, childKey st
 }
 
 func getValueFromResponse(field string, response interface{}) interface{} {
-	var res interface{}
-
 	if result, ok := response.(map[string]interface{}); ok {
 		for key, value := range result {
 			if key == field {
-				res = value
-				break
+				return value
 			}
 		}
 	}
 	if result, ok := response.([]interface{}); ok {
-		res = result
+		return result
 	} else {
-		res = ""
+		return ""
 	}
-	return res
 }
 
 func logoText() string {
