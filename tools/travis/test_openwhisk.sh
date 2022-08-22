@@ -104,6 +104,20 @@ $ANSIBLE_CMD properties.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD routemgmt.yml
 
+# avoid does not find pureconfig during testing CLI tests
+cat <<EOT >> $TRAVIS_BUILD_DIR/tests/src/test/resources/application.conf
+whisk {
+  controller {
+    https {
+      keystore-flavor = "PKCS12"
+      keystore-path = "$OPENWHISK_HOME/ansible/roles/controller/files/controller-openwhisk-keystore.p12"
+      keystore-password = "openwhisk"
+      client-auth = "true"
+    }
+  }
+}
+EOT
+
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR
 ./gradlew --console=plain :tests:test --tests=*ApiGwCliTests*
