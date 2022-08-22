@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 package system.basic
+import akka.actor.ActorSystem
+
 import java.net.ServerSocket
 import akka.http.scaladsl.{ConnectionContext, Http}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, Uri}
@@ -43,6 +45,7 @@ trait HttpProxy extends WskActorSystem with ScalaFutures {
   implicit val testConfig: PatienceConfig = PatienceConfig(1.minute)
 
   def withProxy(check: (WskProps, ListBuffer[(HttpRequest, HttpResponse)]) => Unit)(implicit wp: WskProps): Unit = {
+    implicit val actorSystem = ActorSystem("test-openwhisk-cli")
     val uri = getTargetUri(wp)
     val requests = new ListBuffer[(HttpRequest, HttpResponse)]
     val port = freePort()
@@ -77,7 +80,7 @@ trait HttpProxy extends WskActorSystem with ScalaFutures {
     }
   }
 
-  private def makeHttpFlow(uri: Uri) = {
+  private def makeHttpFlow(uri: Uri)(implicit actorSystem: ActorSystem) = {
     if (uri.scheme == "https") {
       //Use ssl config which does not validate anything
       Http(actorSystem).outgoingConnectionHttps(
