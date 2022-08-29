@@ -82,21 +82,41 @@ cd $TRAVIS_BUILD_DIR
 #
 cd $OPENWHISK_HOME
 
+# Build openwhisk image to keep test case code consistent with latest openwhisk core code
+./gradlew distDocker -PdockerImagePrefix=openwhisk -PdockerImageTag=latest
+
 # Install Ansible and other pre-reqs
 #./tools/travis/setup.sh
 
 #  Fire up the cluster
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
+echo 'limit_invocations_per_minute: 120' >> $OPENWHISK_HOME/ansible/environments/local/group_vars/all
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=latest"
 cd $OPENWHISK_HOME/ansible
 $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controllerProtocolForSetup=http
+$ANSIBLE_CMD elasticsearch.yml
+$ANSIBLE_CMD etcd.yml
+$ANSIBLE_CMD openwhisk.yml -e cli_tag=$openwhisk_cli_tag -e cli_installation_mode=local -e openwhisk_cli_home=$TRAVIS_BUILD_DIR -e controller_protocol=http -e db_activation_backend=ElasticSearch
 $ANSIBLE_CMD properties.yml
 $ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD routemgmt.yml
+
+# avoid does not find pureconfig during testing CLI tests
+cat <<EOT >> $TRAVIS_BUILD_DIR/tests/src/test/resources/application.conf
+whisk {
+  controller {
+    https {
+      keystore-flavor = "PKCS12"
+      keystore-path = "$OPENWHISK_HOME/ansible/roles/controller/files/controller-openwhisk-keystore.p12"
+      keystore-password = "openwhisk"
+      client-auth = "true"
+    }
+  }
+}
+EOT
 
 #  Run the test cases under openwhisk to ensure the quality of the runnint API.
 cd $TRAVIS_BUILD_DIR

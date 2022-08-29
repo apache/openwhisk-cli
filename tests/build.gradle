@@ -41,9 +41,16 @@ task testWithoutCredentials(type: Test) {
 }
 
 dependencies {
-    compile "org.scala-lang:scala-library:${gradle.scala.version}"
-    compile "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:tests"
-    compile "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:test-sources"
+    implementation "com.typesafe.akka:akka-discovery_${gradle.scala.depVersion}:${gradle.akka.version}"
+    implementation "com.typesafe.akka:akka-http2-support_${gradle.scala.depVersion}:${gradle.akka_http.version}"
+    implementation "com.typesafe.akka:akka-http-xml_${gradle.scala.depVersion}:${gradle.akka_http.version}"
+    implementation "io.rest-assured:rest-assured:4.0.0"
+    implementation "junit:junit:4.11"
+    implementation "org.scala-lang:scala-library:${gradle.scala.version}"
+    implementation "org.scalatest:scalatest_${gradle.scala.depVersion}:3.0.8"
+    implementation "org.apache.openwhisk:openwhisk-common:${gradle.openwhisk.version}"
+    implementation "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:tests"
+    implementation "org.apache.openwhisk:openwhisk-tests:${gradle.openwhisk.version}:test-sources"
 }
 
 tasks.withType(ScalaCompile) {

@@ -279,8 +279,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
         val response = activation.response
-        response.result.get
-          .fields("error") shouldBe Messages.abnormalInitialization.toJson
+        response.result.get.asJsObject.fields("error") shouldBe Messages.abnormalInitialization.toJson
         response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
@@ -294,9 +293,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
         val response = activation.response
-        response.result.get.fields("error") shouldBe Messages
-          .timedoutActivation(3 seconds, true)
-          .toJson
+        response.result.get.asJsObject.fields("error") shouldBe Messages.timedoutActivation(3 seconds, true).toJson
         response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
@@ -310,7 +307,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
         val response = activation.response
-        response.result.get.fields("error") shouldBe Messages.abnormalRun.toJson
+        response.result.get.asJsObject.fields("error") shouldBe Messages.abnormalRun.toJson
         response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
       }
   }
@@ -484,8 +481,8 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       withActivation(wsk.activation, wsk.action.invoke(name)) { activation =>
         val response = activation.response
-        response.result.get.fields.get("error") shouldBe empty
-        response.result.get.fields.get("author") shouldBe defined
+        response.result.get.asJsObject.fields.get("error") shouldBe empty
+        response.result.get.asJsObject.fields.get("author") shouldBe defined
       }
   }
 
@@ -505,7 +502,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val run = wsk.action.invoke(name)
       withActivation(wsk.activation, run) { activation =>
         activation.response.status shouldBe ActivationResponse.messageForCode(ActivationResponse.DeveloperError)
-        activation.response.result.get
+        activation.response.result.get.asJsObject
           .fields("error") shouldBe s"Failed to pull container image '$containerName'.".toJson
         activation.annotations shouldBe defined
         val limits = activation.annotations.get
@@ -621,14 +618,14 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         val webEnabled = flag.toLowerCase == "true" || flag.toLowerCase == "yes"
         val rawEnabled = flag.toLowerCase == "raw"
 
-        wsk.action.create(name, file, web = Some(flag), update = true, kind = Some("nodejs:10"))
+        wsk.action.create(name, file, web = Some(flag), update = true, kind = Some("nodejs:14"))
 
         val action = wsk.action.get(name)
 
         val baseAnnotations = Parameters("web-export", JsBoolean(webEnabled || rawEnabled)) ++
           Parameters("raw-http", JsBoolean(rawEnabled)) ++
           Parameters("final", JsBoolean(webEnabled || rawEnabled)) ++
-          Parameters("exec", "nodejs:10")
+          Parameters("exec", "nodejs:14")
         val testAnnotations = if (requireAPIKeyAnnotation) {
           baseAnnotations ++ Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse)
         } else baseAnnotations
@@ -658,7 +655,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       Parameters("web-export", JsTrue) ++
         Parameters("raw-http", JsFalse) ++
         Parameters("final", JsTrue) ++
-        Parameters("exec", "nodejs:10")
+        Parameters("exec", "nodejs:14")
     val createAnnotations = if (requireAPIKeyAnnotation) {
       baseAnnotations ++
         Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse) ++
@@ -674,10 +671,10 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       overwrittenValue)
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, file, annotations = createAnnots, kind = Some("nodejs:10"))
+      action.create(name, file, annotations = createAnnots, kind = Some("nodejs:14"))
     }
 
-    wsk.action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:10"))
+    wsk.action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:14"))
 
     val existingAnnots = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     assert(existingAnnots.startsWith(s"ok: got action $name, displaying field annotations\n"))
@@ -690,7 +687,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       web = Some("true"),
       update = true,
       annotations = updateAnnots,
-      kind = Some("nodejs:10"))
+      kind = Some("nodejs:14"))
 
     val updatedAnnots =
       wsk.action.get(name, fieldFilter = Some("annotations")).stdout
@@ -705,14 +702,14 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       val file = Some(TestUtils.getTestActionFilename("echo.js"))
 
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:10"))
+        action.create(name, file, web = Some("true"), update = true, kind = Some("nodejs:14"))
       }
 
       val baseAnnotations =
         Parameters("web-export", JsTrue) ++
           Parameters("raw-http", JsFalse) ++
           Parameters("final", JsTrue) ++
-          Parameters("exec", "nodejs:10")
+          Parameters("exec", "nodejs:14")
 
       val testAnnotations = if (requireAPIKeyAnnotation) {
         baseAnnotations ++
@@ -783,7 +780,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
       // -web true --web-secure true -> annotation "require-whisk-auth" value is an int
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, file, web = Some("true"), websecure = Some("true"), kind = Some("nodejs:10"))
+        action.create(name, file, web = Some("true"), websecure = Some("true"), kind = Some("nodejs:14"))
       }
       var stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       var secretJsVar = removeCLIHeader(stdout).parseJson
@@ -806,11 +803,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         web = Some("true"),
         websecure = Some(s"$secretStr"),
         update = true,
-        kind = Some("nodejs:10"))
+        kind = Some("nodejs:14"))
       stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       val actualAnnotations =
         removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
-      actualAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:10"))) shouldBe true
+      actualAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:14"))) shouldBe true
       actualAnnotations.contains(JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true))) shouldBe true
       actualAnnotations.contains(JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false))) shouldBe true
       actualAnnotations.contains(JsObject("key" -> JsString("final"), "value" -> JsBoolean(true))) shouldBe true
@@ -823,7 +820,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         web = Some("true"),
         websecure = Some("true"),
         update = true,
-        kind = Some("nodejs:10"))
+        kind = Some("nodejs:14"))
       stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
       val secretNumJsVar = removeCLIHeader(stdout).parseJson
         .convertTo[JsArray]
@@ -837,7 +834,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
         web = Some("true"),
         websecure = Some("true"),
         update = true,
-        kind = Some("nodejs:10"))
+        kind = Some("nodejs:14"))
       removeCLIHeader(stdout).parseJson
         .convertTo[JsArray]
         .elements
@@ -886,14 +883,14 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val secretStr = "my-secret"
 
     assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-      action.create(name, file, web = Some("true"), annotations = createAnnots, kind = Some("nodejs:10"))
+      action.create(name, file, web = Some("true"), annotations = createAnnots, kind = Some("nodejs:14"))
     }
 
-    wsk.action.create(name, file, websecure = Some(secretStr), update = true, kind = Some("nodejs:10"))
+    wsk.action.create(name, file, websecure = Some(secretStr), update = true, kind = Some("nodejs:14"))
     var stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var existingAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
-    existingAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:10"))) shouldBe true
+    existingAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:14"))) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true))) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false))) shouldBe true
     existingAnnotations.contains(JsObject("key" -> JsString("final"), "value" -> JsBoolean(true))) shouldBe true
@@ -907,11 +904,11 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
       websecure = Some(secretStr),
       update = true,
       annotations = updateAnnots,
-      kind = Some("nodejs:10"))
+      kind = Some("nodejs:14"))
     stdout = wsk.action.get(name, fieldFilter = Some("annotations")).stdout
     var updatedAnnotations =
       removeCLIHeader(stdout).parseJson.convertTo[JsArray].elements
-    updatedAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:10"))) shouldBe true
+    updatedAnnotations.contains(JsObject("key" -> JsString("exec"), "value" -> JsString("nodejs:14"))) shouldBe true
     updatedAnnotations.contains(JsObject("key" -> JsString("web-export"), "value" -> JsBoolean(true))) shouldBe true
     updatedAnnotations.contains(JsObject("key" -> JsString("raw-http"), "value" -> JsBoolean(false))) shouldBe true
     updatedAnnotations.contains(JsObject("key" -> JsString("final"), "value" -> JsBoolean(true))) shouldBe true
@@ -1223,10 +1220,10 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
     val requireAPIKeyAnnotation = WhiskProperties.getBooleanProperty("whisk.feature.requireApiKeyAnnotation", true)
     val expectedParam = JsObject("payload" -> JsString("test"))
     val ns = wsk.namespace.whois()
-    val expectedExec = JsObject("kind" -> "nodejs:10".toJson, "binary" -> JsFalse)
+    val expectedExec = JsObject("kind" -> "nodejs:14".toJson, "binary" -> JsFalse)
     val expectedParams = Parameters("payload", "test")
     val baseAnnotations =
-      Parameters("exec", "nodejs:10")
+      Parameters("exec", "nodejs:14")
     val expectedAnnots = if (requireAPIKeyAnnotation) {
       baseAnnotations ++
         Parameters(Annotations.ProvideApiKeyAnnotationName, JsFalse)
@@ -1238,7 +1235,7 @@ class WskCliBasicUsageTests extends TestHelpers with WskTestHelpers {
 
     (wp, assetHelper) =>
       assetHelper.withCleaner(wsk.action, name) { (action, _) =>
-        action.create(name, defaultAction, parameters = paramInput, kind = Some("nodejs:10"))
+        action.create(name, defaultAction, parameters = paramInput, kind = Some("nodejs:14"))
       }
 
       wsk.action.get(name, fieldFilter = Some("name")).stdout should include(s"""$successMsg name\n"$name"""")
