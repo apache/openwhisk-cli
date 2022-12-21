@@ -21,7 +21,7 @@ matrix:
   include:
     - os: linux
       sudo: required
-      go: "1.15"
+      go: "1.18"
       services: docker
       dist: xenial
 
@@ -51,31 +51,32 @@ install:
 
 before_script:
   - cd $TRAVIS_BUILD_DIR
-  - ./gradlew --console=plain checkScalafmtAll
-  - GO_FILES=$(find . -iname '*.go' -type f)
-  - test -z "$(gofmt -s -l $(echo $GO_FILES))"
-  - cd $TRAVIS_BUILD_DIR/..
-  - git clone https://github.com/apache/openwhisk-utilities.git
-  - git clone https://github.com/apache/openwhisk.git
-  - cd openwhisk
-  - ./tools/travis/setup.sh
+  # - ./gradlew --console=plain checkScalafmtAll
+  # - GO_FILES=$(find . -iname '*.go' -type f)
+  # - test -z "$(gofmt -s -l $(echo $GO_FILES))"
+  # - cd $TRAVIS_BUILD_DIR/..
+  # - git clone https://github.com/apache/openwhisk-utilities.git
+  # - git clone https://github.com/apache/openwhisk.git
+  # - cd openwhisk
+  # - ./tools/travis/setup.sh
 
 script:
-  - cd $TRAVIS_BUILD_DIR/../openwhisk
-  - ./gradlew install tests:buildArtifacts
-  - cd $TRAVIS_BUILD_DIR
-  - export BUILD_VERSION="latest"
-  - if [ ! -z "$TRAVIS_TAG" ] ; then
-    export BUILD_VERSION=$TRAVIS_TAG;
-    fi
-  - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
-  - ./tools/travis/test_openwhisk.sh $BUILD_VERSION
+  # - cd $TRAVIS_BUILD_DIR/../openwhisk
+  # - ./gradlew install tests:buildArtifacts
+  # - cd $TRAVIS_BUILD_DIR
+  # - export BUILD_VERSION="latest"
+  # - if [ ! -z "$TRAVIS_TAG" ] ; then
+  #   export BUILD_VERSION=$TRAVIS_TAG;
+  #   fi
+  # - ./gradlew --console=plain releaseBinaries -PpackageVersion=$BUILD_VERSION
+  # - ./tools/travis/test_openwhisk.sh $BUILD_VERSION
+  - echo "tests disabled"
 
 after_success:
-  - export DEPLOY_BUILD_READY=true
-  - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
-    export DEPLOY_BUILD_READY=false;
-    fi
+  # - export DEPLOY_BUILD_READY=true
+  # - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
+  #   export DEPLOY_BUILD_READY=false;
+  #   fi
 
 before_deploy:
   - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
