@@ -1,3 +1,4 @@
+//go:build native
 // +build native
 
 /*
@@ -32,8 +33,10 @@ var tmpProp = common.GetRepoPath() + "/wskprops.tmp"
 var invalidArgs []common.InvalidArg
 var invalidParamMsg = "Arguments for '-p' must be a key/value pair"
 var invalidAnnotMsg = "Arguments for '-a' must be a key/value pair"
+var invalidEnvMsg = "Arguments for '-e' must be a key/value pair"
 var invalidParamFileMsg = "An argument must be provided for '-P'"
 var invalidAnnotFileMsg = "An argument must be provided for '-A'"
+var invalidEnvFileMsg = "An argument must be provided for '-E'"
 
 var emptyFile = common.GetTestActionFilename("emtpy.js")
 var helloFile = common.GetTestActionFilename("hello.js")
@@ -259,6 +262,30 @@ func initInvalidArgsNotEnoughParamsArgs() {
 		{
 			Cmd: []string{"action", "invoke", "actionName", "-A"},
 			Err: invalidAnnotFileMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", "-e"},
+			Err: invalidEnvMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", "-e", "key"},
+			Err: invalidEnvMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", "-E"},
+			Err: invalidEnvFileMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", "-e"},
+			Err: invalidEnvMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", "-e", "key"},
+			Err: invalidEnvMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", "-E"},
+			Err: invalidEnvFileMsg,
 		},
 		{
 			Cmd: []string{"package", "create", "packageName", "-p"},
@@ -527,6 +554,30 @@ func initInvalidArgsMissingInvalidParamsAnno() {
 		},
 		{
 			Cmd: []string{"trigger", "fire", "triggerName", "-A", missingFile},
+			Err: missingFileMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", helloFile, "-E", emptyFile},
+			Err: emptyFileMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", helloFile, "-E", emptyFile},
+			Err: emptyFileMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", "-E", emptyFile},
+			Err: emptyFileMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", "-E", emptyFile},
+			Err: emptyFileMsg,
+		},
+		{
+			Cmd: []string{"action", "create", "actionName", helloFile, "-E", missingFile},
+			Err: missingFileMsg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", helloFile, "-E", missingFile},
 			Err: missingFileMsg,
 		},
 	}
