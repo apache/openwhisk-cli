@@ -469,6 +469,8 @@ func TestRejectCommInvalidJSON(t *testing.T) {
 	}
 	var invalidParamArg = "Invalid parameter argument"
 	var invalidAnnoArg = "Invalid annotation argument"
+	var invalidEnvArg = "Invalid environment argument"
+
 	var paramCmds = []common.InvalidArg{
 		{
 			Cmd: []string{"action", "create", "actionName", helloFile},
@@ -539,6 +541,17 @@ func TestRejectCommInvalidJSON(t *testing.T) {
 		},
 	}
 
+	var envCmds = []common.InvalidArg{
+		{
+			Cmd: []string{"action", "create", "actionName", helloFile},
+			Err: invalidEnvArg,
+		},
+		{
+			Cmd: []string{"action", "update", "actionName", helloFile},
+			Err: invalidEnvArg,
+		}
+	}
+
 	for _, cmd := range paramCmds {
 		for _, invalid := range invalidJSONInputs {
 			cs := cmd.Cmd
@@ -576,6 +589,29 @@ func TestRejectCommInvalidJSON(t *testing.T) {
 		for _, invalid := range invalidJSONFiles {
 			cs := cmd.Cmd
 			cs = append(cs, "-A", invalid, "--apihost", wsk.Wskprops.APIHost)
+			stdout, err := wsk.RunCommand(cs...)
+			outputString := string(stdout)
+			assert.NotEqual(t, nil, err, "The command should fail to run.")
+			assert.Equal(t, "exit status 1", err.Error(), "The error should be exit status 1.")
+			assert.Contains(t, outputString, cmd.Err,
+				"The output of the command does not contain "+cmd.Err+" .")
+		}
+	}
+
+	for _, cmd := range envCmds {
+		for _, invalid := range invalidJSONInputs {
+			cs := cmd.Cmd
+			cs = append(cs, "-e", "key", invalid, "--apihost", wsk.Wskprops.APIHost)
+			stdout, err := wsk.RunCommand(cs...)
+			outputString := string(stdout)
+			assert.NotEqual(t, nil, err, "The command should fail to run.")
+			assert.Equal(t, "exit status 1", err.Error(), "The error should be exit status 1.")
+			assert.Contains(t, outputString, cmd.Err,
+				"The output of the command does not contain "+cmd.Err+" .")
+		}
+		for _, invalid := range invalidJSONFiles {
+			cs := cmd.Cmd
+			cs = append(cs, "-E", invalid, "--apihost", wsk.Wskprops.APIHost)
 			stdout, err := wsk.RunCommand(cs...)
 			outputString := string(stdout)
 			assert.NotEqual(t, nil, err, "The command should fail to run.")

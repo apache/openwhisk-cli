@@ -56,6 +56,10 @@
     "translation": "Annotation arguments must be a key value pair: {{.args}}"
   },
   {
+    "id": "Environment variable arguments must be a key value pair: {{.args}}",
+    "translation": "Environment variable arguments must be a key value pair: {{.args}}"
+  },
+  {
     "id": "Failed to parse arguments: {{.err}}",
     "translation": "Failed to parse arguments: {{.err}}"
   },
@@ -106,6 +110,10 @@
   {
     "id": "Invalid annotation argument '{{.annotation}}': {{.err}}",
     "translation": "Invalid annotation argument '{{.annotation}}': {{.err}}"
+  },
+  {
+    "id": "Invalid environment variable argument '{{.env}}': {{.err}}",
+    "translation": "Invalid environment variable argument '{{.env}}': {{.err}}"
   },
   {
     "id": "Binding creation failed: {{.err}}",
@@ -1092,6 +1100,10 @@
     "translation": "The annotation arguments are invalid: {{.err}}"
   },
   {
+    "id": "The environment variable arguments are invalid: {{.err}}",
+    "translation": "The environment variable arguments are invalid: {{.err}}"
+  },
+  {
     "id": "An action name and code artifact are required.",
     "translation": "An action name and code artifact are required."
   },
@@ -1216,11 +1228,11 @@
     "translation": "An API path and an API verb are required."
   },
   {
-    "id":"'{{.name}}' is not a valid action name: {{.err}}",
+    "id": "'{{.name}}' is not a valid action name: {{.err}}",
     "translation": "'{{.name}}' is not a valid action name: {{.err}}"
   },
   {
-    "id":"'{{.name}}' is not a valid action name.",
+    "id": "'{{.name}}' is not a valid action name.",
     "translation": "'{{.name}}' is not a valid action name."
   },
   {
@@ -1600,19 +1612,19 @@
     "translation": "Exports managed project assets from OpenWhisk to manifest and function files.\n\nThe most common way to run export:\n$ wsk project export --projectname PROJECT --manifest path/to/exported-manifest.yaml"
   },
   {
-    "id": "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag", 
+    "id": "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag",
     "translation": "Incorrect usage. Cannot combine --feed-param or --trigger-param flag with neither --param nor --param-file flag"
   },
   {
-    "id": "trigger parameter values in `KEY VALUE` format", 
+    "id": "trigger parameter values in `KEY VALUE` format",
     "translation": "trigger parameter values in `KEY VALUE` format"
   },
   {
-    "id": "feed parameter values in `KEY VALUE` format", 
+    "id": "feed parameter values in `KEY VALUE` format",
     "translation": "feed parameter values in `KEY VALUE` format"
   },
   {
-    "id": "Incorrect usage. Trigger without a feed cannot have feed parameters", 
+    "id": "Incorrect usage. Trigger without a feed cannot have feed parameters",
     "translation": "Incorrect usage. Trigger without a feed cannot have feed parameters"
   }
 ]

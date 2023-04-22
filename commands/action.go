@@ -401,8 +401,10 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 	var existingAction *whisk.Action
 	var paramArgs []string
 	var annotArgs []string
+	var envArgs []string
 	var parameters interface{}
 	var annotations interface{}
+	var environment interface{}
 
 	var qualifiedName = new(QualifiedName)
 
@@ -426,6 +428,7 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 
 	paramArgs = Flags.common.param
 	annotArgs = Flags.common.annotation
+	envArgs = Flags.common.env
 
 	if len(paramArgs) > 0 {
 		if parameters, err = getJSONFromStrings(paramArgs, true); err != nil {
@@ -441,6 +444,14 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		}
 
 		action.Annotations = annotations.(whisk.KeyValueArr)
+	}
+
+	if len(envArgs) > 0 {
+		if environment, err = getJSONFromStrings(envArgs, true); err != nil {
+			return nil, getJSONFromStringsEnvError(envArgs, true, err)
+		}
+
+		action.Env = environment.(whisk.KeyValueArr)
 	}
 
 	if len(Flags.action.kind) > 0 && len(Flags.action.docker) > 0 {
@@ -465,6 +476,7 @@ func parseAction(cmd *cobra.Command, args []string, update bool) (*whisk.Action,
 		action.Exec = existingAction.Exec
 		action.Parameters = append(action.Parameters, existingAction.Parameters...)
 		action.Annotations = append(action.Annotations, existingAction.Annotations...)
+		action.Env = append(action.Env, existingAction.Env...)
 	} else if Flags.action.sequence {
 		if len(args) == 2 {
 			action.Exec = new(whisk.Exec)
@@ -895,11 +907,11 @@ func updateWebSecureAnnotation(websecure string, annotations whisk.KeyValueArr) 
 	return annotations
 }
 
-//
 // Generate a secret according to the --web-secure setting
-//  true:   return a random int64
-//  false:  return false, meaning no secret was returned
-//  string: return the same string
+//
+//	true:   return a random int64
+//	false:  return false, meaning no secret was returned
+//	string: return the same string
 func webSecureSecret(webSecureMode string) interface{} {
 	switch strings.ToLower(webSecureMode) {
 	case "true":
@@ -1000,6 +1012,19 @@ func getJSONFromStringsAnnotError(annots []string, keyValueFormat bool, err erro
 		map[string]interface{}{
 			"annotation": fmt.Sprintf("%#v", annots),
 			"err":        err,
+		})
+
+	return nestedError(errMsg, err)
+}
+
+func getJSONFromStringsEnvError(envs []string, keyValueFormat bool, err error) error {
+	whisk.Debug(whisk.DbgError, "getJSONFromStrings(%#v, %t) failed: %s\n", envs, keyValueFormat, err)
+
+	errMsg := wski18n.T(
+		"Invalid annotation argument '{{.annotation}}': {{.err}}",
+		map[string]interface{}{
+			"env": fmt.Sprintf("%#v", envs),
+			"err": err,
 		})
 
 	return nestedError(errMsg, err)
@@ -1304,6 +1329,8 @@ func init() {
 	actionCreateCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionCreateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
+	actionCreateCmd.Flags().StringSliceVarP(&Flags.common.env, "env", "e", nil, wski18n.T("environment variables in `KEY VALUE` format"))
+	actionCreateCmd.Flags().StringVarP(&Flags.common.envFile, "env-file", "E", "", wski18n.T("`FILE` containing environment variables in JSON format"))
 
 	actionUpdateCmd.Flags().BoolVar(&Flags.action.native, "native", false, wski18n.T("treat ACTION as native action (zip file provides a compatible executable to run)"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.docker, "docker", "", wski18n.T("use provided docker image (a path on DockerHub) to run the action"))
@@ -1322,6 +1349,8 @@ func init() {
 	actionUpdateCmd.Flags().StringVar(&Flags.action.web, WEB_FLAG, "", wski18n.T("treat ACTION as a web action, a raw HTTP web action, or as a standard action; yes | true = web action, raw = raw HTTP web action, no | false = standard action"))
 	actionUpdateCmd.Flags().StringVar(&Flags.action.websecure, WEB_SECURE_FLAG, "", wski18n.T("secure the web action. where `SECRET` is true, false, or any string. Only valid when the ACTION is a web action"))
 	actionUpdateCmd.Flags().StringArrayVar(&Flags.action.delAnnotation, "del-annotation", []string{}, wski18n.T("the list of annotations to be deleted from the action, e.g. --del-annotation key1 --del-annotation key2"))
+	actionUpdateCmd.Flags().StringSliceVarP(&Flags.common.env, "env", "e", nil, wski18n.T("environment variables in `KEY VALUE` format"))
+	actionUpdateCmd.Flags().StringVarP(&Flags.common.envFile, "env-file", "E", "", wski18n.T("`FILE` containing environment variables in JSON format"))
 
 	actionInvokeCmd.Flags().StringSliceVarP(&Flags.common.param, "param", "p", []string{}, wski18n.T("parameter values in `KEY VALUE` format"))
 	actionInvokeCmd.Flags().StringVarP(&Flags.common.paramFile, "param-file", "P", "", wski18n.T("`FILE` containing parameter values in JSON format"))
