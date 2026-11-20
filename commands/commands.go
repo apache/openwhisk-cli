@@ -40,9 +40,10 @@ func SetupClientConfig(cmd *cobra.Command, args []string) error {
 	baseURL, err := whisk.GetURLBase(Properties.APIHost, DefaultOpenWhiskApiPath)
 
 	// Determine if the parent command will require the API host to be set
-	apiHostRequired := (cmd.Parent().Name() == "property" && cmd.Name() == "get" && (Flags.property.auth ||
-		Flags.property.cert || Flags.property.key || Flags.property.apihost ||
-		Flags.property.apiversion || Flags.property.cliversion)) ||
+	// When true, skip API-host validation. property get should work for local
+	// properties even when no host is configured (including the default --all case,
+	// which sets Flags.property.all only later in RunE).
+	apiHostRequired := (cmd.Parent().Name() == "property" && cmd.Name() == "get") ||
 		(cmd.Parent().Name() == "property" && cmd.Name() == "set" && (len(Flags.property.apihostSet) > 0 ||
 			len(Flags.property.apiversionSet) > 0 || len(Flags.Global.Auth) > 0)) ||
 		(cmd.Parent().Name() == "sdk" && cmd.Name() == "install" && len(args) > 0 && args[0] == "bashauto")
