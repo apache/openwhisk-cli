@@ -319,12 +319,18 @@ var propertyGetCmd = &cobra.Command{
 		}
 
 		if Flags.property.all || Flags.property.apibuild || Flags.property.apibuildno {
-			info, _, err := Client.Info.Get()
-			if err != nil {
-				whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
-				info = &whisk.Info{}
-				info.Build = wski18n.T("Unknown")
-				info.BuildNo = wski18n.T("Unknown")
+			var info *whisk.Info
+			var err error
+			if len(Properties.APIHost) == 0 {
+				info = &whisk.Info{Build: wski18n.T("Unknown"), BuildNo: wski18n.T("Unknown")}
+			} else {
+				info, _, err = Client.Info.Get()
+				if err != nil {
+					whisk.Debug(whisk.DbgError, "Client.Info.Get() failed: %s\n", err)
+					info = &whisk.Info{}
+					info.Build = wski18n.T("Unknown")
+					info.BuildNo = wski18n.T("Unknown")
+				}
 			}
 			if Flags.property.all {
 				fmt.Fprintf(color.Output, "%s\t\t%s\n", wski18n.T(propDisplayAPIBuild), boldString(info.Build))
@@ -336,7 +342,8 @@ var propertyGetCmd = &cobra.Command{
 			if Flags.property.apibuildno && !Flags.property.all {
 				printProperty(info.BuildNo, propDisplayAPIBuildNo, outputFormat, "%s\t%s\n")
 			}
-			if err != nil {
+			// Only fail hard when the user explicitly asked for build info and a host is set.
+			if err != nil && (Flags.property.apibuild || Flags.property.apibuildno) && !Flags.property.all {
 				errStr := fmt.Sprintf(
 					wski18n.T("Unable to obtain API build information: {{.err}}",
 						map[string]interface{}{"err": err}))
